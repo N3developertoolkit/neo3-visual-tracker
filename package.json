@@ -30,7 +30,7 @@
     "Neo",
     "Blockchain"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension/index.js",
   "contributes": {
     "commands": [
       {
@@ -40,10 +40,10 @@
     ]
   },
   "scripts": {
-    "compile": "tsc -p ./",
-    "package": "vsce package",
+    "compile": "webpack --config src/extension/webpack.config.js --mode development",
+    "package": "webpack --config src/extension/webpack.config.js --mode production && vsce package",
     "setversion": "gulp setversion",
-    "watch": "tsc -watch -p ./"
+    "watch": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
@@ -55,12 +55,14 @@
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
     "nerdbank-gitversioning": "^3.2.7-beta",
-    "ts-node": "^8.10.2",
-    "typescript": "^3.8.3",
-    "vsce": "^1.77.0"
-  },
-  "dependencies": {
     "react": "^16.13.1",
-    "react-dom": "^16.13.1"
-  }
+    "react-dom": "^16.13.1",
+    "ts-loader": "^7.0.5",
+    "ts-node": "^8.10.2",
+    "typescript": "^3.9.6",
+    "vsce": "^1.77.0",
+    "webpack": "^4.43.0",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {}
 }
