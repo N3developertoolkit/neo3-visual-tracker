@@ -40,15 +40,20 @@
     ]
   },
   "scripts": {
-    "package": "vsce package",
     "compile": "tsc -p ./",
+    "package": "vsce package",
+    "setversion": "gulp setversion",
     "watch": "tsc -watch -p ./"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
+    "@types/gulp": "^4.0.6",
     "@types/node": "^13.11.0",
     "@types/vscode": "^1.46.0",
     "glob": "^7.1.6",
+    "gulp": "^4.0.2",
+    "nerdbank-gitversioning": "^3.2.7-beta",
+    "ts-node": "^8.10.2",
     "typescript": "^3.8.3",
     "vsce": "^1.77.0"
   }
