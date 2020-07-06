@@ -3,6 +3,7 @@
 "use strict";
 
 const path = require("path");
+const webpack = require("webpack");
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -11,9 +12,18 @@ const config = {
   output: {
     path: path.join(__dirname, "..", "..", "dist", "panel"),
     filename: "index.js",
-    devtoolModuleFilenameTemplate: "[absolute-resource-path]",
+    devtoolModuleFilenameTemplate: "file://[absolute-resource-path]",
   },
-  devtool: "source-map",
+  devtool: false,
+  plugins: [
+    new webpack.SourceMapDevToolPlugin({
+      filename: "[file].map",
+      append:
+        "\n//# sourceMappingURL=file://" +
+        path.resolve(__dirname, "..", "..", "dist", "panel") +
+        "/[url]",
+    }),
+  ],
   resolve: {
     extensions: [".tsx", ".ts", ".js"],
   },
