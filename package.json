@@ -40,10 +40,17 @@
     ]
   },
   "scripts": {
-    "compile": "webpack --config src/extension/webpack.config.js --mode development",
-    "package": "webpack --config src/extension/webpack.config.js --mode production && vsce package",
+    "compile": "npm run compile-ext && npm run compile-panel",
+    "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
+    "compile-panel": "webpack --config src/panel/webpack.config.js --mode development",
+    "compile-prod": "npm run compile-ext && npm run compile-panel",
+    "compile-prod-ext": "webpack --config src/extension/webpack.config.js --mode production",
+    "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
+    "package": "npm run compile-prod && vsce package",
     "setversion": "gulp setversion",
-    "watch": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose"
+    "watch": "concurrently -r npm:watch-*",
+    "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose",
+    "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --info-verbosity verbose"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
@@ -52,6 +59,8 @@
     "@types/react": "^16.9.41",
     "@types/react-dom": "^16.9.8",
     "@types/vscode": "^1.46.0",
+    "concurrently": "^5.2.0",
+    "file-loader": "^6.0.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
     "nerdbank-gitversioning": "^3.2.7-beta",
