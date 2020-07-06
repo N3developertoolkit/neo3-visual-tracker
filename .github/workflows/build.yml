@@ -1,0 +1,44 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  buildextension:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: ⏳ Checkout
+        uses: actions/checkout@v2
+      - name: 💿 Setup NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: 💿 Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.5.0
+        with:
+          dotnet-version: 3.1.x
+      - name: 🚀 Build
+        run: |
+          npm ci
+          npm run compile
+      - name: 🔢 Set version
+        run: npm run setversion
+      - name: 🎁 Package
+        id: package
+        shell: bash
+        run: |
+          npm run package
+          cp *.vsix neo3-visual-tracker.vsix
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: 🌎 Release
+        uses: djnicholson/release-action@v2.4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: v0.0-${{ steps.package.outputs.branch }}
+          release-name: "Rolling build"
+          asset-name: "neo3-visual-tracker.vsix"
+          file: "neo3-visual-tracker.vsix"
+
