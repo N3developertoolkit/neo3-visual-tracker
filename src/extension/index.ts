@@ -2,6 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import * as neonCore from "@cityofzion/neon-core";
+
 export function activate(context: vscode.ExtensionContext) {
   let disposable = vscode.commands.registerCommand(
     "neo3-visual-tracker.helloWorld",
@@ -29,6 +31,12 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(disposable);
+
+  const rpcClient = new neonCore.rpc.RPCClient("http://seed1t.neo.org:20332");
+  setInterval(async () => {
+    const blockNumber = await rpcClient.getBlockCount();
+    console.log("Block height", blockNumber);
+  }, 5000);
 }
 
 export function deactivate() {}
