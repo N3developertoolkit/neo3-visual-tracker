@@ -11,7 +11,8 @@
     "jsx": "react",
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "downlevelIteration": true
   },
   "exclude": ["node_modules", "gulpfile.ts"]
 }

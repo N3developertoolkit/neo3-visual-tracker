@@ -6,6 +6,8 @@ import ControllerRequest from "../../shared/controllerRequest";
 import ViewRequest from "../../shared/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
 
+const LOG_PREFIX = "[PanelControllerBase]";
+
 export default abstract class PanelControllerBase<
   TViewState extends ViewStateBase
 > {
@@ -13,7 +15,7 @@ export default abstract class PanelControllerBase<
 
   private readonly setTitle: (newTitle: string) => void;
 
-  private viewState: TViewState;
+  protected viewState: TViewState;
 
   constructor(initialViewState: TViewState, context: vscode.ExtensionContext) {
     this.viewState = { ...initialViewState };
@@ -61,14 +63,14 @@ export default abstract class PanelControllerBase<
   }
 
   private recieveRequest(request: ViewRequest) {
-    console.log("📬", request);
+    console.log(LOG_PREFIX, "📬", request);
     if (request.retrieveViewState) {
       this.sendRequest({ viewState: this.viewState });
     }
   }
 
   private sendRequest(request: ControllerRequest) {
-    console.log("📤", request);
+    console.log(LOG_PREFIX, "📤", request);
     this.postMessage(request);
   }
 }
