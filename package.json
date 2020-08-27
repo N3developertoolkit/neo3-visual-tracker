@@ -24,6 +24,7 @@
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
   },
   "activationEvents": [
+    "onView:neo3-visual-devtracker.blockchainsExplorer",
     "onCommand:neo3-visual-tracker.helloWorld"
   ],
   "keywords": [
@@ -32,6 +33,23 @@
   ],
   "main": "./dist/extension/index.js",
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "neo3-visual-devtracker-mainView",
+          "title": "Neo",
+          "icon": "resources/neo-logo.png"
+        }
+      ]
+    },
+    "views": {
+      "neo3-visual-devtracker-mainView": [
+        {
+          "id": "neo3-visual-devtracker.blockchainsExplorer",
+          "name": "Blockchains"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "neo3-visual-tracker.helloWorld",
