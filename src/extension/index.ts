@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainsExplorer from "./views/blockchainsExplorer";
+import NeoExpress from "./neoExpress/neoExpress";
 import TrackerPanelController from "./panelControllers/trackerPanelController";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -16,6 +17,9 @@ export function activate(context: vscode.ExtensionContext) {
       new TrackerPanelController(context);
     })
   );
+
+  const neoExpress = new NeoExpress(context);
+  //console.log(neoExpress.runSync("create"));
 }
 
 export function deactivate() {}
