@@ -15,7 +15,7 @@ export default class NeoExpress {
       | "show"
       | "transfer"
       | "wallet",
-    options?: string[]
+    ...options: string[]
   ) {
     const binaryPath = path.join(
       this.context.extensionPath,
@@ -25,7 +25,6 @@ export default class NeoExpress {
       "any",
       "nxp3.dll"
     );
-    options = options || [];
     const dotNetArguments = [binaryPath, command, ...options];
     return childProcess.execFileSync("dotnet", dotNetArguments).toString();
   }

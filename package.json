@@ -25,7 +25,8 @@
   },
   "activationEvents": [
     "onView:neo3-visual-devtracker.blockchainsExplorer",
-    "onCommand:neo3-visual-tracker.helloWorld"
+    "onCommand:neo3-visual-tracker.helloWorld",
+    "onCommand:neo3-visual-tracker.nxp3.create"
   ],
   "keywords": [
     "Neo",
@@ -33,12 +34,22 @@
   ],
   "main": "./dist/extension/index.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
+    "commands": [
+      {
+        "command": "neo3-visual-tracker.helloWorld",
+        "title": "Hello World"
+      },
+      {
+        "command": "neo3-visual-tracker.nxp3.create",
+        "title": "Create neo-express instance",
+        "category": "Neo Express 3"
+      }
+    ],
+    "menus": {
+      "view/title": [
         {
-          "id": "neo3-visual-devtracker-mainView",
-          "title": "Neo",
-          "icon": "resources/neo-logo.png"
+          "command": "neo3-visual-tracker.nxp3.create",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         }
       ]
     },
@@ -50,12 +61,15 @@
         }
       ]
     },
-    "commands": [
-      {
-        "command": "neo3-visual-tracker.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "neo3-visual-devtracker-mainView",
+          "title": "Neo",
+          "icon": "resources/neo-logo.png"
+        }
+      ]
+    }
   },
   "scripts": {
     "bundle-nxp3": "npm run bundle-nxp3-download && npm run bundle-nxp3-extract",
