@@ -11,11 +11,11 @@ const LOG_PREFIX = "[PanelControllerBase]";
 export default abstract class PanelControllerBase<
   TViewState extends ViewStateBase
 > {
+  protected viewState: TViewState;
+
   private readonly postMessage: (request: ControllerRequest) => void;
 
   private readonly setTitle: (newTitle: string) => void;
-
-  protected viewState: TViewState;
 
   constructor(initialViewState: TViewState, context: vscode.ExtensionContext) {
     this.viewState = { ...initialViewState };
