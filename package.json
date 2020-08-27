@@ -58,13 +58,16 @@
     ]
   },
   "scripts": {
+    "bundle-nxp3": "npm run bundle-nxp3-download && npm run bundle-nxp3-extract",
+    "bundle-nxp3-download": "mkdir -p nxp3 && nwget https://github.com/neo-project/neo-express/releases/download/1.2.20-insiders/Neo.Express3.1.2.20-insiders.nupkg -O nxp3/nxp3.nupkg",
+    "bundle-nxp3-extract": "cd nxp3 && extract-zip nxp3.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
     "compile-panel": "webpack --config src/panel/webpack.config.js --mode development",
-    "compile-prod": "npm run compile-ext && npm run compile-panel",
+    "compile-prod": "npm run compile-prod-ext && npm run compile-prod-panel",
     "compile-prod-ext": "webpack --config src/extension/webpack.config.js --mode production",
     "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
-    "package": "npm run compile-prod && vsce package",
+    "package": "npm run compile-prod && npm run bundle-nxp3 && vsce package",
     "setversion": "gulp setversion",
     "watch": "concurrently -r npm:watch-*",
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose",
@@ -80,6 +83,7 @@
     "@types/react-dom": "^16.9.8",
     "@types/vscode": "^1.46.0",
     "concurrently": "^5.2.0",
+    "extract-zip": "^2.0.1",
     "file-loader": "^6.0.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
@@ -91,7 +95,8 @@
     "typescript": "^3.9.6",
     "vsce": "^1.77.0",
     "webpack": "^4.43.0",
-    "webpack-cli": "^3.3.12"
+    "webpack-cli": "^3.3.12",
+    "wget-improved": "^3.2.1"
   },
   "dependencies": {}
 }
