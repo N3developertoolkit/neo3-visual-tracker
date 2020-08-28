@@ -26,7 +26,8 @@
   "activationEvents": [
     "onView:neo3-visual-devtracker.blockchainsExplorer",
     "onCommand:neo3-visual-tracker.helloWorld",
-    "onCommand:neo3-visual-tracker.nxp3.create"
+    "onCommand:neo3-visual-tracker.nxp3.create",
+    "onCommand:neo3-visual-tracker.nxp3.run"
   ],
   "keywords": [
     "Neo",
@@ -43,9 +44,29 @@
         "command": "neo3-visual-tracker.nxp3.create",
         "title": "Create neo-express instance",
         "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-tracker.nxp3.run",
+        "title": "Run neo-express instance",
+        "category": "Neo Express 3",
+        "icon": {
+          "light": "resources/light/play.svg",
+          "dark": "resources/dark/play.svg"
+        }
       }
     ],
     "menus": {
+      "view/item/context": [
+        {
+          "command": "neo3-visual-tracker.nxp3.run",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer",
+          "group": "inline"
+        },
+        {
+          "command": "neo3-visual-tracker.nxp3.run",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer"
+        }
+      ],
       "view/title": [
         {
           "command": "neo3-visual-tracker.nxp3.create",

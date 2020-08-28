@@ -20,9 +20,12 @@ export default class BlockchainIdentifier {
         return undefined;
       }
       return new BlockchainIdentifier(
+        "runnable",
         "parent",
         path.basename(configPath),
-        nodePorts.map((_: number) => `http://127.0.0.1:${_}`)
+        nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
+        0,
+        configPath
       );
     } catch (e) {
       console.log(
@@ -36,15 +39,26 @@ export default class BlockchainIdentifier {
   }
 
   constructor(
+    public readonly context: "runnable" | "remote",
     public readonly nodeType: "parent" | "child",
     public readonly name: string,
-    public readonly rpcUrls: string[]
+    public readonly rpcUrls: string[],
+    public readonly index: number,
+    public readonly configPath: string
   ) {}
 
   getChildren() {
     if (this.nodeType === "parent") {
       return this.rpcUrls.map(
-        (_) => new BlockchainIdentifier("child", this.name, [_])
+        (_, i) =>
+          new BlockchainIdentifier(
+            this.context,
+            "child",
+            `${this.name}:${i}`,
+            [_],
+            i,
+            this.configPath
+          )
       );
     } else {
       return [];
@@ -57,12 +71,14 @@ export default class BlockchainIdentifier {
         this.name,
         vscode.TreeItemCollapsibleState.Expanded
       );
+      treeItem.contextValue = this.context;
       return treeItem;
     } else {
       const treeItem = new vscode.TreeItem(
         this.rpcUrls[0],
         vscode.TreeItemCollapsibleState.None
       );
+      treeItem.contextValue = this.context;
       return treeItem;
     }
   }

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
+import IoHelpers from "../ioHelpers";
 
 const LOG_PREFIX = "[BlockchainsExplorer]";
 const SEARCH_PATTERN = "**/*.neo-express";
@@ -15,7 +16,13 @@ export default class BlockchainsExplorer
 
   private rootElements: BlockchainIdentifier[] = [];
 
-  constructor() {
+  static async create() {
+    const blockchainsExplorer = new BlockchainsExplorer();
+    await blockchainsExplorer.refresh();
+    return blockchainsExplorer;
+  }
+
+  private constructor() {
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
     this.refresh();
@@ -50,5 +57,21 @@ export default class BlockchainsExplorer
       .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_.fsPath))
       .filter((_) => !!_) as BlockchainIdentifier[];
     this.onDidChangeTreeDataEmitter.fire();
+  }
+
+  async select(context: string): Promise<BlockchainIdentifier | undefined> {
+    const candidates = this.rootElements.filter((_) => _.context === context);
+    if (!candidates.length) {
+      return;
+    }
+    const selection = await IoHelpers.multipleChoice(
+      "Select a blockchain",
+      ...candidates.map((_, i) => `${i} - ${_.name}`)
+    );
+    if (!selection) {
+      return;
+    }
+    const selectedIndex = parseInt(selection);
+    return candidates[selectedIndex];
   }
 }

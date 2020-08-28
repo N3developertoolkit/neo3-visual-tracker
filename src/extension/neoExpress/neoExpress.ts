@@ -2,22 +2,21 @@ import * as childProcess from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
 
-export default class NeoExpress {
-  constructor(private readonly context: vscode.ExtensionContext) {}
+type Command =
+  | "checkpoint"
+  | "contract"
+  | "create"
+  | "reset"
+  | "run"
+  | "show"
+  | "transfer"
+  | "wallet";
 
-  runSync(
-    command:
-      | "checkpoint"
-      | "contract"
-      | "create"
-      | "reset"
-      | "run"
-      | "show"
-      | "transfer"
-      | "wallet",
-    ...options: string[]
-  ) {
-    const binaryPath = path.join(
+export default class NeoExpress {
+  private readonly binaryPath: string;
+
+  constructor(private readonly context: vscode.ExtensionContext) {
+    this.binaryPath = path.join(
       this.context.extensionPath,
       "nxp3",
       "tools",
@@ -25,7 +24,21 @@ export default class NeoExpress {
       "any",
       "nxp3.dll"
     );
-    const dotNetArguments = [binaryPath, command, ...options];
+  }
+
+  runInTerminal(name: string, command: Command, ...options: string[]) {
+    const dotNetArguments = [this.binaryPath, command, ...options];
+    const terminal = vscode.window.createTerminal(
+      name,
+      "dotnet",
+      dotNetArguments
+    );
+    terminal.show();
+    return terminal;
+  }
+
+  runSync(command: Command, ...options: string[]) {
+    const dotNetArguments = [this.binaryPath, command, ...options];
     return childProcess.execFileSync("dotnet", dotNetArguments).toString();
   }
 }
