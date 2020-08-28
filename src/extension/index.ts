@@ -6,12 +6,15 @@ import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import TrackerPanelController from "./panelControllers/trackerPanelController";
 
 export function activate(context: vscode.ExtensionContext) {
+  const blockchainsExplorer = new BlockchainsExplorer();
   const neoExpress = new NeoExpress(context);
+
+  context.subscriptions.push(blockchainsExplorer);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
       "neo3-visual-devtracker.blockchainsExplorer",
-      new BlockchainsExplorer()
+      blockchainsExplorer
     )
   );
 

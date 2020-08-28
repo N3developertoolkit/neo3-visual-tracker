@@ -6,3 +6,4 @@ node_modules/**
 **/*.map
 **/*.ts
 *.nupkg
+sample-workspace
