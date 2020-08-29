@@ -5,6 +5,15 @@ import * as vscode from "vscode";
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
 export default class BlockchainIdentifier {
+  static testNet = new BlockchainIdentifier(
+    "remote",
+    "parent",
+    "Neo 3 TestNet",
+    ["http://seed1t.neo.org:20332"],
+    0,
+    ""
+  );
+
   static fromNeoExpressConfig(
     configPath: string
   ): BlockchainIdentifier | undefined {
@@ -38,7 +47,7 @@ export default class BlockchainIdentifier {
     }
   }
 
-  constructor(
+  private constructor(
     public readonly context: "runnable" | "remote",
     public readonly nodeType: "parent" | "child",
     public readonly name: string,

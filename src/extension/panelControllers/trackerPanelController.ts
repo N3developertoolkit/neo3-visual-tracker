@@ -18,13 +18,13 @@ export default class TrackerPanelController extends PanelControllerBase<
   private cachedBlocks: Block[];
   private timeout?: NodeJS.Timeout;
 
-  constructor(context: vscode.ExtensionContext) {
+  constructor(context: vscode.ExtensionContext, rpcUrl: string) {
     super(
       { view: "tracker", panelTitle: "Block Explorer", blockHeight: 0 },
       context
     );
     this.cachedBlocks = [];
-    this.rpcClient = new neonCore.rpc.RPCClient("http://seed1t.neo.org:20332");
+    this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.refreshLoop();
   }
 

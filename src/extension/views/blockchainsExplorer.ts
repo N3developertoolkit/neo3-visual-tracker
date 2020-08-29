@@ -53,14 +53,17 @@ export default class BlockchainsExplorer
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing tree view...");
     const allConfigFiles = await vscode.workspace.findFiles(SEARCH_PATTERN);
-    this.rootElements = allConfigFiles
+    const neoExpressEntries = allConfigFiles
       .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_.fsPath))
       .filter((_) => !!_) as BlockchainIdentifier[];
+    this.rootElements = [BlockchainIdentifier.testNet, ...neoExpressEntries];
     this.onDidChangeTreeDataEmitter.fire();
   }
 
-  async select(context: string): Promise<BlockchainIdentifier | undefined> {
-    const candidates = this.rootElements.filter((_) => _.context === context);
+  async select(context?: string): Promise<BlockchainIdentifier | undefined> {
+    const candidates = this.rootElements.filter(
+      (_) => !context || _.context === context
+    );
     if (!candidates.length) {
       return;
     }
