@@ -28,11 +28,12 @@ export default class NeoExpress {
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
     const dotNetArguments = [this.binaryPath, command, ...options];
-    const terminal = vscode.window.createTerminal(
+    const terminal = vscode.window.createTerminal({
       name,
-      "dotnet",
-      dotNetArguments
-    );
+      shellPath: "dotnet",
+      shellArgs: dotNetArguments,
+      hideFromUser: false,
+    });
     terminal.show();
     return terminal;
   }

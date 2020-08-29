@@ -63,7 +63,10 @@ export default class NeoExpressCommands {
       neoExpress.runInTerminal(
         identifer.name,
         "run",
-        `-i ${identifer.configPath}`,
+        "-i",
+        identifer.configPath,
+        "-s",
+        "15",
         `${identifer.index}`
       );
     }
