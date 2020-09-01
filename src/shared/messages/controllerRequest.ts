@@ -1,4 +1,4 @@
-import ViewStateBase from "./viewState/viewStateBase";
+import ViewStateBase from "../viewState/viewStateBase";
 
 type ControllerRequest = {
   viewState: ViewStateBase;

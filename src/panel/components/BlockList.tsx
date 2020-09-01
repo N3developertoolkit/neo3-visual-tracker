@@ -5,7 +5,7 @@ import Hash from "./Hash";
 import Time from "./Time";
 
 type Props = {
-  blocks?: Block[];
+  blocks: Block[];
 };
 
 export default function BlockList({ blocks }: Props) {
@@ -32,15 +32,14 @@ export default function BlockList({ blocks }: Props) {
         </tr>
       </thead>
       <tbody>
-        {!blocks?.length && (
+        {!blocks.length && (
           <tr>
             <td colSpan={5} style={loadingStyle}>
               Loading&hellip;
             </td>
           </tr>
         )}
-        {!!blocks &&
-          !!blocks.length &&
+        {!!blocks.length &&
           blocks.map((block) => (
             <tr key={block.index}>
               <td style={cellStyle}>{block.index}</td>

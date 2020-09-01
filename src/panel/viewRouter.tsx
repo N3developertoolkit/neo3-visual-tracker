@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import ControllerRequest from "../shared/controllerRequest";
+import ControllerRequest from "../shared/messages/controllerRequest";
 import Tracker from "./views/Tracker";
 import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
-import ViewRequest from "../shared/viewRequest";
+import ViewRequest from "../shared/messages/viewRequest";
 import ViewStateBase from "../shared/viewState/viewStateBase";
 
 declare var acquireVsCodeApi: any;
@@ -37,7 +37,12 @@ export default function ViewRouter() {
   }
   switch (view) {
     case "tracker":
-      return <Tracker viewState={viewState as TrackerViewState} />;
+      return (
+        <Tracker
+          viewState={viewState as TrackerViewState}
+          postMessage={(typedRequest) => postMessage({ typedRequest })}
+        />
+      );
     default:
       return <div>Error: Unknown view.</div>;
   }

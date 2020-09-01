@@ -2,14 +2,15 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import ControllerRequest from "../../shared/controllerRequest";
-import ViewRequest from "../../shared/viewRequest";
+import ControllerRequest from "../../shared/messages/controllerRequest";
+import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
 
 const LOG_PREFIX = "[PanelControllerBase]";
 
 export default abstract class PanelControllerBase<
-  TViewState extends ViewStateBase
+  TViewState extends ViewStateBase,
+  TViewRequest
 > {
   protected viewState: TViewState;
 
@@ -54,6 +55,8 @@ export default abstract class PanelControllerBase<
 
   abstract onClose(): void;
 
+  protected abstract onRequest(request: TViewRequest): void;
+
   protected updateViewState(updates: Partial<TViewState>) {
     if (updates.panelTitle !== undefined) {
       this.setTitle(updates.panelTitle);
@@ -66,6 +69,9 @@ export default abstract class PanelControllerBase<
     console.log(LOG_PREFIX, "📬", request);
     if (request.retrieveViewState) {
       this.sendRequest({ viewState: this.viewState });
+    }
+    if (request.typedRequest) {
+      this.onRequest(request.typedRequest);
     }
   }
 

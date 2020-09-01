@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 
 import Block from "../../shared/neon/block";
 import PanelControllerBase from "./panelControllerBase";
+import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 
 const LOG_PREFIX = "[TrackerPanelController]";
@@ -11,7 +12,8 @@ const BLOCKS_PER_PAGE = 25;
 const BLOCK_CACHE_SIZE = 1024;
 
 export default class TrackerPanelController extends PanelControllerBase<
-  TrackerViewState
+  TrackerViewState,
+  TrackerViewRequest
 > {
   private readonly rpcClient: neonCore.rpc.RPCClient;
 
@@ -20,7 +22,14 @@ export default class TrackerPanelController extends PanelControllerBase<
 
   constructor(context: vscode.ExtensionContext, rpcUrl: string) {
     super(
-      { view: "tracker", panelTitle: "Block Explorer", blockHeight: 0 },
+      {
+        view: "tracker",
+        panelTitle: `Block Explorer: ${rpcUrl}`,
+        blockHeight: 0,
+        blocksPerPage: BLOCKS_PER_PAGE,
+        blocks: [],
+        startAtBlock: -1,
+      },
       context
     );
     this.cachedBlocks = [];
@@ -31,6 +40,18 @@ export default class TrackerPanelController extends PanelControllerBase<
   onClose() {
     if (this.timeout) {
       clearTimeout(this.timeout);
+    }
+  }
+
+  protected async onRequest(request: TrackerViewRequest) {
+    if (request.setStartAtBlock !== undefined) {
+      await this.updateViewState({
+        startAtBlock: request.setStartAtBlock,
+        blocks: await this.getBlocks(
+          request.setStartAtBlock,
+          this.viewState.blockHeight
+        ),
+      });
     }
   }
 
@@ -51,30 +72,37 @@ export default class TrackerPanelController extends PanelControllerBase<
     return block;
   }
 
-  private async onNewBlockAvailable() {
-    if (this.viewState.startAtBlock) {
-      return;
-    }
-    let newBlocks: Block[] = [];
+  private async getBlocks(startAtBlock: number, blockHeight: number) {
+    let newBlocks: Promise<Block>[] = [];
+    startAtBlock =
+      startAtBlock < 0 || startAtBlock >= blockHeight
+        ? blockHeight - 1
+        : startAtBlock;
     for (let i = 0; i < BLOCKS_PER_PAGE; i++) {
-      const blockNumber = this.viewState.blockHeight - i - 1;
+      const blockNumber = startAtBlock - i;
       if (blockNumber >= 0) {
-        newBlocks.push(await this.getBlock(blockNumber));
+        newBlocks.push(this.getBlock(blockNumber));
       }
     }
-    this.updateViewState({ blocks: newBlocks });
+    return Promise.all(newBlocks);
+  }
+
+  private async onNewBlockAvailable(blockHeight: number) {
+    if (this.viewState.startAtBlock >= 0) {
+      return;
+    }
+    this.updateViewState({
+      blockHeight,
+      blocks: await this.getBlocks(-1, blockHeight),
+    });
   }
 
   private async refreshLoop() {
     try {
-      const currentBlockHeight = await this.rpcClient.getBlockCount();
-      if (currentBlockHeight > this.viewState.blockHeight) {
-        console.log(LOG_PREFIX, "New block available", currentBlockHeight);
-        this.updateViewState({
-          blockHeight: currentBlockHeight,
-          panelTitle: `Block Explorer: ${currentBlockHeight}`,
-        });
-        await this.onNewBlockAvailable();
+      const blockHeight = await this.rpcClient.getBlockCount();
+      if (blockHeight > this.viewState.blockHeight) {
+        console.log(LOG_PREFIX, "New block available", blockHeight);
+        await this.onNewBlockAvailable(blockHeight);
       }
     } finally {
       this.timeout = <any>(
