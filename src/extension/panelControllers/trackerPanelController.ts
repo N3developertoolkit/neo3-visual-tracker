@@ -18,7 +18,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private readonly rpcClient: neonCore.rpc.RPCClient;
 
   private cachedBlocks: Block[];
-  private timeout?: NodeJS.Timeout;
+  private closed: boolean;
 
   constructor(context: vscode.ExtensionContext, rpcUrl: string) {
     super(
@@ -32,15 +32,14 @@ export default class TrackerPanelController extends PanelControllerBase<
       },
       context
     );
+    this.closed = false;
     this.cachedBlocks = [];
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.refreshLoop();
   }
 
   onClose() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-    }
+    this.closed = true;
   }
 
   protected async onRequest(request: TrackerViewRequest) {
@@ -98,6 +97,9 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async refreshLoop() {
+    if (this.closed) {
+      return;
+    }
     try {
       const blockHeight = await this.rpcClient.getBlockCount();
       if (blockHeight > this.viewState.blockHeight) {
@@ -105,9 +107,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         await this.onNewBlockAvailable(blockHeight);
       }
     } finally {
-      this.timeout = <any>(
-        setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS)
-      );
+      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 }

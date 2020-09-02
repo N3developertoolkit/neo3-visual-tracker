@@ -30,7 +30,7 @@ export default abstract class PanelControllerBase<
     panel.iconPath = vscode.Uri.file(
       path.join(context.extensionPath, "resources", "neo-logo.png")
     );
-    panel.onDidDispose(this.onClose, this, context.subscriptions);
+    panel.onDidDispose(() => this.onClose(), this, context.subscriptions);
     panel.webview.onDidReceiveMessage(
       this.recieveRequest,
       this,
