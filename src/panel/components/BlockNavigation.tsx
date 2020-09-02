@@ -1,12 +1,14 @@
 import React from "react";
 
 import Block from "../../shared/neon/block";
+import NavButton from "./NavButton";
 
 type Props = {
   blocks: Block[];
   blockHeight: number;
   blocksPerPage: number;
   startAtBlock: number;
+  style?: React.CSSProperties;
   setStartAtBlock: (newStartAtBlock: number) => void;
 };
 
@@ -15,23 +17,27 @@ export default function BlockNavigation({
   blockHeight,
   blocksPerPage,
   startAtBlock,
+  style,
   setStartAtBlock,
 }: Props) {
   if (!blocks.length) {
     return <></>;
   }
   const lastBlock = blocks[blocks.length - 1].index;
+  const buttonStyle: React.CSSProperties = {
+    margin: "0.25em",
+  };
   return (
-    <div>
-      <button
-        type="button"
+    <div style={style}>
+      <NavButton
+        style={buttonStyle}
         disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
         onClick={() => setStartAtBlock(-1)}
       >
         Most recent
-      </button>
-      <button
-        type="button"
+      </NavButton>
+      <NavButton
+        style={buttonStyle}
         disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
         onClick={() => {
           const goto = startAtBlock + blocksPerPage;
@@ -39,23 +45,23 @@ export default function BlockNavigation({
         }}
       >
         Previous
-      </button>
-      <button
-        type="button"
+      </NavButton>
+      <NavButton
+        style={buttonStyle}
         disabled={lastBlock === 0}
         onClick={() =>
           setStartAtBlock(Math.max(blocksPerPage - 1, lastBlock - 1))
         }
       >
         Next
-      </button>
-      <button
-        type="button"
+      </NavButton>
+      <NavButton
+        style={buttonStyle}
         disabled={lastBlock === 0}
         onClick={() => setStartAtBlock(blocksPerPage - 1)}
       >
         Oldest
-      </button>
+      </NavButton>
     </div>
   );
 }
