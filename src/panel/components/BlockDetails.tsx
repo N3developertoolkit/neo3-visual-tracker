@@ -23,7 +23,7 @@ export default function BlockDetails({
     color: "var(--vscode-editor-foreground)",
     margin: "0px 20px",
     padding: 10,
-    border: "1px solid var(--vscode-editorWidget-border)",
+    border: "1px solid var(--vscode-editor-lineHighlightBorder)",
   };
   return (
     <div

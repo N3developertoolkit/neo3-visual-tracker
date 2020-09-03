@@ -32,7 +32,7 @@ export default function BlockList({
     color: "var(--vscode-editor-foreground)",
     margin: "0px 20px",
     padding: 10,
-    border: "1px solid var(--vscode-editorWidget-border)",
+    border: "1px solid var(--vscode-editor-lineHighlightBorder)",
     overflow: "scroll",
     maxHeight: windowHeight - 200,
   };

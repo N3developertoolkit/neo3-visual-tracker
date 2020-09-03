@@ -16,6 +16,7 @@ export default function Table({ headings, rows }: Props) {
     height: "100%",
     width: "100%",
     borderCollapse: "collapse",
+    border: "1px solid var(--vscode-editor-lineHighlightBorder)",
   };
   const theadStyle: React.CSSProperties = {
     backgroundColor: "var(--vscode-editor-selectionBackground)",
@@ -24,17 +25,17 @@ export default function Table({ headings, rows }: Props) {
     fontSize: "0.6rem",
   };
   const trStyleEven: React.CSSProperties = {
-    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
+    borderBottom: "1px solid var(--vscode-editor-lineHighlightBorder)",
     backgroundColor: "var(--vscode-editor-background)",
     color: "var(--vscode-editor-foreground)",
   };
   const trStyleOdd: React.CSSProperties = {
-    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
+    borderBottom: "1px solid var(--vscode-editor-lineHighlightBorder)",
     backgroundColor: "var(--vscode-editor-inactiveSelectionBackground)",
     color: "var(--vscode-editor-foreground)",
   };
   const trStyleSelected: React.CSSProperties = {
-    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
+    borderBottom: "1px solid var(--vscode-editor-lineHighlightBorder)",
     backgroundColor: "var(--vscode-editor-background)",
     color: "var(--vscode-editor-foreground)",
   };
