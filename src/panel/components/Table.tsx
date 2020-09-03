@@ -1,7 +1,7 @@
 import React from "react";
 
 type Props = {
-  headings: { key?: string; content: JSX.Element }[];
+  headings?: { key?: string; content: JSX.Element }[];
   rows: {
     key?: string;
     parity?: boolean;
@@ -38,13 +38,15 @@ export default function Table({ headings, rows }: Props) {
   };
   return (
     <table style={tableStyle}>
-      <thead style={theadStyle}>
-        {headings.map((heading) => (
-          <th style={cellStyle} key={heading.key || undefined}>
-            {heading.content}
-          </th>
-        ))}
-      </thead>
+      {!!headings && (
+        <thead style={theadStyle}>
+          {headings.map((heading) => (
+            <th style={cellStyle} key={heading.key || undefined}>
+              {heading.content}
+            </th>
+          ))}
+        </thead>
+      )}
       <tbody>
         {rows.map((row, i) => (
           <tr

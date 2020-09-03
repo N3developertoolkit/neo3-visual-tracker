@@ -3,6 +3,7 @@ import React from "react";
 import Block from "../../shared/neon/block";
 import Hash from "./Hash";
 import MetadataBadge from "./MetadataBadge";
+import Table from "./Table";
 import Time from "./Time";
 
 type Props = {
@@ -15,7 +16,7 @@ export default function BlockDetails({ block }: Props) {
       style={{
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "space-evenly",
+        justifyContent: "space-between",
         alignItems: "stretch",
       }}
     >
@@ -36,6 +37,16 @@ export default function BlockDetails({ block }: Props) {
         {block.consensusdata.nonce} &mdash; {block.consensusdata.primary}
       </MetadataBadge>
       <MetadataBadge title="Witnesses">{block.witnesses.length}</MetadataBadge>
+      {block.witnesses.map((witness) => (
+        <MetadataBadge title="Witness">
+          <div style={{ textAlign: "left" }}>
+            <strong>Invocation:</strong> <Hash hash={witness.invocation} />
+          </div>
+          <div style={{ textAlign: "left", marginTop: 4 }}>
+            <strong>Verification:</strong> <Hash hash={witness.verification} />
+          </div>
+        </MetadataBadge>
+      ))}
     </div>
   );
 }
