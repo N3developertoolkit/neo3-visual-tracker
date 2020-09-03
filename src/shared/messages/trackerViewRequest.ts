@@ -1,4 +1,5 @@
 type TrackerViewRequest = {
+  selectBlock?: number;
   setStartAtBlock?: number;
 };
 

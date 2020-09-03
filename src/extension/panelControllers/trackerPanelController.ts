@@ -28,6 +28,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         blockHeight: 0,
         blocksPerPage: BLOCKS_PER_PAGE,
         blocks: [],
+        selectedBlock: -1,
         startAtBlock: -1,
       },
       context
@@ -52,6 +53,21 @@ export default class TrackerPanelController extends PanelControllerBase<
         ),
       });
     }
+    if (request.selectBlock !== undefined) {
+      const selectedBlock = request.selectBlock;
+      let startAtBlock = this.viewState.startAtBlock;
+      if (startAtBlock === -1) {
+        startAtBlock = Math.max(selectedBlock, this.viewState.blockHeight - 1);
+      }
+      if (selectedBlock - startAtBlock >= this.viewState.blocksPerPage) {
+        startAtBlock = selectedBlock;
+      }
+      await this.updateViewState({
+        selectedBlock,
+        startAtBlock,
+        blocks: await this.getBlocks(startAtBlock, this.viewState.blockHeight),
+      });
+    }
   }
 
   private async getBlock(blockNumber: number): Promise<Block> {
@@ -61,7 +77,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     }
     console.log(LOG_PREFIX, "Retrieving block", blockNumber);
     const block = (await this.rpcClient.getBlock(blockNumber)) as Block;
-    if (blockNumber + 1 < this.viewState.blockHeight) {
+    if (blockNumber < this.viewState.blockHeight) {
       // never cache head block
       if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
         this.cachedBlocks.shift();
@@ -88,12 +104,13 @@ export default class TrackerPanelController extends PanelControllerBase<
 
   private async onNewBlockAvailable(blockHeight: number) {
     if (this.viewState.startAtBlock >= 0) {
-      return;
+      await this.updateViewState({ blockHeight });
+    } else {
+      await this.updateViewState({
+        blockHeight,
+        blocks: await this.getBlocks(-1, blockHeight),
+      });
     }
-    this.updateViewState({
-      blockHeight,
-      blocks: await this.getBlocks(-1, blockHeight),
-    });
   }
 
   private async refreshLoop() {

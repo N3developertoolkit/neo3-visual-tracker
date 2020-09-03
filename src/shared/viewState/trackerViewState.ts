@@ -4,6 +4,7 @@ type TrackerViewState = {
   view: "tracker";
   panelTitle: string;
   blockHeight: number;
+  selectedBlock: number;
   startAtBlock: number;
   blocks: Block[];
   blocksPerPage: number;

@@ -4,6 +4,9 @@ type Props = {
   headings: { key?: string; content: JSX.Element }[];
   rows: {
     key?: string;
+    parity?: boolean;
+    selected?: boolean;
+    onClick?: () => void;
     cells: { key?: string; colSpan?: number; content: JSX.Element }[];
   }[];
 };
@@ -25,6 +28,10 @@ export default function Table({ headings, rows }: Props) {
     backgroundColor: "var(--vscode-editor-inactiveSelectionBackground)",
     color: "var(--vscode-editor-foreground)",
   };
+  const trStyleSelected: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-findMatchHighlightBackground)",
+    color: "var(--vscode-editor-foreground)",
+  };
   const cellStyle: React.CSSProperties = {
     textAlign: "center",
     padding: 5,
@@ -42,7 +49,18 @@ export default function Table({ headings, rows }: Props) {
         {rows.map((row, i) => (
           <tr
             key={row.key || undefined}
-            style={i % 2 === 0 ? trStyleEven : trStyleOdd}
+            style={
+              row.selected
+                ? trStyleSelected
+                : row.parity !== undefined
+                ? row.parity
+                  ? trStyleEven
+                  : trStyleOdd
+                : i % 2 === 0
+                ? trStyleEven
+                : trStyleOdd
+            }
+            onClick={row.onClick}
           >
             {row.cells.map((cell) => (
               <td

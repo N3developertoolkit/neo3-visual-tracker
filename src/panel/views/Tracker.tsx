@@ -13,7 +13,11 @@ type Props = {
 export default function Tracker({ viewState, postMessage }: Props) {
   return (
     <>
-      <BlockList blocks={viewState.blocks} />
+      <BlockList
+        blocks={viewState.blocks}
+        selectedBlock={viewState.selectedBlock}
+        selectBlock={(index) => postMessage({ selectBlock: index })}
+      />
       <BlockNavigation
         style={{ marginTop: "1.5em", textAlign: "center" }}
         blocks={viewState.blocks}

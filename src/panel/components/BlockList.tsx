@@ -7,18 +7,17 @@ import Time from "./Time";
 
 type Props = {
   blocks: Block[];
+  selectedBlock: number;
+  selectBlock: (index: number) => void;
 };
 
-export default function BlockList({ blocks }: Props) {
-  const tableStyle: React.CSSProperties = {
-    width: "100%",
-  };
-  const cellStyle: React.CSSProperties = {
-    textAlign: "center",
-    padding: 5,
-  };
+export default function BlockList({
+  blocks,
+  selectedBlock,
+  selectBlock,
+}: Props) {
   const loadingStyle: React.CSSProperties = {
-    ...cellStyle,
+    textAlign: "center",
     padding: 30,
   };
   return (
@@ -34,13 +33,19 @@ export default function BlockList({ blocks }: Props) {
         blocks.length
           ? blocks.map((block) => ({
               key: block.hash,
-              cells: [
-                { content: <>{block.index}</> },
-                { content: <Time ts={block.time} /> },
-                { content: <>{block.tx.length}</> },
-                { content: <Hash hash={block.hash} /> },
-                { content: <>{block.size}</> },
-              ],
+              parity: block.index % 2 === 0,
+              selected: selectedBlock === block.index,
+              onClick: () => selectBlock(block.index),
+              cells:
+                selectedBlock === block.index
+                  ? [{ colSpan: 5, content: <>SELECTED</> }]
+                  : [
+                      { content: <>{block.index}</> },
+                      { content: <Time ts={block.time} /> },
+                      { content: <>{block.tx.length}</> },
+                      { content: <Hash hash={block.hash} /> },
+                      { content: <>{block.size}</> },
+                    ],
             }))
           : [
               {
