@@ -2,6 +2,7 @@ import React from "react";
 
 import Block from "../../shared/neon/block";
 import Hash from "./Hash";
+import MetadataBadge from "./MetadataBadge";
 import Time from "./Time";
 
 type Props = {
@@ -18,22 +19,23 @@ export default function BlockDetails({ block }: Props) {
         alignItems: "stretch",
       }}
     >
-      <div>{block.index}</div>
-      <Time ts={block.time} />
-      <div>Transactions: {block.tx.length}</div>
-      <div>
-        Hash: <Hash hash={block.hash} />
-      </div>
-      <div>Size: {block.size} bytes</div>
-      <div>Version: {block.version}</div>
-      <div>
-        Merkle root: <Hash hash={block.merkleroot} />
-      </div>
-      <div>
-        Consensus data: {block.consensusdata.nonce}{" "}
-        {block.consensusdata.primary}
-      </div>
-      <div>Witnesses: {block.witnesses.length}</div>
+      <MetadataBadge title="Index">{block.index}</MetadataBadge>
+      <MetadataBadge title="Time">
+        <Time ts={block.time} />
+      </MetadataBadge>
+      <MetadataBadge title="Transactions">{block.tx.length}</MetadataBadge>
+      <MetadataBadge title="Hash">
+        <Hash hash={block.hash} />
+      </MetadataBadge>
+      <MetadataBadge title="Size">{block.size} bytes</MetadataBadge>
+      <MetadataBadge title="Version">{block.version}</MetadataBadge>
+      <MetadataBadge title="Merkle root">
+        <Hash hash={block.merkleroot} />
+      </MetadataBadge>
+      <MetadataBadge title="Consensus data">
+        {block.consensusdata.nonce} &mdash; {block.consensusdata.primary}
+      </MetadataBadge>
+      <MetadataBadge title="Witnesses">{block.witnesses.length}</MetadataBadge>
     </div>
   );
 }

@@ -21,6 +21,13 @@ export default function BlockList({
     textAlign: "center",
     padding: 30,
   };
+  const insetStyle: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-background)",
+    color: "var(--vscode-editor-foreground)",
+    margin: "0px 20px",
+    padding: 10,
+    border: "1px solid var(--vscode-editorWidget-border)",
+  };
   return (
     <Table
       headings={[
@@ -36,10 +43,22 @@ export default function BlockList({
               key: block.hash,
               parity: block.index % 2 === 0,
               selected: selectedBlock === block.index,
-              onClick: () => selectBlock(block.index),
+              onClick:
+                selectedBlock === block.index
+                  ? undefined
+                  : () => selectBlock(block.index),
               cells:
                 selectedBlock === block.index
-                  ? [{ colSpan: 5, content: <BlockDetails block={block} /> }]
+                  ? [
+                      {
+                        colSpan: 5,
+                        content: (
+                          <div style={insetStyle}>
+                            <BlockDetails block={block} />
+                          </div>
+                        ),
+                      },
+                    ]
                   : [
                       { content: <>{block.index}</> },
                       { content: <Time ts={block.time} /> },

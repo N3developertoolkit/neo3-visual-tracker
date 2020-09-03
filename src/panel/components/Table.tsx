@@ -29,7 +29,7 @@ export default function Table({ headings, rows }: Props) {
     color: "var(--vscode-editor-foreground)",
   };
   const trStyleSelected: React.CSSProperties = {
-    backgroundColor: "var(--vscode-editor-findMatchHighlightBackground)",
+    backgroundColor: "var(--vscode-editor-background)",
     color: "var(--vscode-editor-foreground)",
   };
   const cellStyle: React.CSSProperties = {
@@ -49,8 +49,8 @@ export default function Table({ headings, rows }: Props) {
         {rows.map((row, i) => (
           <tr
             key={row.key || undefined}
-            style={
-              row.selected
+            style={{
+              ...(row.selected
                 ? trStyleSelected
                 : row.parity !== undefined
                 ? row.parity
@@ -58,8 +58,9 @@ export default function Table({ headings, rows }: Props) {
                   : trStyleOdd
                 : i % 2 === 0
                 ? trStyleEven
-                : trStyleOdd
-            }
+                : trStyleOdd),
+              cursor: row.onClick ? "pointer" : undefined,
+            }}
             onClick={row.onClick}
           >
             {row.cells.map((cell) => (
