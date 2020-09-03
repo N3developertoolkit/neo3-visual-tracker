@@ -64,7 +64,7 @@ export default function BlockList({
                       { content: <Time ts={block.time} /> },
                       { content: <>{block.tx.length}</> },
                       { content: <Hash hash={block.hash} /> },
-                      { content: <>{block.size}</> },
+                      { content: <>{block.size} bytes</> },
                     ],
             }))
           : [

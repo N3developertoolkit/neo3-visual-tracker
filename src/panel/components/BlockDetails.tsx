@@ -24,7 +24,6 @@ export default function BlockDetails({ block }: Props) {
       <MetadataBadge title="Time">
         <Time ts={block.time} />
       </MetadataBadge>
-      <MetadataBadge title="Transactions">{block.tx.length}</MetadataBadge>
       <MetadataBadge title="Hash">
         <Hash hash={block.hash} />
       </MetadataBadge>
@@ -47,6 +46,36 @@ export default function BlockDetails({ block }: Props) {
           </div>
         </MetadataBadge>
       ))}
+      {!!block.tx.length && (
+        <div style={{width:"100%"}}>
+          <div
+            style={{
+              fontWeight: "bold",
+              fontSize: "0.6rem",
+              textTransform: "uppercase",
+              margin: 2,
+            }}
+          >
+            Transactions:
+          </div>
+          <Table
+            headings={[
+              { content: <></> },
+              { content: <>Hash</> },
+              { content: <>Sender</> },
+              { content: <>Size</> },
+            ]}
+            rows={block.tx.map((tx, i) => ({
+              cells: [
+                { content: <>{i + 1}</> },
+                { content: <Hash hash={tx.hash} /> },
+                { content: <Hash hash={tx.sender} /> },
+                { content: <>{tx.size} bytes</> },
+              ],
+            }))}
+          />
+        </div>
+      )}
     </div>
   );
 }
