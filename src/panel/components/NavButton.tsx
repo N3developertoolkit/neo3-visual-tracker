@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 type Props = {
   children: JSX.Element | string;
   disabled?: boolean;
-  secondary?: boolean;
   style?: React.CSSProperties;
   onClick: () => void;
 };
@@ -11,17 +10,16 @@ type Props = {
 export default function NavButton({
   children,
   disabled,
-  secondary,
   style,
   onClick,
 }: Props) {
   const [hover, setHover] = useState(false);
   useEffect(() => setHover(disabled ? false : hover), [disabled]);
   const buttonStyle: React.CSSProperties = {
-    backgroundColor: secondary
+    backgroundColor: disabled
       ? "var(--vscode-button-secondaryBackground)"
       : "var(--vscode-button-background)",
-    color: secondary
+    color: disabled
       ? "var(--vscode-button-secondaryForeground)"
       : "var(--vscode-button-foreground)",
     border: "none",
@@ -29,9 +27,7 @@ export default function NavButton({
   };
   const buttonStyleHover: React.CSSProperties = {
     ...buttonStyle,
-    backgroundColor: secondary
-      ? "var(--vscode-button-secondaryHoverBackground)"
-      : "var(--vscode-button-hoverBackground)",
+    backgroundColor: "var(--vscode-button-hoverBackground)",
     cursor: "pointer",
   };
   return (
