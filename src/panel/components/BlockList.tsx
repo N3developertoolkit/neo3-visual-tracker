@@ -33,8 +33,8 @@ export default function BlockList({
     margin: "0px 20px",
     padding: 10,
     border: "1px solid var(--vscode-editorWidget-border)",
-    overflow: "auto",
-    maxHeight: windowHeight * 0.4,
+    overflow: "scroll",
+    maxHeight: windowHeight - 200,
   };
   return (
     <Table

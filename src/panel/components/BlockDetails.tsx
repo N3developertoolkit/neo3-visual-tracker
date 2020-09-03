@@ -5,6 +5,7 @@ import Hash from "./Hash";
 import MetadataBadge from "./MetadataBadge";
 import Table from "./Table";
 import Time from "./Time";
+import TransactionDetails from "./TransactionDetails";
 
 type Props = {
   block: Block;
@@ -29,7 +30,7 @@ export default function BlockDetails({
       style={{
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "space-between",
+        justifyContent: "flex-end",
         alignItems: "stretch",
       }}
     >
@@ -37,7 +38,7 @@ export default function BlockDetails({
       <MetadataBadge title="Time">
         <Time ts={block.time} />
       </MetadataBadge>
-      <MetadataBadge title="Hash">
+      <MetadataBadge title="TXID">
         <Hash hash={block.hash} />
       </MetadataBadge>
       <MetadataBadge title="Size">{block.size} bytes</MetadataBadge>
@@ -46,39 +47,37 @@ export default function BlockDetails({
         <Hash hash={block.merkleroot} />
       </MetadataBadge>
       <MetadataBadge title="Consensus data">
-        {block.consensusdata.nonce} &mdash; {block.consensusdata.primary}
+        <Hash hash={block.consensusdata.nonce} /> &mdash;{" "}
+        {block.consensusdata.primary}
       </MetadataBadge>
       <MetadataBadge title="Witnesses">{block.witnesses.length}</MetadataBadge>
       {block.witnesses.map((witness) => (
         <MetadataBadge title="Witness">
-          <div style={{ textAlign: "left" }}>
-            <strong>Invocation:</strong> <Hash hash={witness.invocation} />
+          <div>
+            <strong>
+              <small>Invocation</small>
+            </strong>
+            <br />
+            <Hash hash={witness.invocation} />
           </div>
-          <div style={{ textAlign: "left", marginTop: 4 }}>
-            <strong>Verification:</strong> <Hash hash={witness.verification} />
+          <div style={{ marginTop: 4 }}>
+            <strong>
+              <small>Verification</small>
+            </strong>
+            <br />
+            <Hash hash={witness.verification} />
           </div>
         </MetadataBadge>
       ))}
       {!!block.tx.length && (
-        <div style={{ width: "100%" }}>
-          <div
-            style={{
-              fontWeight: "bold",
-              fontSize: "0.6rem",
-              textTransform: "uppercase",
-              margin: 2,
-            }}
-          >
-            Transactions:
-          </div>
+        <div style={{ width: "100%", marginTop: 10 }}>
           <Table
             headings={[
-              { content: <></> },
-              { content: <>Hash</> },
+              { content: <>TXID</> },
               { content: <>Sender</> },
               { content: <>Size</> },
             ]}
-            rows={block.tx.map((tx, i) => ({
+            rows={block.tx.map((tx) => ({
               onClick: () => selectTransaction(tx.hash),
               key: tx.hash,
               selected: selectedTransaction === tx.hash,
@@ -86,16 +85,15 @@ export default function BlockDetails({
                 selectedTransaction === tx.hash
                   ? [
                       {
-                        colSpan: 4,
+                        colSpan: 3,
                         content: (
                           <div style={insetStyle}>
-                            Selected transaction: {tx.hash}
+                            <TransactionDetails transaction={tx} />
                           </div>
                         ),
                       },
                     ]
                   : [
-                      { content: <>{i + 1}</> },
                       { content: <Hash hash={tx.hash} /> },
                       { content: <Hash hash={tx.sender} /> },
                       { content: <>{tx.size} bytes</> },

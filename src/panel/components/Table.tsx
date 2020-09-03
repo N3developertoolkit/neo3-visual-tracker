@@ -20,16 +20,21 @@ export default function Table({ headings, rows }: Props) {
   const theadStyle: React.CSSProperties = {
     backgroundColor: "var(--vscode-editor-selectionBackground)",
     color: "var(--vscode-editor-selectionForeground)",
+    textTransform: "uppercase",
+    fontSize: "0.6rem",
   };
   const trStyleEven: React.CSSProperties = {
+    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
     backgroundColor: "var(--vscode-editor-background)",
     color: "var(--vscode-editor-foreground)",
   };
   const trStyleOdd: React.CSSProperties = {
+    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
     backgroundColor: "var(--vscode-editor-inactiveSelectionBackground)",
     color: "var(--vscode-editor-foreground)",
   };
   const trStyleSelected: React.CSSProperties = {
+    borderBottom: "1px solid var(--vscode-editor-wordHighlightBorder)",
     backgroundColor: "var(--vscode-editor-background)",
     color: "var(--vscode-editor-foreground)",
   };
