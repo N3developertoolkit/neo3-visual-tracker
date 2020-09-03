@@ -1,6 +1,7 @@
 import React from "react";
 
 import Block from "../../shared/neon/block";
+import BlockDetails from "./BlockDetails";
 import Hash from "./Hash";
 import Table from "./Table";
 import Time from "./Time";
@@ -38,7 +39,7 @@ export default function BlockList({
               onClick: () => selectBlock(block.index),
               cells:
                 selectedBlock === block.index
-                  ? [{ colSpan: 5, content: <>SELECTED</> }]
+                  ? [{ colSpan: 5, content: <BlockDetails block={block} /> }]
                   : [
                       { content: <>{block.index}</> },
                       { content: <Time ts={block.time} /> },
