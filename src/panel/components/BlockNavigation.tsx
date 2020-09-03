@@ -34,7 +34,7 @@ export default function BlockNavigation({
         disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
         onClick={() => setStartAtBlock(-1)}
       >
-        Most recent
+        &lt;&lt; Most recent
       </NavButton>
       <NavButton
         style={buttonStyle}
@@ -44,7 +44,7 @@ export default function BlockNavigation({
           setStartAtBlock(goto >= blockHeight ? -1 : goto);
         }}
       >
-        Previous
+        &lt; Previous
       </NavButton>
       <NavButton
         style={buttonStyle}
@@ -53,14 +53,14 @@ export default function BlockNavigation({
           setStartAtBlock(Math.max(blocksPerPage - 1, lastBlock - 1))
         }
       >
-        Next
+        Next &gt;
       </NavButton>
       <NavButton
         style={buttonStyle}
         disabled={lastBlock === 0}
         onClick={() => setStartAtBlock(blocksPerPage - 1)}
       >
-        Oldest
+        Oldest &gt;&gt;
       </NavButton>
     </div>
   );

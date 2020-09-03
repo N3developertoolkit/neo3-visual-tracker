@@ -11,6 +11,19 @@ type Props = {
 export default function Table({ headings, rows }: Props) {
   const tableStyle: React.CSSProperties = {
     width: "100%",
+    borderCollapse: "collapse",
+  };
+  const theadStyle: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-selectionBackground)",
+    color: "var(--vscode-editor-selectionForeground)",
+  };
+  const trStyleEven: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-background)",
+    color: "var(--vscode-editor-foreground)",
+  };
+  const trStyleOdd: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-inactiveSelectionBackground)",
+    color: "var(--vscode-editor-foreground)",
   };
   const cellStyle: React.CSSProperties = {
     textAlign: "center",
@@ -18,7 +31,7 @@ export default function Table({ headings, rows }: Props) {
   };
   return (
     <table style={tableStyle}>
-      <thead>
+      <thead style={theadStyle}>
         {headings.map((heading) => (
           <th style={cellStyle} key={heading.key || undefined}>
             {heading.content}
@@ -26,8 +39,11 @@ export default function Table({ headings, rows }: Props) {
         ))}
       </thead>
       <tbody>
-        {rows.map((row) => (
-          <tr key={row.key || undefined}>
+        {rows.map((row, i) => (
+          <tr
+            key={row.key || undefined}
+            style={i % 2 === 0 ? trStyleEven : trStyleOdd}
+          >
             {row.cells.map((cell) => (
               <td
                 key={cell.key || undefined}

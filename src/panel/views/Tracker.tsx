@@ -15,7 +15,7 @@ export default function Tracker({ viewState, postMessage }: Props) {
     <>
       <BlockList blocks={viewState.blocks} />
       <BlockNavigation
-        style={{ marginTop: "1em" }}
+        style={{ marginTop: "1.5em", textAlign: "center" }}
         blocks={viewState.blocks}
         blockHeight={viewState.blockHeight}
         blocksPerPage={viewState.blocksPerPage}

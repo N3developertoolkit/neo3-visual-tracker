@@ -6,13 +6,15 @@ import ViewRouter from "./viewRouter";
 import "./index.html";
 
 function initialize() {
-    ReactDOM.render(
-      <React.StrictMode>
+  const negateVsCodeMargin: React.CSSProperties = { margin: "0 -20px" };
+  ReactDOM.render(
+    <React.StrictMode>
+      <div style={negateVsCodeMargin}>
         <ViewRouter />
-      </React.StrictMode>,
-      document.getElementById("root")
-    );
-  }
-  
-  window.onload = initialize;
-  
+      </div>
+    </React.StrictMode>,
+    document.getElementById("root")
+  );
+}
+
+window.onload = initialize;
