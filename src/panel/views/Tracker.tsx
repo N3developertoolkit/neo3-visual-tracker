@@ -26,7 +26,9 @@ export default function Tracker({ viewState, postMessage }: Props) {
         <BlockList
           blocks={viewState.blocks}
           selectedBlock={viewState.selectedBlock}
-          selectBlock={(index) => postMessage({ selectBlock: index })}
+          selectedTransaction={viewState.selectedTransaction}
+          selectBlock={(hash) => postMessage({ selectBlock: hash })}
+          selectTransaction={(txid) => postMessage({ selectTransaction: txid })}
         />
       </div>
       <BlockNavigation

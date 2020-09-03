@@ -9,14 +9,18 @@ import useWindowHeight from "./useWindowHeight";
 
 type Props = {
   blocks: Block[];
-  selectedBlock: number;
-  selectBlock: (index: number) => void;
+  selectedBlock: string;
+  selectedTransaction: string;
+  selectBlock: (hash: string) => void;
+  selectTransaction: (txid: string) => void;
 };
 
 export default function BlockList({
   blocks,
   selectedBlock,
+  selectedTransaction,
   selectBlock,
+  selectTransaction,
 }: Props) {
   const windowHeight = useWindowHeight();
   const loadingStyle: React.CSSProperties = {
@@ -46,19 +50,23 @@ export default function BlockList({
           ? blocks.map((block) => ({
               key: block.hash,
               parity: block.index % 2 === 0,
-              selected: selectedBlock === block.index,
+              selected: selectedBlock === block.hash,
               onClick:
-                selectedBlock === block.index
+                selectedBlock === block.hash
                   ? undefined
-                  : () => selectBlock(block.index),
+                  : () => selectBlock(block.hash),
               cells:
-                selectedBlock === block.index
+                selectedBlock === block.hash
                   ? [
                       {
                         colSpan: 5,
                         content: (
                           <div style={insetStyle}>
-                            <BlockDetails block={block} />
+                            <BlockDetails
+                              block={block}
+                              selectedTransaction={selectedTransaction}
+                              selectTransaction={selectTransaction}
+                            />
                           </div>
                         ),
                       },

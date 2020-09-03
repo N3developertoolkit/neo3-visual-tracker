@@ -4,7 +4,8 @@ type TrackerViewState = {
   view: "tracker";
   panelTitle: string;
   blockHeight: number;
-  selectedBlock: number;
+  selectedBlock: string;
+  selectedTransaction: string;
   startAtBlock: number;
   blocks: Block[];
   paginationDistance: number;

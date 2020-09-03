@@ -5,12 +5,14 @@ import Block from "../../shared/neon/block";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
+import Transaction from "../../shared/neon/transaction";
 
 const LOG_PREFIX = "[TrackerPanelController]";
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
 const BLOCKS_PER_PAGE = 50;
 const PAGINATION_DISTANCE = 15;
-const BLOCK_CACHE_SIZE = 10240;
+const BLOCK_CACHE_SIZE = 1024;
+const TRANSACTION_CACHE_SIZE = 1024;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
@@ -19,6 +21,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private readonly rpcClient: neonCore.rpc.RPCClient;
 
   private cachedBlocks: Block[];
+  private cachedTransactions: Transaction[];
   private closed: boolean;
 
   constructor(context: vscode.ExtensionContext, rpcUrl: string) {
@@ -29,13 +32,15 @@ export default class TrackerPanelController extends PanelControllerBase<
         blockHeight: 0,
         paginationDistance: PAGINATION_DISTANCE,
         blocks: [],
-        selectedBlock: -1,
+        selectedTransaction: "",
+        selectedBlock: "",
         startAtBlock: -1,
       },
       context
     );
     this.closed = false;
     this.cachedBlocks = [];
+    this.cachedTransactions = [];
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.refreshLoop();
   }
@@ -55,27 +60,54 @@ export default class TrackerPanelController extends PanelControllerBase<
       });
     }
     if (request.selectBlock !== undefined) {
-      const selectedBlock = request.selectBlock;
+      const selectedBlock = await this.getBlock(request.selectBlock);
       const startAtBlock = Math.min(
         this.viewState.blockHeight - 1,
-        request.selectBlock + 2
+        selectedBlock.index + 2
       );
       await this.updateViewState({
-        selectedBlock,
+        selectedBlock: selectedBlock.hash,
         startAtBlock,
         blocks: await this.getBlocks(startAtBlock, this.viewState.blockHeight),
       });
     }
+    if (request.selectTransaction !== undefined) {
+      if (request.selectTransaction) {
+        const selectedTransaction = await this.getTransaction(
+          request.selectTransaction
+        );
+        const selectedBlock = await this.getBlock(
+          selectedTransaction.blockhash
+        );
+        const startAtBlock = Math.min(
+          this.viewState.blockHeight - 1,
+          selectedBlock.index + 2
+        );
+        await this.updateViewState({
+          selectedTransaction: selectedTransaction.hash,
+          selectedBlock: selectedBlock.hash,
+          startAtBlock,
+          blocks: await this.getBlocks(
+            startAtBlock,
+            this.viewState.blockHeight
+          ),
+        });
+      } else {
+        await this.updateViewState({ selectedTransaction: "" });
+      }
+    }
   }
 
-  private async getBlock(blockNumber: number): Promise<Block> {
-    const cachedBlock = this.cachedBlocks.find((_) => _.index === blockNumber);
+  private async getBlock(indexOrHash: string | number): Promise<Block> {
+    const cachedBlock = this.cachedBlocks.find(
+      (_) => _.index === indexOrHash || _.hash === indexOrHash
+    );
     if (cachedBlock) {
       return cachedBlock;
     }
-    console.log(LOG_PREFIX, "Retrieving block", blockNumber);
-    const block = (await this.rpcClient.getBlock(blockNumber)) as Block;
-    if (blockNumber < this.viewState.blockHeight) {
+    console.log(LOG_PREFIX, "Retrieving block", indexOrHash);
+    const block = (await this.rpcClient.getBlock(indexOrHash)) as Block;
+    if (block.index < this.viewState.blockHeight - 1) {
       // never cache head block
       if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
         this.cachedBlocks.shift();
@@ -98,6 +130,25 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
     }
     return Promise.all(newBlocks);
+  }
+
+  private async getTransaction(hash: string): Promise<Transaction> {
+    const cachedTransaction = this.cachedTransactions.find(
+      (_) => _.hash === hash
+    );
+    if (cachedTransaction) {
+      return cachedTransaction;
+    }
+    console.log(LOG_PREFIX, "Retrieving tx", hash);
+    const transaction = (await this.rpcClient.getRawTransaction(
+      hash
+    )) as Transaction;
+    if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
+      this.cachedTransactions.shift();
+    }
+    this.cachedTransactions.push(transaction);
+    console.log(JSON.stringify(transaction), transaction);
+    return transaction;
   }
 
   private async onNewBlockAvailable(blockHeight: number) {

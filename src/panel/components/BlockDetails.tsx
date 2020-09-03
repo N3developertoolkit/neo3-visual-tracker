@@ -8,9 +8,22 @@ import Time from "./Time";
 
 type Props = {
   block: Block;
+  selectedTransaction: string;
+  selectTransaction: (txid: string) => void;
 };
 
-export default function BlockDetails({ block }: Props) {
+export default function BlockDetails({
+  block,
+  selectedTransaction,
+  selectTransaction,
+}: Props) {
+  const insetStyle: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-background)",
+    color: "var(--vscode-editor-foreground)",
+    margin: "0px 20px",
+    padding: 10,
+    border: "1px solid var(--vscode-editorWidget-border)",
+  };
   return (
     <div
       style={{
@@ -47,7 +60,7 @@ export default function BlockDetails({ block }: Props) {
         </MetadataBadge>
       ))}
       {!!block.tx.length && (
-        <div style={{width:"100%"}}>
+        <div style={{ width: "100%" }}>
           <div
             style={{
               fontWeight: "bold",
@@ -66,12 +79,27 @@ export default function BlockDetails({ block }: Props) {
               { content: <>Size</> },
             ]}
             rows={block.tx.map((tx, i) => ({
-              cells: [
-                { content: <>{i + 1}</> },
-                { content: <Hash hash={tx.hash} /> },
-                { content: <Hash hash={tx.sender} /> },
-                { content: <>{tx.size} bytes</> },
-              ],
+              onClick: () => selectTransaction(tx.hash),
+              key: tx.hash,
+              selected: selectedTransaction === tx.hash,
+              cells:
+                selectedTransaction === tx.hash
+                  ? [
+                      {
+                        colSpan: 4,
+                        content: (
+                          <div style={insetStyle}>
+                            Selected transaction: {tx.hash}
+                          </div>
+                        ),
+                      },
+                    ]
+                  : [
+                      { content: <>{i + 1}</> },
+                      { content: <Hash hash={tx.hash} /> },
+                      { content: <Hash hash={tx.sender} /> },
+                      { content: <>{tx.size} bytes</> },
+                    ],
             }))}
           />
         </div>

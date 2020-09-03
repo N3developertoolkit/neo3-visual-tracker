@@ -1,5 +1,6 @@
 type TrackerViewRequest = {
-  selectBlock?: number;
+  selectBlock?: string;
+  selectTransaction?: string;
   setStartAtBlock?: number;
 };
 

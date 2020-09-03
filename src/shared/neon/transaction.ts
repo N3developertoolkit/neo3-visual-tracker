@@ -13,6 +13,7 @@ type Transaction = {
   attributes: any[];
   script: string;
   witnesses: Witness[];
+  blockhash: string;
 };
 
 export default Transaction;
