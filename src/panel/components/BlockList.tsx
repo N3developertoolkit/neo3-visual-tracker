@@ -5,6 +5,7 @@ import BlockDetails from "./BlockDetails";
 import Hash from "./Hash";
 import Table from "./Table";
 import Time from "./Time";
+import useWindowHeight from "./useWindowHeight";
 
 type Props = {
   blocks: Block[];
@@ -17,6 +18,7 @@ export default function BlockList({
   selectedBlock,
   selectBlock,
 }: Props) {
+  const windowHeight = useWindowHeight();
   const loadingStyle: React.CSSProperties = {
     textAlign: "center",
     padding: 30,
@@ -27,6 +29,8 @@ export default function BlockList({
     margin: "0px 20px",
     padding: 10,
     border: "1px solid var(--vscode-editorWidget-border)",
+    overflow: "auto",
+    maxHeight: windowHeight * 0.4,
   };
   return (
     <Table
