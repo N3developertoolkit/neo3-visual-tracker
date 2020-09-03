@@ -13,6 +13,7 @@ type Props = {
 
 export default function Table({ headings, rows }: Props) {
   const tableStyle: React.CSSProperties = {
+    height: "100%",
     width: "100%",
     borderCollapse: "collapse",
   };

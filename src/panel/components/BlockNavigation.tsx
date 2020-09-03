@@ -6,7 +6,7 @@ import NavButton from "./NavButton";
 type Props = {
   blocks: Block[];
   blockHeight: number;
-  blocksPerPage: number;
+  paginationDistance: number;
   startAtBlock: number;
   style?: React.CSSProperties;
   setStartAtBlock: (newStartAtBlock: number) => void;
@@ -15,7 +15,7 @@ type Props = {
 export default function BlockNavigation({
   blocks,
   blockHeight,
-  blocksPerPage,
+  paginationDistance,
   startAtBlock,
   style,
   setStartAtBlock,
@@ -23,45 +23,57 @@ export default function BlockNavigation({
   if (!blocks.length) {
     return <></>;
   }
-  const lastBlock = blocks[blocks.length - 1].index;
+  const lastBlock =
+    blocks[Math.min(paginationDistance, blocks.length - 1)].index;
   const buttonStyle: React.CSSProperties = {
     margin: "0.25em",
   };
   return (
     <div style={style}>
-      <NavButton
-        style={buttonStyle}
-        disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
-        onClick={() => setStartAtBlock(-1)}
-      >
-        &lt;&lt; Most recent
-      </NavButton>
-      <NavButton
-        style={buttonStyle}
-        disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
-        onClick={() => {
-          const goto = startAtBlock + blocksPerPage;
-          setStartAtBlock(goto >= blockHeight ? -1 : goto);
-        }}
-      >
-        &lt; Previous
-      </NavButton>
-      <NavButton
-        style={buttonStyle}
-        disabled={lastBlock === 0}
-        onClick={() =>
-          setStartAtBlock(Math.max(blocksPerPage - 1, lastBlock - 1))
-        }
-      >
-        Next &gt;
-      </NavButton>
-      <NavButton
-        style={buttonStyle}
-        disabled={lastBlock === 0}
-        onClick={() => setStartAtBlock(blocksPerPage - 1)}
-      >
-        Oldest &gt;&gt;
-      </NavButton>
+      <span style={{ marginRight: "2em" }}>
+        <NavButton
+          style={buttonStyle}
+          disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
+          onClick={() => setStartAtBlock(-1)}
+        >
+          &lt;&lt; Most recent
+        </NavButton>
+        <NavButton
+          style={buttonStyle}
+          disabled={startAtBlock < 0 || startAtBlock >= blockHeight - 1}
+          onClick={() => {
+            const goto = startAtBlock + paginationDistance;
+            setStartAtBlock(goto >= blockHeight ? -1 : goto);
+          }}
+        >
+          &lt; Backwards
+        </NavButton>
+      </span>
+      <span>
+        <NavButton
+          style={buttonStyle}
+          disabled={lastBlock === 0}
+          onClick={() =>
+            setStartAtBlock(
+              startAtBlock === -1
+                ? blockHeight - paginationDistance
+                : Math.max(
+                    startAtBlock - paginationDistance,
+                    paginationDistance
+                  )
+            )
+          }
+        >
+          Forwards &gt;
+        </NavButton>
+        <NavButton
+          style={buttonStyle}
+          disabled={lastBlock === 0}
+          onClick={() => setStartAtBlock(paginationDistance - 1)}
+        >
+          Oldest &gt;&gt;
+        </NavButton>
+      </span>
     </div>
   );
 }

@@ -12,20 +12,31 @@ type Props = {
 
 export default function Tracker({ viewState, postMessage }: Props) {
   return (
-    <>
-      <BlockList
-        blocks={viewState.blocks}
-        selectedBlock={viewState.selectedBlock}
-        selectBlock={(index) => postMessage({ selectBlock: index })}
-      />
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        alignItems: "stretch",
+        alignContent: "stretch",
+        height: "100%",
+      }}
+    >
+      <div style={{ flex: "none 1", overflow: "hidden" }}>
+        <BlockList
+          blocks={viewState.blocks}
+          selectedBlock={viewState.selectedBlock}
+          selectBlock={(index) => postMessage({ selectBlock: index })}
+        />
+      </div>
       <BlockNavigation
-        style={{ marginTop: "1.5em", textAlign: "center" }}
+        style={{ margin: 10, textAlign: "center" }}
         blocks={viewState.blocks}
         blockHeight={viewState.blockHeight}
-        blocksPerPage={viewState.blocksPerPage}
+        paginationDistance={viewState.paginationDistance}
         startAtBlock={viewState.startAtBlock}
         setStartAtBlock={(setStartAtBlock) => postMessage({ setStartAtBlock })}
       />
-    </>
+    </div>
   );
 }

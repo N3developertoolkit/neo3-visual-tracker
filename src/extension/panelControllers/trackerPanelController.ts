@@ -8,8 +8,9 @@ import TrackerViewState from "../../shared/viewState/trackerViewState";
 
 const LOG_PREFIX = "[TrackerPanelController]";
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
-const BLOCKS_PER_PAGE = 25;
-const BLOCK_CACHE_SIZE = 1024;
+const BLOCKS_PER_PAGE = 50;
+const PAGINATION_DISTANCE = 15;
+const BLOCK_CACHE_SIZE = 10240;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
@@ -26,7 +27,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         view: "tracker",
         panelTitle: `Block Explorer: ${rpcUrl}`,
         blockHeight: 0,
-        blocksPerPage: BLOCKS_PER_PAGE,
+        paginationDistance: PAGINATION_DISTANCE,
         blocks: [],
         selectedBlock: -1,
         startAtBlock: -1,
@@ -55,13 +56,10 @@ export default class TrackerPanelController extends PanelControllerBase<
     }
     if (request.selectBlock !== undefined) {
       const selectedBlock = request.selectBlock;
-      let startAtBlock = this.viewState.startAtBlock;
-      if (startAtBlock === -1) {
-        startAtBlock = Math.max(selectedBlock, this.viewState.blockHeight - 1);
-      }
-      if (selectedBlock - startAtBlock >= this.viewState.blocksPerPage) {
-        startAtBlock = selectedBlock;
-      }
+      const startAtBlock = Math.min(
+        this.viewState.blockHeight - 1,
+        request.selectBlock + 3
+      );
       await this.updateViewState({
         selectedBlock,
         startAtBlock,

@@ -7,7 +7,7 @@ type TrackerViewState = {
   selectedBlock: number;
   startAtBlock: number;
   blocks: Block[];
-  blocksPerPage: number;
+  paginationDistance: number;
 };
 
 export default TrackerViewState;
