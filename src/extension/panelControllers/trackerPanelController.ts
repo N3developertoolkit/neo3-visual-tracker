@@ -58,7 +58,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       const selectedBlock = request.selectBlock;
       const startAtBlock = Math.min(
         this.viewState.blockHeight - 1,
-        request.selectBlock + 3
+        request.selectBlock + 2
       );
       await this.updateViewState({
         selectedBlock,
