@@ -2,6 +2,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import BlockchainType from "./blockchainType";
+
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
 export default class BlockchainIdentifier {
@@ -52,7 +54,7 @@ export default class BlockchainIdentifier {
   }
 
   private constructor(
-    public readonly context: "nxp3" | "remote",
+    public readonly blockchainType: BlockchainType,
     public readonly nodeType: "parent" | "child",
     public readonly name: string,
     public readonly rpcUrls: string[],
@@ -66,7 +68,7 @@ export default class BlockchainIdentifier {
       return this.rpcUrls.map(
         (_, i) =>
           new BlockchainIdentifier(
-            this.context,
+            this.blockchainType,
             "child",
             `${this.name}:${i}`,
             [_],
@@ -86,14 +88,14 @@ export default class BlockchainIdentifier {
         this.name,
         vscode.TreeItemCollapsibleState.Expanded
       );
-      treeItem.contextValue = this.context;
+      treeItem.contextValue = this.blockchainType;
       return treeItem;
     } else {
       const treeItem = new vscode.TreeItem(
         this.rpcUrls[0],
         vscode.TreeItemCollapsibleState.None
       );
-      treeItem.contextValue = this.context;
+      treeItem.contextValue = this.blockchainType;
       return treeItem;
     }
   }

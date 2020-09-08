@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
+import BlockchainType from "./blockchainType";
 import IoHelpers from "../ioHelpers";
 
 const LOG_PREFIX = "[BlockchainsExplorer]";
@@ -60,9 +61,11 @@ export default class BlockchainsExplorer
     this.onDidChangeTreeDataEmitter.fire();
   }
 
-  async select(context?: string): Promise<BlockchainIdentifier | undefined> {
+  async select(
+    blockchainTypeFilter?: BlockchainType
+  ): Promise<BlockchainIdentifier | undefined> {
     const candidates = this.rootElements.filter(
-      (_) => !context || _.context === context
+      (_) => !blockchainTypeFilter || _.blockchainType === blockchainTypeFilter
     );
     if (!candidates.length) {
       return;
