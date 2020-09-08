@@ -28,6 +28,7 @@
     "onCommand:neo3-visual-devtracker.nxp3.create",
     "onCommand:neo3-visual-devtracker.nxp3.run",
     "onCommand:neo3-visual-devtracker.nxp3.transfer",
+    "onCommand:neo3-visual-devtracker.nxp3.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openTracker"
   ],
   "keywords": [
@@ -39,12 +40,12 @@
     "commands": [
       {
         "command": "neo3-visual-devtracker.nxp3.create",
-        "title": "Create neo-express instance",
+        "title": "Create instance",
         "category": "Neo Express 3"
       },
       {
         "command": "neo3-visual-devtracker.nxp3.run",
-        "title": "Run neo-express instance",
+        "title": "Run instance",
         "category": "Neo Express 3",
         "icon": {
           "light": "resources/light/play.svg",
@@ -54,6 +55,11 @@
       {
         "command": "neo3-visual-devtracker.nxp3.transfer",
         "title": "Transfer assets",
+        "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.nxp3.walletCreate",
+        "title": "Create wallet",
         "category": "Neo Express 3"
       },
       {
@@ -79,6 +85,10 @@
         },
         {
           "command": "neo3-visual-devtracker.nxp3.transfer",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+        },
+        {
+          "command": "neo3-visual-devtracker.nxp3.walletCreate",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
         },
         {

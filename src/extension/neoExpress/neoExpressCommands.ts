@@ -35,11 +35,7 @@ export default class NeoExpressCommands {
       configSavePath,
       "-f"
     );
-    if (output.isError) {
-      vscode.window.showErrorMessage(output.message);
-    } else {
-      vscode.window.showInformationMessage(output.message);
-    }
+    NeoExpressCommands.showResult(output);
   }
 
   static async run(
@@ -119,6 +115,31 @@ export default class NeoExpressCommands {
       sender,
       receiver
     );
+    NeoExpressCommands.showResult(output);
+  }
+
+  static async walletCreate(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier
+  ) {
+    if (identifer.blockchainType !== "nxp3") {
+      return;
+    }
+    const walletName = await IoHelpers.enterString("Wallet name");
+    if (!walletName) {
+      return;
+    }
+    const output = neoExpress.runSync(
+      "wallet",
+      "create",
+      walletName,
+      "-i",
+      identifer.configPath
+    );
+    NeoExpressCommands.showResult(output);
+  }
+
+  private static showResult(output: { message: string; isError?: boolean }) {
     if (output.isError) {
       vscode.window.showErrorMessage(output.message);
     } else {

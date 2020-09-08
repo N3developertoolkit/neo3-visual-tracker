@@ -75,6 +75,14 @@ export async function activate(context: vscode.ExtensionContext) {
     "neo3-visual-devtracker.nxp3.transfer",
     (identifier) => NeoExpressCommands.transfer(neoExpress, identifier)
   );
+
+  registerBlockchainInstanceCommand(
+    context,
+    "nxp3",
+    blockchainsExplorer,
+    "neo3-visual-devtracker.nxp3.walletCreate",
+    (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
+  );
 }
 
 export function deactivate() {}
