@@ -30,7 +30,7 @@ export default class BlockchainIdentifier {
         return undefined;
       }
       return new BlockchainIdentifier(
-        "runnable",
+        "nxp3",
         "parent",
         path.basename(configPath),
         nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
@@ -52,7 +52,7 @@ export default class BlockchainIdentifier {
   }
 
   private constructor(
-    public readonly context: "runnable" | "remote",
+    public readonly context: "nxp3" | "remote",
     public readonly nodeType: "parent" | "child",
     public readonly name: string,
     public readonly rpcUrls: string[],

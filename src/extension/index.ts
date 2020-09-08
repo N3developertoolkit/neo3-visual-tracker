@@ -48,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
       "neo3-visual-devtracker.nxp3.run",
       async (identifier?: BlockchainIdentifier) => {
         if (!identifier) {
-          identifier = await blockchainsExplorer.select("runnable");
+          identifier = await blockchainsExplorer.select("nxp3");
           if (!identifier) {
             return;
           }
@@ -63,7 +63,7 @@ export async function activate(context: vscode.ExtensionContext) {
       "neo3-visual-devtracker.nxp3.transfer",
       async (identifier?: BlockchainIdentifier) => {
         if (!identifier) {
-          identifier = await blockchainsExplorer.select("runnable");
+          identifier = await blockchainsExplorer.select("nxp3");
           if (!identifier) {
             return;
           }

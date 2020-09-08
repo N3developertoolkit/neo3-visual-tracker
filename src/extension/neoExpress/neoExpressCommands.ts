@@ -47,7 +47,7 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ) {
-    if (identifer.context !== "runnable") {
+    if (identifer.context !== "nxp3") {
       return;
     }
     const children = identifer.getChildren();
@@ -80,7 +80,7 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ) {
-    if (identifer.context !== "runnable") {
+    if (identifer.context !== "nxp3") {
       return;
     }
     const asset = await IoHelpers.multipleChoice(

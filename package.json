@@ -70,16 +70,16 @@
       "view/item/context": [
         {
           "command": "neo3-visual-devtracker.nxp3.run",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == runnable",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3",
           "group": "inline"
         },
         {
           "command": "neo3-visual-devtracker.nxp3.run",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == runnable"
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
         },
         {
           "command": "neo3-visual-devtracker.nxp3.transfer",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == runnable"
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
         },
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
