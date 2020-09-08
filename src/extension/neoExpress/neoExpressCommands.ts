@@ -35,7 +35,11 @@ export default class NeoExpressCommands {
       configSavePath,
       "-f"
     );
-    vscode.window.showInformationMessage(output);
+    if (output.isError) {
+      vscode.window.showErrorMessage(output.message);
+    } else {
+      vscode.window.showInformationMessage(output.message);
+    }
   }
 
   static async run(
@@ -69,6 +73,56 @@ export default class NeoExpressCommands {
         "15",
         `${identifer.index}`
       );
+    }
+  }
+
+  static async transfer(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier
+  ) {
+    if (identifer.context !== "runnable") {
+      return;
+    }
+    const asset = await IoHelpers.multipleChoice(
+      "Select an asset",
+      "NEO",
+      "GAS"
+    );
+    if (!asset) {
+      return;
+    }
+    const amount = await IoHelpers.enterNumber(
+      `How many ${asset} should be transferred?`
+    );
+    const sender = await IoHelpers.multipleChoice(
+      `Transfer ${amount} ${asset} from which wallet?`,
+      "genesis",
+      ...identifer.wallets
+    );
+    if (!sender) {
+      return;
+    }
+    const receiver = await IoHelpers.multipleChoice(
+      `Transfer ${amount} ${asset} from '${sender}' to...`,
+      "genesis",
+      ...identifer.wallets
+    );
+    if (!receiver) {
+      return;
+    }
+    const output = neoExpress.runSync(
+      "transfer",
+      "-i",
+      identifer.configPath,
+      asset,
+      amount + "",
+      sender,
+      receiver
+    );
+    if (output.isError) {
+      vscode.window.showErrorMessage(output.message);
+    } else {
+      vscode.window.showInformationMessage(output.message);
     }
   }
 }

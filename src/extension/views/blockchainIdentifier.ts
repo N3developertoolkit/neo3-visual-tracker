@@ -11,7 +11,8 @@ export default class BlockchainIdentifier {
     "Neo 3 TestNet",
     ["http://seed1t.neo.org:20332"],
     0,
-    ""
+    "",
+    []
   );
 
   static fromNeoExpressConfig(
@@ -34,7 +35,10 @@ export default class BlockchainIdentifier {
         path.basename(configPath),
         nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
         0,
-        configPath
+        configPath,
+        neoExpressConfig["wallets"]
+          .map((_: any) => _.name)
+          .filter((_: string) => !!_)
       );
     } catch (e) {
       console.log(
@@ -53,7 +57,8 @@ export default class BlockchainIdentifier {
     public readonly name: string,
     public readonly rpcUrls: string[],
     public readonly index: number,
-    public readonly configPath: string
+    public readonly configPath: string,
+    public readonly wallets: string[]
   ) {}
 
   getChildren() {
@@ -66,7 +71,8 @@ export default class BlockchainIdentifier {
             `${this.name}:${i}`,
             [_],
             i,
-            this.configPath
+            this.configPath,
+            this.wallets
           )
       );
     } else {

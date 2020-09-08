@@ -38,8 +38,26 @@ export default class NeoExpress {
     return terminal;
   }
 
-  runSync(command: Command, ...options: string[]) {
+  runSync(
+    command: Command,
+    ...options: string[]
+  ): { message: string; isError?: boolean } {
     const dotNetArguments = [this.binaryPath, command, ...options];
-    return childProcess.execFileSync("dotnet", dotNetArguments).toString();
+    try {
+      return {
+        message: childProcess
+          .execFileSync("dotnet", dotNetArguments)
+          .toString(),
+      };
+    } catch (e) {
+      return {
+        isError: true,
+        message:
+          e.stderr?.toString() ||
+          e.stdout?.toString() ||
+          e.message ||
+          "Unknown failure",
+      };
+    }
   }
 }

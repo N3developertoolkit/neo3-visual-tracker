@@ -1,14 +1,17 @@
 import * as vscode from "vscode";
 
 export default class IoHelpers {
-  static async yesNo(question: string): Promise<boolean> {
-    const choice = await vscode.window.showErrorMessage(
-      question,
-      { modal: true },
-      { title: "Yes" },
-      { title: "No", isCloseAffordance: true }
-    );
-    return choice?.title === "Yes";
+  static async enterNumber(prompt: string): Promise<number | undefined> {
+    const input = await vscode.window.showInputBox({
+      prompt,
+      validateInput: (_) =>
+        isNaN(parseFloat(_)) ? "Enter a numeric value" : null,
+    });
+    if (input) {
+      return parseFloat(input);
+    } else {
+      return undefined;
+    }
   }
 
   static async multipleChoice(placeHolder: string, ...items: string[]) {
@@ -50,5 +53,15 @@ export default class IoHelpers {
         saveLabel: verb,
       })
     )?.fsPath;
+  }
+
+  static async yesNo(question: string): Promise<boolean> {
+    const choice = await vscode.window.showErrorMessage(
+      question,
+      { modal: true },
+      { title: "Yes" },
+      { title: "No", isCloseAffordance: true }
+    );
+    return choice?.title === "Yes";
   }
 }

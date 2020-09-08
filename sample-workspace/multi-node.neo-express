@@ -146,6 +146,41 @@
       }
     }
   ],
-  "wallets": [],
+  "wallets": [
+    {
+      "name": "test1",
+      "accounts": [
+        {
+          "private-key": "f6c964fa252b22dfbe8ea6734802ea2994c2eb968e51af8e7c327ff7ffeb5c54",
+          "script-hash": "NM7wXWWrx2SCWh3HxpPEApegTMCWSGMwE8",
+          "label": null,
+          "is-default": true,
+          "contract": {
+            "script": "0c21034a2af4ac83d3b16e962f360457edbaf0eb942707c777654c5e01e86a7156f6850b4195440d78",
+            "parameters": [
+              "Signature"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "test2",
+      "accounts": [
+        {
+          "private-key": "2ba2a257f1d8cda4d74dc71f0e3e8b276b70fc4091331fa604459458841b8782",
+          "script-hash": "NbVJvSBuqz5CryTCsEpRoSLMnCN8ft41RY",
+          "label": null,
+          "is-default": true,
+          "contract": {
+            "script": "0c21030420ace5aa966627206f4dc2e89c95fbb1d44df1685c46e7a835eeb73c8a35d60b4195440d78",
+            "parameters": [
+              "Signature"
+            ]
+          }
+        }
+      ]
+    }
+  ],
   "contracts": []
 }

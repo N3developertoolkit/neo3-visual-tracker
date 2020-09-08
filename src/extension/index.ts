@@ -57,6 +57,21 @@ export async function activate(context: vscode.ExtensionContext) {
       }
     )
   );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "neo3-visual-devtracker.nxp3.transfer",
+      async (identifier?: BlockchainIdentifier) => {
+        if (!identifier) {
+          identifier = await blockchainsExplorer.select("runnable");
+          if (!identifier) {
+            return;
+          }
+        }
+        await NeoExpressCommands.transfer(neoExpress, identifier);
+      }
+    )
+  );
 }
 
 export function deactivate() {}

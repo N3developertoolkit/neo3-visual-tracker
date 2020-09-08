@@ -27,6 +27,7 @@
     "onView:neo3-visual-devtracker.blockchainsExplorer",
     "onCommand:neo3-visual-devtracker.nxp3.create",
     "onCommand:neo3-visual-devtracker.nxp3.run",
+    "onCommand:neo3-visual-devtracker.nxp3.transfer",
     "onCommand:neo3-visual-devtracker.tracker.openTracker"
   ],
   "keywords": [
@@ -51,6 +52,11 @@
         }
       },
       {
+        "command": "neo3-visual-devtracker.nxp3.transfer",
+        "title": "Transfer assets",
+        "category": "Neo Express 3"
+      },
+      {
         "command": "neo3-visual-devtracker.tracker.openTracker",
         "title": "Open Neo Visual DevTracker",
         "category": "Neo 3 Visual DevTracker",
@@ -69,6 +75,10 @@
         },
         {
           "command": "neo3-visual-devtracker.nxp3.run",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == runnable"
+        },
+        {
+          "command": "neo3-visual-devtracker.nxp3.transfer",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == runnable"
         },
         {
