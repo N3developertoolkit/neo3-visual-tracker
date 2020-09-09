@@ -41,7 +41,7 @@ export default function BlockList({
               parity: block.index % 2 === 0,
               onClick:
                 selectedBlock === block.hash
-                  ? undefined
+                  ? () => selectBlock("")
                   : () => selectBlock(block.hash),
               cells: [
                 { content: <>{block.index}</> },

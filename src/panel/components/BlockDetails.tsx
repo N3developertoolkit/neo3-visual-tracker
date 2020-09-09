@@ -71,7 +71,10 @@ export default function BlockDetails({
               { content: <>Size</> },
             ]}
             rows={block.tx.map((tx) => ({
-              onClick: () => selectTransaction(tx.hash),
+              onClick:
+                selectedTransaction === tx.hash
+                  ? () => selectTransaction("")
+                  : () => selectTransaction(tx.hash),
               key: tx.hash,
               cells: [
                 { content: <Hash hash={tx.hash} /> },

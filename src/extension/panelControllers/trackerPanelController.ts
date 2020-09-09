@@ -61,16 +61,23 @@ export default class TrackerPanelController extends PanelControllerBase<
       });
     }
     if (request.selectBlock !== undefined) {
-      const selectedBlock = await this.getBlock(request.selectBlock);
-      const startAtBlock = Math.min(
-        this.viewState.blockHeight - 1,
-        selectedBlock.index + 2
-      );
-      await this.updateViewState({
-        selectedBlock: selectedBlock.hash,
-        startAtBlock,
-        blocks: await this.getBlocks(startAtBlock, this.viewState.blockHeight),
-      });
+      if (request.selectBlock) {
+        const selectedBlock = await this.getBlock(request.selectBlock);
+        const startAtBlock = Math.min(
+          this.viewState.blockHeight - 1,
+          selectedBlock.index + 2
+        );
+        await this.updateViewState({
+          selectedBlock: selectedBlock.hash,
+          startAtBlock,
+          blocks: await this.getBlocks(
+            startAtBlock,
+            this.viewState.blockHeight
+          ),
+        });
+      } else {
+        await this.updateViewState({ selectedBlock: "" });
+      }
     }
     if (request.selectTransaction !== undefined) {
       if (request.selectTransaction) {
