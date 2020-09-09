@@ -9,10 +9,11 @@ import Transaction from "../../shared/neon/transaction";
 
 const LOG_PREFIX = "[TrackerPanelController]";
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
-const BLOCKS_PER_PAGE = 40;
+const BLOCKS_PER_PAGE = 50;
 const PAGINATION_DISTANCE = 15;
 const BLOCK_CACHE_SIZE = 1024;
 const TRANSACTION_CACHE_SIZE = 1024;
+const MAX_RETRIES = 5;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
@@ -105,16 +106,36 @@ export default class TrackerPanelController extends PanelControllerBase<
     if (cachedBlock) {
       return cachedBlock;
     }
-    console.log(LOG_PREFIX, "Retrieving block", indexOrHash);
-    const block = (await this.rpcClient.getBlock(indexOrHash)) as Block;
-    if (block.index < this.viewState.blockHeight - 1) {
-      // never cache head block
-      if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
-        this.cachedBlocks.shift();
+    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+      console.log(
+        LOG_PREFIX,
+        "Retrieving block",
+        indexOrHash,
+        "- attempt",
+        retry + 1
+      );
+      try {
+        const block = (await this.rpcClient.getBlock(indexOrHash)) as Block;
+        if (block.index < this.viewState.blockHeight - 1) {
+          // never cache head block
+          if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
+            this.cachedBlocks.shift();
+          }
+          this.cachedBlocks.push(block);
+        }
+        return block;
+      } catch (e) {
+        console.warn(
+          LOG_PREFIX,
+          "Error retrieving block",
+          indexOrHash,
+          e.message
+        );
       }
-      this.cachedBlocks.push(block);
     }
-    return block;
+    throw Error(
+      `Maximum retires exceeded while trying to retrieve block ${indexOrHash}`
+    );
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
