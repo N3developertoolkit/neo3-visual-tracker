@@ -87,6 +87,7 @@ export default function Table({ headings, rows }: Props) {
                   ? trStyleEven
                   : trStyleOdd),
                 cursor: row.onClick ? "pointer" : undefined,
+                fontWeight: !!row.annotation ? "bold" : undefined,
               }}
               onClick={row.onClick}
             >
