@@ -5,7 +5,6 @@ import BlockDetails from "./BlockDetails";
 import Hash from "./Hash";
 import Table from "./Table";
 import Time from "./Time";
-import useWindowHeight from "./useWindowHeight";
 
 type Props = {
   blocks: Block[];
@@ -22,19 +21,9 @@ export default function BlockList({
   selectBlock,
   selectTransaction,
 }: Props) {
-  const windowHeight = useWindowHeight();
   const loadingStyle: React.CSSProperties = {
     textAlign: "center",
     padding: 30,
-  };
-  const insetStyle: React.CSSProperties = {
-    backgroundColor: "var(--vscode-editor-background)",
-    color: "var(--vscode-editor-foreground)",
-    margin: "0px 20px",
-    padding: 10,
-    border: "1px solid var(--vscode-editor-lineHighlightBorder)",
-    overflow: "scroll",
-    maxHeight: windowHeight - 200,
   };
   return (
     <Table
@@ -50,34 +39,25 @@ export default function BlockList({
           ? blocks.map((block) => ({
               key: block.hash,
               parity: block.index % 2 === 0,
-              selected: selectedBlock === block.hash,
               onClick:
                 selectedBlock === block.hash
                   ? undefined
                   : () => selectBlock(block.hash),
-              cells:
-                selectedBlock === block.hash
-                  ? [
-                      {
-                        colSpan: 5,
-                        content: (
-                          <div style={insetStyle}>
-                            <BlockDetails
-                              block={block}
-                              selectedTransaction={selectedTransaction}
-                              selectTransaction={selectTransaction}
-                            />
-                          </div>
-                        ),
-                      },
-                    ]
-                  : [
-                      { content: <>{block.index}</> },
-                      { content: <Time ts={block.time} /> },
-                      { content: <>{block.tx.length}</> },
-                      { content: <Hash hash={block.hash} /> },
-                      { content: <>{block.size} bytes</> },
-                    ],
+              cells: [
+                { content: <>{block.index}</> },
+                { content: <Time ts={block.time} /> },
+                { content: <>{block.tx.length}</> },
+                { content: <Hash hash={block.hash} /> },
+                { content: <>{block.size} bytes</> },
+              ],
+              annotation:
+                selectedBlock === block.hash ? (
+                  <BlockDetails
+                    block={block}
+                    selectedTransaction={selectedTransaction}
+                    selectTransaction={selectTransaction}
+                  />
+                ) : undefined,
             }))
           : [
               {

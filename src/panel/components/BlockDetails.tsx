@@ -18,13 +18,6 @@ export default function BlockDetails({
   selectedTransaction,
   selectTransaction,
 }: Props) {
-  const insetStyle: React.CSSProperties = {
-    backgroundColor: "var(--vscode-editor-background)",
-    color: "var(--vscode-editor-foreground)",
-    margin: "0px 20px",
-    padding: 10,
-    border: "1px solid var(--vscode-editor-lineHighlightBorder)",
-  };
   return (
     <div
       style={{
@@ -80,24 +73,15 @@ export default function BlockDetails({
             rows={block.tx.map((tx) => ({
               onClick: () => selectTransaction(tx.hash),
               key: tx.hash,
-              selected: selectedTransaction === tx.hash,
-              cells:
-                selectedTransaction === tx.hash
-                  ? [
-                      {
-                        colSpan: 3,
-                        content: (
-                          <div style={insetStyle}>
-                            <TransactionDetails transaction={tx} />
-                          </div>
-                        ),
-                      },
-                    ]
-                  : [
-                      { content: <Hash hash={tx.hash} /> },
-                      { content: <Hash hash={tx.sender} /> },
-                      { content: <>{tx.size} bytes</> },
-                    ],
+              cells: [
+                { content: <Hash hash={tx.hash} /> },
+                { content: <Hash hash={tx.sender} /> },
+                { content: <>{tx.size} bytes</> },
+              ],
+              annotation:
+                selectedTransaction === tx.hash ? (
+                  <TransactionDetails transaction={tx} />
+                ) : undefined,
             }))}
           />
         </div>

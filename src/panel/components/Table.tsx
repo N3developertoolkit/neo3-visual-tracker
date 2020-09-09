@@ -1,17 +1,28 @@
-import React from "react";
+import React, { Fragment } from "react";
+
+import useWindowHeight from "./useWindowHeight";
+
+function sum(ns: number[]) {
+  let result = 0;
+  for (const n of ns) {
+    result += n;
+  }
+  return result;
+}
 
 type Props = {
   headings?: { key?: string; content: JSX.Element }[];
   rows: {
     key?: string;
     parity?: boolean;
-    selected?: boolean;
     onClick?: () => void;
     cells: { key?: string; colSpan?: number; content: JSX.Element }[];
+    annotation?: JSX.Element;
   }[];
 };
 
 export default function Table({ headings, rows }: Props) {
+  const windowHeight = useWindowHeight();
   const tableStyle: React.CSSProperties = {
     height: "100%",
     width: "100%",
@@ -34,14 +45,23 @@ export default function Table({ headings, rows }: Props) {
     backgroundColor: "var(--vscode-editor-inactiveSelectionBackground)",
     color: "var(--vscode-editor-foreground)",
   };
-  const trStyleSelected: React.CSSProperties = {
-    borderBottom: "1px solid var(--vscode-editor-lineHighlightBorder)",
-    backgroundColor: "var(--vscode-editor-background)",
-    color: "var(--vscode-editor-foreground)",
-  };
   const cellStyle: React.CSSProperties = {
     textAlign: "center",
     padding: 5,
+  };
+  const insetStyleOuter: React.CSSProperties = {
+    backgroundColor: "var(--vscode-editor-background)",
+    color: "var(--vscode-editor-foreground)",
+    margin: "-1px 5% 10px 5%",
+    borderRadius: "0px 0px 15px 15px",
+    padding: 10,
+    borderBottom: "1px solid var(--vscode-editor-lineHighlightBorder)",
+    borderLeft: "1px solid var(--vscode-editor-lineHighlightBorder)",
+    borderRight: "1px solid var(--vscode-editor-lineHighlightBorder)",
+  };
+  const insetStyleInner: React.CSSProperties = {
+    overflow: "scroll",
+    maxHeight: windowHeight - 200,
   };
   return (
     <table style={tableStyle}>
@@ -56,32 +76,40 @@ export default function Table({ headings, rows }: Props) {
       )}
       <tbody>
         {rows.map((row, i) => (
-          <tr
-            key={row.key || undefined}
-            style={{
-              ...(row.selected
-                ? trStyleSelected
-                : row.parity !== undefined
-                ? row.parity
+          <Fragment key={row.key || undefined}>
+            <tr
+              style={{
+                ...(row.parity !== undefined
+                  ? row.parity
+                    ? trStyleEven
+                    : trStyleOdd
+                  : i % 2 === 0
                   ? trStyleEven
-                  : trStyleOdd
-                : i % 2 === 0
-                ? trStyleEven
-                : trStyleOdd),
-              cursor: row.onClick ? "pointer" : undefined,
-            }}
-            onClick={row.onClick}
-          >
-            {row.cells.map((cell) => (
-              <td
-                key={cell.key || undefined}
-                style={cellStyle}
-                colSpan={cell.colSpan}
-              >
-                {cell.content}
-              </td>
-            ))}
-          </tr>
+                  : trStyleOdd),
+                cursor: row.onClick ? "pointer" : undefined,
+              }}
+              onClick={row.onClick}
+            >
+              {row.cells.map((cell) => (
+                <td
+                  key={cell.key || undefined}
+                  style={cellStyle}
+                  colSpan={cell.colSpan}
+                >
+                  {cell.content}
+                </td>
+              ))}
+            </tr>
+            {!!row.annotation && (
+              <tr>
+                <td colSpan={sum(row.cells.map((_) => _.colSpan || 1))}>
+                  <div style={insetStyleOuter}>
+                    <div style={insetStyleInner}>{row.annotation}</div>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </Fragment>
         ))}
       </tbody>
     </table>
