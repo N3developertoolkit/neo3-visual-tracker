@@ -167,16 +167,24 @@ export default class TrackerPanelController extends PanelControllerBase<
     if (cachedTransaction) {
       return cachedTransaction;
     }
-    console.log(LOG_PREFIX, "Retrieving tx", hash);
-    const transaction = (await this.rpcClient.getRawTransaction(
-      hash
-    )) as Transaction;
-    if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
-      this.cachedTransactions.shift();
+    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+      console.log(LOG_PREFIX, "Retrieving tx", hash, "- attempt", retry + 1);
+      try {
+        const transaction = (await this.rpcClient.getRawTransaction(
+          hash
+        )) as Transaction;
+        if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
+          this.cachedTransactions.shift();
+        }
+        this.cachedTransactions.push(transaction);
+        return transaction;
+      } catch (e) {
+        console.warn(LOG_PREFIX, "Error retrieving tx", hash, e.message);
+      }
     }
-    this.cachedTransactions.push(transaction);
-    console.log(JSON.stringify(transaction), transaction);
-    return transaction;
+    throw Error(
+      `Maximum retires exceeded while trying to retrieve btxlock ${hash}`
+    );
   }
 
   private async onNewBlockAvailable(blockHeight: number) {
