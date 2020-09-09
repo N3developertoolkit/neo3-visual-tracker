@@ -2,6 +2,7 @@ import React from "react";
 
 import Hash from "./Hash";
 import MetadataBadge from "./MetadataBadge";
+import NavLink from "./NavLink";
 import Transaction from "../../shared/neon/transaction";
 
 type Props = {
@@ -22,7 +23,9 @@ export default function TransactionDetails({ transaction }: Props) {
         <Hash hash={transaction.hash} />
       </MetadataBadge>
       <MetadataBadge title="Sender">
-        <Hash hash={transaction.sender} />
+        <NavLink onClick={() => {}}>
+          <Hash hash={transaction.sender} />
+        </NavLink>
       </MetadataBadge>
       {transaction.signers.map((signer) => (
         <MetadataBadge title="Signer">
