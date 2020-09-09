@@ -7,9 +7,13 @@ import Transaction from "../../shared/neon/transaction";
 
 type Props = {
   transaction: Transaction;
+  selectAddress: (address: string) => void;
 };
 
-export default function TransactionDetails({ transaction }: Props) {
+export default function TransactionDetails({
+  transaction,
+  selectAddress,
+}: Props) {
   return (
     <div
       style={{
@@ -23,7 +27,7 @@ export default function TransactionDetails({ transaction }: Props) {
         <Hash hash={transaction.hash} />
       </MetadataBadge>
       <MetadataBadge title="Sender">
-        <NavLink onClick={() => {}}>
+        <NavLink onClick={() => selectAddress(transaction.sender)}>
           <Hash hash={transaction.sender} />
         </NavLink>
       </MetadataBadge>

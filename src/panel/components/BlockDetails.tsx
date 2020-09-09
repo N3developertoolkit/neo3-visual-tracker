@@ -10,12 +10,14 @@ import TransactionDetails from "./TransactionDetails";
 type Props = {
   block: Block;
   selectedTransaction: string;
+  selectAddress: (address: string) => void;
   selectTransaction: (txid: string) => void;
 };
 
 export default function BlockDetails({
   block,
   selectedTransaction,
+  selectAddress,
   selectTransaction,
 }: Props) {
   return (
@@ -83,7 +85,10 @@ export default function BlockDetails({
               ],
               annotation:
                 selectedTransaction === tx.hash ? (
-                  <TransactionDetails transaction={tx} />
+                  <TransactionDetails
+                    transaction={tx}
+                    selectAddress={selectAddress}
+                  />
                 ) : undefined,
             }))}
           />

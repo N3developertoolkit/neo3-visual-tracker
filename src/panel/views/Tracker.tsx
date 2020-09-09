@@ -27,6 +27,7 @@ export default function Tracker({ viewState, postMessage }: Props) {
           blocks={viewState.blocks}
           selectedBlock={viewState.selectedBlock}
           selectedTransaction={viewState.selectedTransaction}
+          selectAddress={(address) => postMessage({ selectAddress: address })}
           selectBlock={(hash) => postMessage({ selectBlock: hash })}
           selectTransaction={(txid) => postMessage({ selectTransaction: txid })}
         />

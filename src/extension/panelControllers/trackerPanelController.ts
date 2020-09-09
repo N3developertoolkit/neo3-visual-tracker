@@ -1,6 +1,7 @@
 import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
+import Account from "../../shared/neon/account";
 import Block from "../../shared/neon/block";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
@@ -33,6 +34,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         blockHeight: 0,
         paginationDistance: PAGINATION_DISTANCE,
         blocks: [],
+        selectedAddress: null,
         selectedTransaction: "",
         selectedBlock: "",
         startAtBlock: -1,
@@ -51,6 +53,15 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: TrackerViewRequest) {
+    if (request.selectAddress !== undefined) {
+      if (request.selectAddress) {
+        await this.updateViewState({
+          selectedAddress: await this.getAddress(request.selectAddress),
+        });
+      } else {
+        await this.updateViewState({ selectedAddress: null });
+      }
+    }
     if (request.setStartAtBlock !== undefined) {
       await this.updateViewState({
         startAtBlock: request.setStartAtBlock,
@@ -106,6 +117,31 @@ export default class TrackerPanelController extends PanelControllerBase<
     }
   }
 
+  private async getAddress(address: string): Promise<Account> {
+    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+      console.log(
+        LOG_PREFIX,
+        "Retrieving address",
+        address,
+        "- attempt",
+        retry + 1
+      );
+      try {
+        return (await this.rpcClient.getAccountState(address)) as Account;
+      } catch (e) {
+        console.warn(
+          LOG_PREFIX,
+          "Error retrieving address",
+          address,
+          e.message
+        );
+      }
+    }
+    throw Error(
+      `Maximum retries exceeded while trying to retrieve address ${address}`
+    );
+  }
+
   private async getBlock(indexOrHash: string | number): Promise<Block> {
     const cachedBlock = this.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
@@ -141,7 +177,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
     }
     throw Error(
-      `Maximum retires exceeded while trying to retrieve block ${indexOrHash}`
+      `Maximum retries exceeded while trying to retrieve block ${indexOrHash}`
     );
   }
 
@@ -183,7 +219,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
     }
     throw Error(
-      `Maximum retires exceeded while trying to retrieve btxlock ${hash}`
+      `Maximum retries exceeded while trying to retrieve btxlock ${hash}`
     );
   }
 

@@ -10,6 +10,7 @@ type Props = {
   blocks: Block[];
   selectedBlock: string;
   selectedTransaction: string;
+  selectAddress: (address: string) => void;
   selectBlock: (hash: string) => void;
   selectTransaction: (txid: string) => void;
 };
@@ -18,6 +19,7 @@ export default function BlockList({
   blocks,
   selectedBlock,
   selectedTransaction,
+  selectAddress,
   selectBlock,
   selectTransaction,
 }: Props) {
@@ -55,6 +57,7 @@ export default function BlockList({
                   <BlockDetails
                     block={block}
                     selectedTransaction={selectedTransaction}
+                    selectAddress={selectAddress}
                     selectTransaction={selectTransaction}
                   />
                 ) : undefined,
