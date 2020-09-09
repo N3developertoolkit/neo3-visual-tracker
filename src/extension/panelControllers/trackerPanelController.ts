@@ -9,7 +9,7 @@ import Transaction from "../../shared/neon/transaction";
 
 const LOG_PREFIX = "[TrackerPanelController]";
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
-const BLOCKS_PER_PAGE = 50;
+const BLOCKS_PER_PAGE = 40;
 const PAGINATION_DISTANCE = 15;
 const BLOCK_CACHE_SIZE = 1024;
 const TRANSACTION_CACHE_SIZE = 1024;
