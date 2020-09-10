@@ -2,6 +2,7 @@ import React from "react";
 
 import BlockList from "../components/BlockList";
 import BlockNavigation from "../components/BlockNavigation";
+import Search from "../components/Search";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 
@@ -22,15 +23,23 @@ export default function Tracker({ viewState, postMessage }: Props) {
         height: "100%",
       }}
     >
+      <Search
+        searchHistory={viewState.searchHistory}
+        onSearch={(query) => postMessage({ search: query })}
+      />
       <div style={{ flex: "none 1", overflow: "hidden" }}>
-        <BlockList
-          blocks={viewState.blocks}
-          selectedBlock={viewState.selectedBlock}
-          selectedTransaction={viewState.selectedTransaction}
-          selectAddress={(address) => postMessage({ selectAddress: address })}
-          selectBlock={(hash) => postMessage({ selectBlock: hash })}
-          selectTransaction={(txid) => postMessage({ selectTransaction: txid })}
-        />
+        <div style={{ minHeight: "100vh" }}>
+          <BlockList
+            blocks={viewState.blocks}
+            selectedBlock={viewState.selectedBlock}
+            selectedTransaction={viewState.selectedTransaction}
+            selectAddress={(address) => postMessage({ selectAddress: address })}
+            selectBlock={(hash) => postMessage({ selectBlock: hash })}
+            selectTransaction={(txid) =>
+              postMessage({ selectTransaction: txid })
+            }
+          />
+        </div>
       </div>
       <BlockNavigation
         style={{ margin: 10, textAlign: "center" }}

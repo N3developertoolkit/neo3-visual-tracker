@@ -11,6 +11,7 @@ type TrackerViewState = {
   startAtBlock: number;
   blocks: Block[];
   paginationDistance: number;
+  searchHistory: string[];
 };
 
 export default TrackerViewState;

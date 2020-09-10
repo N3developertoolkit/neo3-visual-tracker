@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 type Props = {
   children: JSX.Element | string;
+  roundedBadge?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;
   onClick: () => void;
@@ -9,6 +10,7 @@ type Props = {
 
 export default function NavButton({
   children,
+  roundedBadge,
   disabled,
   style,
   onClick,
@@ -23,7 +25,8 @@ export default function NavButton({
       ? "var(--vscode-button-secondaryForeground)"
       : "var(--vscode-button-foreground)",
     border: "none",
-    padding: "1em 2em 1em 2em",
+    padding: roundedBadge ? "5px 10px" : "1em 2em 1em 2em",
+    borderRadius: roundedBadge ? 10 : undefined,
   };
   const buttonStyleHover: React.CSSProperties = {
     ...buttonStyle,
@@ -36,7 +39,12 @@ export default function NavButton({
         type="button"
         style={hover && !disabled ? buttonStyleHover : buttonStyle}
         disabled={!!disabled}
-        onClick={onClick}
+        onClick={(e) => {
+          if (roundedBadge) {
+            (e.target as HTMLButtonElement).blur();
+          }
+          onClick();
+        }}
         onMouseMove={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
       >

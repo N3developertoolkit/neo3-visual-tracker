@@ -33,7 +33,7 @@ export default function BlockDetails({
       <MetadataBadge title="Time">
         <Time ts={block.time} />
       </MetadataBadge>
-      <MetadataBadge title="TXID">
+      <MetadataBadge title="Block hash">
         <Hash hash={block.hash} />
       </MetadataBadge>
       <MetadataBadge title="Size">{block.size} bytes</MetadataBadge>

@@ -3,6 +3,7 @@ type TrackerViewRequest = {
   selectBlock?: string;
   selectTransaction?: string;
   setStartAtBlock?: number;
+  search?: string;
 };
 
 export default TrackerViewRequest;

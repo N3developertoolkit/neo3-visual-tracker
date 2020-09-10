@@ -8,22 +8,25 @@ import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 import Transaction from "../../shared/neon/transaction";
 
-const LOG_PREFIX = "[TrackerPanelController]";
-const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
-const BLOCKS_PER_PAGE = 50;
-const PAGINATION_DISTANCE = 15;
 const BLOCK_CACHE_SIZE = 1024;
+const BLOCKS_PER_PAGE = 50;
+const HISTORY_SIZE = 50;
+const LOG_PREFIX = "[TrackerPanelController]";
+const MAX_RETRIES = 3;
+const PAGINATION_DISTANCE = 15;
+const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
 const TRANSACTION_CACHE_SIZE = 1024;
-const MAX_RETRIES = 5;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
   TrackerViewRequest
 > {
+  private readonly blockchainId: Promise<string>;
+  private readonly cachedBlocks: Block[];
+  private readonly cachedTransactions: Transaction[];
   private readonly rpcClient: neonCore.rpc.RPCClient;
+  private readonly state: vscode.Memento;
 
-  private cachedBlocks: Block[];
-  private cachedTransactions: Transaction[];
   private closed: boolean;
 
   constructor(context: vscode.ExtensionContext, rpcUrl: string) {
@@ -38,6 +41,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         selectedTransaction: "",
         selectedBlock: "",
         startAtBlock: -1,
+        searchHistory: [],
       },
       context
     );
@@ -45,6 +49,8 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.cachedBlocks = [];
     this.cachedTransactions = [];
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
+    this.state = context.workspaceState;
+    this.blockchainId = this.getBlock(0, false).then((_) => _.hash);
     this.refreshLoop();
   }
 
@@ -53,13 +59,20 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: TrackerViewRequest) {
+    if (request.search) {
+      await this.resolveSearch(request);
+    }
     if (request.selectAddress !== undefined) {
       if (request.selectAddress) {
         await this.updateViewState({
           selectedAddress: await this.getAddress(request.selectAddress),
+          searchHistory: await this.getSearchHistory(),
         });
       } else {
-        await this.updateViewState({ selectedAddress: null });
+        await this.updateViewState({
+          selectedAddress: null,
+          searchHistory: await this.getSearchHistory(),
+        });
       }
     }
     if (request.setStartAtBlock !== undefined) {
@@ -69,11 +82,12 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.setStartAtBlock,
           this.viewState.blockHeight
         ),
+        searchHistory: await this.getSearchHistory(),
       });
     }
     if (request.selectBlock !== undefined) {
       if (request.selectBlock) {
-        const selectedBlock = await this.getBlock(request.selectBlock);
+        const selectedBlock = await this.getBlock(request.selectBlock, true);
         const startAtBlock = Math.min(
           this.viewState.blockHeight - 1,
           selectedBlock.index + 2
@@ -85,9 +99,13 @@ export default class TrackerPanelController extends PanelControllerBase<
             startAtBlock,
             this.viewState.blockHeight
           ),
+          searchHistory: await this.getSearchHistory(),
         });
       } else {
-        await this.updateViewState({ selectedBlock: "" });
+        await this.updateViewState({
+          selectedBlock: "",
+          searchHistory: await this.getSearchHistory(),
+        });
       }
     }
     if (request.selectTransaction !== undefined) {
@@ -96,7 +114,8 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.selectTransaction
         );
         const selectedBlock = await this.getBlock(
-          selectedTransaction.blockhash
+          selectedTransaction.blockhash,
+          false
         );
         const startAtBlock = Math.min(
           this.viewState.blockHeight - 1,
@@ -110,11 +129,22 @@ export default class TrackerPanelController extends PanelControllerBase<
             startAtBlock,
             this.viewState.blockHeight
           ),
+          searchHistory: await this.getSearchHistory(),
         });
       } else {
-        await this.updateViewState({ selectedTransaction: "" });
+        await this.updateViewState({
+          selectedTransaction: "",
+          searchHistory: await this.getSearchHistory(),
+        });
       }
     }
+  }
+
+  private async addToSearchHistory(query: string) {
+    let history = await this.getSearchHistory();
+    history = [query, ...history.filter((_) => _ !== query)];
+    history.length = Math.min(HISTORY_SIZE, history.length);
+    await this.state.update(`history_${await this.blockchainId}`, history);
   }
 
   private async getAddress(address: string): Promise<Account> {
@@ -127,7 +157,11 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        return (await this.rpcClient.getAccountState(address)) as Account;
+        const result = (await this.rpcClient.getAccountState(
+          address
+        )) as Account;
+        await this.addToSearchHistory(address);
+        return result;
       } catch (e) {
         console.warn(
           LOG_PREFIX,
@@ -142,11 +176,17 @@ export default class TrackerPanelController extends PanelControllerBase<
     );
   }
 
-  private async getBlock(indexOrHash: string | number): Promise<Block> {
+  private async getBlock(
+    indexOrHash: string | number,
+    addToHistory: boolean
+  ): Promise<Block> {
     const cachedBlock = this.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
     if (cachedBlock) {
+      if (addToHistory) {
+        this.addToSearchHistory(cachedBlock.index + "");
+      }
       return cachedBlock;
     }
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
@@ -165,6 +205,9 @@ export default class TrackerPanelController extends PanelControllerBase<
             this.cachedBlocks.shift();
           }
           this.cachedBlocks.push(block);
+        }
+        if (addToHistory) {
+          this.addToSearchHistory(block.index + "");
         }
         return block;
       } catch (e) {
@@ -190,10 +233,14 @@ export default class TrackerPanelController extends PanelControllerBase<
     for (let i = 0; i < BLOCKS_PER_PAGE; i++) {
       const blockNumber = startAtBlock - i;
       if (blockNumber >= 0) {
-        newBlocks.push(this.getBlock(blockNumber));
+        newBlocks.push(this.getBlock(blockNumber, false));
       }
     }
     return Promise.all(newBlocks);
+  }
+
+  private async getSearchHistory(): Promise<string[]> {
+    return this.state.get<string[]>(`history_${await this.blockchainId}`, []);
   }
 
   private async getTransaction(hash: string): Promise<Transaction> {
@@ -201,6 +248,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       (_) => _.hash === hash
     );
     if (cachedTransaction) {
+      this.addToSearchHistory(hash);
       return cachedTransaction;
     }
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
@@ -213,6 +261,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           this.cachedTransactions.shift();
         }
         this.cachedTransactions.push(transaction);
+        this.addToSearchHistory(hash);
         return transaction;
       } catch (e) {
         console.warn(LOG_PREFIX, "Error retrieving tx", hash, e.message);
@@ -225,11 +274,15 @@ export default class TrackerPanelController extends PanelControllerBase<
 
   private async onNewBlockAvailable(blockHeight: number) {
     if (this.viewState.startAtBlock >= 0) {
-      await this.updateViewState({ blockHeight });
+      await this.updateViewState({
+        blockHeight,
+        searchHistory: await this.getSearchHistory(),
+      });
     } else {
       await this.updateViewState({
         blockHeight,
         blocks: await this.getBlocks(-1, blockHeight),
+        searchHistory: await this.getSearchHistory(),
       });
     }
   }
@@ -246,6 +299,37 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+    }
+  }
+
+  private async resolveSearch(request: TrackerViewRequest) {
+    const query = (request.search || "").trim();
+    if (parseInt(query) + "" === query) {
+      try {
+        const block = await this.getBlock(parseInt(query), false);
+        request.selectBlock = block.hash;
+        return;
+      } catch {
+        return;
+      }  
+    }
+    try {
+      const block = await this.getBlock(query, false);
+      request.selectBlock = block.hash;
+      return;
+    } catch {
+      try {
+        const tx = await this.getTransaction(query.toLowerCase());
+        request.selectTransaction = tx.hash;
+        return;
+      } catch {
+        try {
+          await this.getAddress(query);
+          request.selectAddress = query;
+          return;
+        } catch {
+        }
+      }
     }
   }
 }
