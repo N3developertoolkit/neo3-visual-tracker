@@ -1,12 +1,12 @@
 import React from "react";
+import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import Hash from "./Hash";
 import MetadataBadge from "./MetadataBadge";
 import NavLink from "./NavLink";
-import Transaction from "../../shared/neon/transaction";
 
 type Props = {
-  transaction: Transaction;
+  transaction: TransactionJson;
   selectAddress: (address: string) => void;
 };
 
@@ -24,7 +24,7 @@ export default function TransactionDetails({
       }}
     >
       <MetadataBadge title="TXID">
-        <Hash hash={transaction.hash} />
+        <Hash hash={transaction.hash || ""} />
       </MetadataBadge>
       <MetadataBadge title="Sender">
         <NavLink onClick={() => selectAddress(transaction.sender)}>

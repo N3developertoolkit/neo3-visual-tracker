@@ -1,12 +1,11 @@
 import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
+import { BlockJson } from "@cityofzion/neon-core/lib/types";
+import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
-import Account from "../../shared/neon/account";
-import Block from "../../shared/neon/block";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
-import Transaction from "../../shared/neon/transaction";
 
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_PAGE = 50;
@@ -22,8 +21,8 @@ export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewRequest
 > {
   private readonly blockchainId: Promise<string>;
-  private readonly cachedBlocks: Block[];
-  private readonly cachedTransactions: Transaction[];
+  private readonly cachedBlocks: BlockJson[];
+  private readonly cachedTransactions: TransactionJson[];
   private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
 
@@ -114,7 +113,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.selectTransaction
         );
         const selectedBlock = await this.getBlock(
-          selectedTransaction.blockhash,
+          (selectedTransaction as any).blockhash,
           false
         );
         const startAtBlock = Math.min(
@@ -147,7 +146,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     await this.state.update(`history_${await this.blockchainId}`, history);
   }
 
-  private async getAddress(address: string): Promise<Account> {
+  private async getAddress(address: string): Promise<any> {
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
       console.log(
         LOG_PREFIX,
@@ -157,9 +156,8 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        const result = (await this.rpcClient.getAccountState(
-          address
-        )) as Account;
+        //const result = (await this.rpcClient.getAccountState(address)) as Account;
+        const result = {};
         await this.addToSearchHistory(address);
         return result;
       } catch (e) {
@@ -179,7 +177,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private async getBlock(
     indexOrHash: string | number,
     addToHistory: boolean
-  ): Promise<Block> {
+  ): Promise<BlockJson> {
     const cachedBlock = this.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
@@ -198,7 +196,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        const block = (await this.rpcClient.getBlock(indexOrHash)) as Block;
+        const block = await this.rpcClient.getBlock(indexOrHash, true);
         if (block.index < this.viewState.blockHeight - 1) {
           // never cache head block
           if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
@@ -225,7 +223,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
-    let newBlocks: Promise<Block>[] = [];
+    let newBlocks: Promise<BlockJson>[] = [];
     startAtBlock =
       startAtBlock < 0 || startAtBlock >= blockHeight
         ? blockHeight - 1
@@ -243,7 +241,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     return this.state.get<string[]>(`history_${await this.blockchainId}`, []);
   }
 
-  private async getTransaction(hash: string): Promise<Transaction> {
+  private async getTransaction(hash: string): Promise<TransactionJson> {
     const cachedTransaction = this.cachedTransactions.find(
       (_) => _.hash === hash
     );
@@ -254,9 +252,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
       console.log(LOG_PREFIX, "Retrieving tx", hash, "- attempt", retry + 1);
       try {
-        const transaction = (await this.rpcClient.getRawTransaction(
-          hash
-        )) as Transaction;
+        const transaction = await this.rpcClient.getRawTransaction(hash, true);
         if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
           this.cachedTransactions.shift();
         }
@@ -311,7 +307,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         return;
       } catch {
         return;
-      }  
+      }
     }
     try {
       const block = await this.getBlock(query, false);
@@ -327,8 +323,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           await this.getAddress(query);
           request.selectAddress = query;
           return;
-        } catch {
-        }
+        } catch {}
       }
     }
   }

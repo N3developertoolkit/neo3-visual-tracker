@@ -1,15 +1,14 @@
-import Account from "../neon/account";
-import Block from "../neon/block";
+import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
 type TrackerViewState = {
   view: "tracker";
   panelTitle: string;
   blockHeight: number;
-  selectedAddress: Account | null;
+  selectedAddress: any | null;
   selectedBlock: string;
   selectedTransaction: string;
   startAtBlock: number;
-  blocks: Block[];
+  blocks: BlockJson[];
   paginationDistance: number;
   searchHistory: string[];
 };

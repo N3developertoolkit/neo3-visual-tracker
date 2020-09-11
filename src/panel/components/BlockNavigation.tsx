@@ -1,10 +1,10 @@
 import React from "react";
+import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
-import Block from "../../shared/neon/block";
 import NavButton from "./NavButton";
 
 type Props = {
-  blocks: Block[];
+  blocks: BlockJson[];
   blockHeight: number;
   paginationDistance: number;
   startAtBlock: number;

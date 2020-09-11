@@ -1,6 +1,6 @@
 import React from "react";
+import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
-import Block from "../../shared/neon/block";
 import Hash from "./Hash";
 import MetadataBadge from "./MetadataBadge";
 import Table from "./Table";
@@ -8,7 +8,7 @@ import Time from "./Time";
 import TransactionDetails from "./TransactionDetails";
 
 type Props = {
-  block: Block;
+  block: BlockJson;
   selectedTransaction: string;
   selectAddress: (address: string) => void;
   selectTransaction: (txid: string) => void;
@@ -72,25 +72,26 @@ export default function BlockDetails({
               { content: <>Sender</> },
               { content: <>Size</> },
             ]}
-            rows={block.tx.map((tx) => ({
-              onClick:
-                selectedTransaction === tx.hash
-                  ? () => selectTransaction("")
-                  : () => selectTransaction(tx.hash),
-              key: tx.hash,
-              cells: [
-                { content: <Hash hash={tx.hash} /> },
-                { content: <Hash hash={tx.sender} /> },
-                { content: <>{tx.size} bytes</> },
-              ],
-              annotation:
-                selectedTransaction === tx.hash ? (
-                  <TransactionDetails
-                    transaction={tx}
-                    selectAddress={selectAddress}
-                  />
-                ) : undefined,
-            }))}
+            rows={block.tx
+              .map((tx) => ({
+                onClick:
+                  selectedTransaction === tx.hash
+                    ? () => selectTransaction("")
+                    : () => selectTransaction(tx.hash || ""),
+                key: tx.hash,
+                cells: [
+                  { content: <Hash hash={tx.hash || ""} /> },
+                  { content: <Hash hash={tx.sender} /> },
+                  { content: <>{tx.size} bytes</> },
+                ],
+                annotation:
+                  selectedTransaction === tx.hash ? (
+                    <TransactionDetails
+                      transaction={tx}
+                      selectAddress={selectAddress}
+                    />
+                  ) : undefined,
+              }))}
           />
         </div>
       )}

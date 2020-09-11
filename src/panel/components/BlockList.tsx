@@ -1,13 +1,13 @@
 import React from "react";
+import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
-import Block from "../../shared/neon/block";
 import BlockDetails from "./BlockDetails";
 import Hash from "./Hash";
 import Table from "./Table";
 import Time from "./Time";
 
 type Props = {
-  blocks: Block[];
+  blocks: BlockJson[];
   selectedBlock: string;
   selectedTransaction: string;
   selectAddress: (address: string) => void;
