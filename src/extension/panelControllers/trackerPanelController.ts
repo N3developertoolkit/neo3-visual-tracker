@@ -156,8 +156,11 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        //const result = (await this.rpcClient.getAccountState(address)) as Account;
-        const result = {};
+        // See: https://docs.neo.org/v3/docs/en-us/reference/rpc/latest-version/api/getnep5balances.html
+        const result = await this.rpcClient.query({
+          method: "getnep5balances",
+          params: [address, 0],
+        });
         await this.addToSearchHistory(address);
         return result;
       } catch (e) {
