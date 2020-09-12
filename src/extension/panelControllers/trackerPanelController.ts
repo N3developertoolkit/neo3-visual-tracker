@@ -1,8 +1,10 @@
 import * as neonCore from "@cityofzion/neon-core";
+import * as neonJs from "@cityofzion/neon-js";
 import * as vscode from "vscode";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
+import AddressInfo from "../../shared/addressInfo";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -14,6 +16,8 @@ const LOG_PREFIX = "[TrackerPanelController]";
 const MAX_RETRIES = 3;
 const PAGINATION_DISTANCE = 15;
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
+const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
+const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
 const TRANSACTION_CACHE_SIZE = 1024;
 
 export default class TrackerPanelController extends PanelControllerBase<
@@ -146,7 +150,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     await this.state.update(`history_${await this.blockchainId}`, history);
   }
 
-  private async getAddress(address: string): Promise<any> {
+  private async getAddress(address: string): Promise<AddressInfo> {
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
       console.log(
         LOG_PREFIX,
@@ -156,11 +160,10 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        // See: https://docs.neo.org/v3/docs/en-us/reference/rpc/latest-version/api/getnep5balances.html
-        const result = await this.rpcClient.query({
-          method: "getnep5balances",
-          params: [address, 0],
-        });
+        const result = {
+          neoBalance: await this.getBalance(address, SCRIPTHASH_NEO),
+          gasBalance: await this.getBalance(address, SCRIPTHASH_GAS),
+        };
         await this.addToSearchHistory(address);
         return result;
       } catch (e) {
@@ -175,6 +178,25 @@ export default class TrackerPanelController extends PanelControllerBase<
     throw Error(
       `Maximum retries exceeded while trying to retrieve address ${address}`
     );
+  }
+
+  private async getBalance(address: string, assetScriptHash: string) {
+    const result: any = await this.rpcClient.query({
+      jsonrpc: "2.0",
+      id: 1,
+      method: "invokefunction",
+      params: [
+        assetScriptHash,
+        "balanceOf",
+        [
+          {
+            type: "Hash160",
+            value: neonJs.wallet.getScriptHashFromAddress(address),
+          },
+        ],
+      ],
+    });
+    return parseInt((result.stack || [])[0]?.value || "0");
   }
 
   private async getBlock(
