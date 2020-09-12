@@ -1,4 +1,5 @@
 type AddressInfo = {
+  address: string;
   neoBalance: number;
   gasBalance: number;
 };

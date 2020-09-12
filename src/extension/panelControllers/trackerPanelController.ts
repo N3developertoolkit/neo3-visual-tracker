@@ -161,6 +161,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       );
       try {
         const result = {
+          address,
           neoBalance: await this.getBalance(address, SCRIPTHASH_NEO),
           gasBalance: await this.getBalance(address, SCRIPTHASH_GAS),
         };
