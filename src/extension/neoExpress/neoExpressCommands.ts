@@ -38,6 +38,25 @@ export default class NeoExpressCommands {
     NeoExpressCommands.showResult(output);
   }
 
+  static async reset(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
+    if (identifer.blockchainType !== "nxp3") {
+      return;
+    }
+    const confirmed = await IoHelpers.yesNo(
+      `Are you sure that you want to reset "${identifer.configPath}"?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    const output = neoExpress.runSync(
+      "reset",
+      "-f",
+      "-i",
+      identifer.configPath
+    );
+    NeoExpressCommands.showResult(output);
+  }
+
   static async run(
     context: vscode.ExtensionContext,
     neoExpress: NeoExpress,
@@ -141,9 +160,9 @@ export default class NeoExpressCommands {
 
   private static showResult(output: { message: string; isError?: boolean }) {
     if (output.isError) {
-      vscode.window.showErrorMessage(output.message);
+      vscode.window.showErrorMessage(output.message || "Unknown error");
     } else {
-      vscode.window.showInformationMessage(output.message);
+      vscode.window.showInformationMessage(output.message || "Command succeeded");
     }
   }
 }

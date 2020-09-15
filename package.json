@@ -25,6 +25,7 @@
   },
   "activationEvents": [
     "onCommand:neo3-visual-devtracker.nxp3.create",
+    "onCommand:neo3-visual-devtracker.nxp3.reset",
     "onCommand:neo3-visual-devtracker.nxp3.run",
     "onCommand:neo3-visual-devtracker.nxp3.transfer",
     "onCommand:neo3-visual-devtracker.nxp3.walletCreate",
@@ -54,6 +55,11 @@
       {
         "command": "neo3-visual-devtracker.nxp3.create",
         "title": "Create instance",
+        "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.nxp3.reset",
+        "title": "Reset instance",
         "category": "Neo Express 3"
       },
       {
@@ -87,6 +93,10 @@
     ],
     "menus": {
       "view/item/context": [
+        {
+          "command": "neo3-visual-devtracker.nxp3.reset",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+        },
         {
           "command": "neo3-visual-devtracker.nxp3.run",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3",
