@@ -1,0 +1,51 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "safe-purchase/0.5.64-preview": {
+        "dependencies": {
+          "Neo.SmartContract.Framework": "3.0.0-preview3",
+          "Nerdbank.GitVersioning": "3.1.91"
+        },
+        "runtime": {
+          "safe-purchase.dll": {}
+        }
+      },
+      "Neo.SmartContract.Framework/3.0.0-preview3": {
+        "runtime": {
+          "lib/netstandard2.1/Neo.SmartContract.Framework.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      },
+      "Nerdbank.GitVersioning/3.1.91": {}
+    }
+  },
+  "libraries": {
+    "safe-purchase/0.5.64-preview": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Neo.SmartContract.Framework/3.0.0-preview3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-bQDQX9cctusw0vzBxkkdwvFz4aZBo5xgWN+LyYf6DxlOHTyJzjqIJ8bmg9ZYckE2lls+v70NBdoFwg8G3Tygfw==",
+      "path": "neo.smartcontract.framework/3.0.0-preview3",
+      "hashPath": "neo.smartcontract.framework.3.0.0-preview3.nupkg.sha512"
+    },
+    "Nerdbank.GitVersioning/3.1.91": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-eQI9TrHjxDtM4eUtl8zCAT5DGtQgZ6mpRd/qkHBEWUeLK/cn1wXnTdJ/6ffs5tlFDP1mEmGHc//wUzFdfr4Eiw==",
+      "path": "nerdbank.gitversioning/3.1.91",
+      "hashPath": "nerdbank.gitversioning.3.1.91.nupkg.sha512"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "neo.neon": {
+      "version": "3.0.0-preview3",
+      "commands": ["neon"]
+    }
+  }
+}
