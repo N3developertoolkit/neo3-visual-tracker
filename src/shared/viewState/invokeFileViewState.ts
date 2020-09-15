@@ -2,9 +2,9 @@ type InvokeFileViewState = {
   view: "invokeFile";
   panelTitle: string;
   fileContents: {
-    contract: string;
+    contract?: string;
     operation?: string;
-    args: (string | number)[];
+    args?: (string | number)[];
   }[];
   errorText: string;
 };
