@@ -5,6 +5,7 @@ import BlockchainType from "./views/blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
+import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
 import TrackerCommands from "./trackerCommands";
 
 function registerBlockchainInstanceCommand(
@@ -33,6 +34,7 @@ function registerBlockchainInstanceCommand(
 export async function activate(context: vscode.ExtensionContext) {
   const blockchainsExplorer = await BlockchainsExplorer.create();
   const neoExpress = new NeoExpress(context);
+  const neoInvokeFileEditor = new NeoInvokeFileEditor(context);
 
   context.subscriptions.push(blockchainsExplorer);
 
@@ -57,6 +59,13 @@ export async function activate(context: vscode.ExtensionContext) {
       async () => {
         await NeoExpressCommands.create(context, neoExpress);
       }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerCustomEditorProvider(
+      "neo3-visual-devtracker.nxp3.neo-invoke-json",
+      neoInvokeFileEditor
     )
   );
 

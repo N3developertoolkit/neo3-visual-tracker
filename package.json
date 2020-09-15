@@ -24,12 +24,13 @@
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
   },
   "activationEvents": [
-    "onView:neo3-visual-devtracker.blockchainsExplorer",
     "onCommand:neo3-visual-devtracker.nxp3.create",
     "onCommand:neo3-visual-devtracker.nxp3.run",
     "onCommand:neo3-visual-devtracker.nxp3.transfer",
     "onCommand:neo3-visual-devtracker.nxp3.walletCreate",
-    "onCommand:neo3-visual-devtracker.tracker.openTracker"
+    "onCommand:neo3-visual-devtracker.tracker.openTracker",
+    "onCustomEditor:neo3-visual-devtracker.nxp3.neo-invoke-json",
+    "onView:neo3-visual-devtracker.blockchainsExplorer"
   ],
   "keywords": [
     "Neo",
@@ -37,6 +38,18 @@
   ],
   "main": "./dist/extension/index.js",
   "contributes": {
+    "customEditors": [
+      {
+        "viewType": "neo3-visual-devtracker.nxp3.neo-invoke-json",
+        "displayName": "Neo Express Contract Invoke File Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.neo-invoke.json"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
     "commands": [
       {
         "command": "neo3-visual-devtracker.nxp3.create",

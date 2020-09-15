@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 
 import ControllerRequest from "../shared/messages/controllerRequest";
+import InvokeFile from "./views/InvokeFile";
+import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
 import Tracker from "./views/Tracker";
 import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
@@ -40,6 +42,13 @@ export default function ViewRouter() {
       return (
         <Tracker
           viewState={viewState as TrackerViewState}
+          postMessage={(typedRequest) => postMessage({ typedRequest })}
+        />
+      );
+    case "invokeFile":
+      return (
+        <InvokeFile
+          viewState={viewState as InvokeFileViewState}
           postMessage={(typedRequest) => postMessage({ typedRequest })}
         />
       );

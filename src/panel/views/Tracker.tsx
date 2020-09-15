@@ -5,8 +5,8 @@ import BlockList from "../components/BlockList";
 import BlockNavigation from "../components/BlockNavigation";
 import Dialog from "../components/Dialog";
 import Search from "../components/Search";
-import TrackerViewState from "../../shared/viewState/trackerViewState";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
+import TrackerViewState from "../../shared/viewState/trackerViewState";
 
 type Props = {
   viewState: TrackerViewState;

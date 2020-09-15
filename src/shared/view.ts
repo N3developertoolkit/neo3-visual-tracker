@@ -1,3 +1,3 @@
-type View = "tracker" | "transfer" /* | ... */;
+type View = "invokeFile" | "tracker" /* | ... */;
 
 export default View;
