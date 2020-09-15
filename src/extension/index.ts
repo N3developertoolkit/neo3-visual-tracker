@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "./views/blockchainIdentifier";
 import BlockchainType from "./views/blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
+import ContractDetector from "./contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
@@ -33,10 +34,12 @@ function registerBlockchainInstanceCommand(
 
 export async function activate(context: vscode.ExtensionContext) {
   const blockchainsExplorer = await BlockchainsExplorer.create();
+  const contractDetector = new ContractDetector();
   const neoExpress = new NeoExpress(context);
   const neoInvokeFileEditor = new NeoInvokeFileEditor(context);
 
   context.subscriptions.push(blockchainsExplorer);
+  context.subscriptions.push(contractDetector);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
