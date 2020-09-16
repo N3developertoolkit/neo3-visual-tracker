@@ -36,7 +36,10 @@ export async function activate(context: vscode.ExtensionContext) {
   const blockchainsExplorer = await BlockchainsExplorer.create();
   const contractDetector = new ContractDetector();
   const neoExpress = new NeoExpress(context);
-  const neoInvokeFileEditor = new NeoInvokeFileEditor(context);
+  const neoInvokeFileEditor = new NeoInvokeFileEditor(
+    context,
+    blockchainsExplorer
+  );
 
   context.subscriptions.push(blockchainsExplorer);
   context.subscriptions.push(contractDetector);
@@ -77,7 +80,12 @@ export async function activate(context: vscode.ExtensionContext) {
     "nxp3",
     blockchainsExplorer,
     "neo3-visual-devtracker.nxp3.contractDeploy",
-    (identifier) => NeoExpressCommands.contractDeploy(neoExpress, identifier, contractDetector)
+    (identifier) =>
+      NeoExpressCommands.contractDeploy(
+        neoExpress,
+        identifier,
+        contractDetector
+      )
   );
 
   registerBlockchainInstanceCommand(

@@ -1,8 +1,11 @@
+import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
-import PanelControllerBase from "./panelControllerBase";
+import BlockchainsExplorer from "../views/blockchainsExplorer";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
+import IoHelpers from "../ioHelpers";
+import PanelControllerBase from "./panelControllerBase";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
 
@@ -10,12 +13,14 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewState,
   InvokeFileViewRequest
 > {
-  private closed: boolean;
   private changeWatcher: vscode.Disposable | null;
+  private closed: boolean;
+  private rpcClient: neonCore.rpc.RPCClient | null;
 
   constructor(
     context: vscode.ExtensionContext,
     private readonly document: vscode.TextDocument,
+    private readonly blockchainsExplorer: BlockchainsExplorer,
     panel: vscode.WebviewPanel
   ) {
     super(
@@ -24,6 +29,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         panelTitle: "Loading...",
         fileContents: [],
         errorText: "",
+        connectedTo: "",
       },
       context,
       panel
@@ -35,6 +41,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         this.onFileUpdate();
       }
     });
+    this.rpcClient = null;
   }
 
   onClose() {
@@ -49,6 +56,34 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     if (request.dismissError) {
       await this.onFileUpdate();
     }
+    if (request.initiateConnection) {
+      const blockchain = await this.blockchainsExplorer.select();
+      let rpcUrl = blockchain?.rpcUrls[0];
+      if ((blockchain?.rpcUrls.length || 0) > 1) {
+        rpcUrl = await IoHelpers.multipleChoice(
+          "Select an RPC server",
+          ...blockchain?.rpcUrls
+        );
+      }
+      if (rpcUrl) {
+        this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
+        this.updateViewState({ connectedTo: blockchain?.name });
+        await this.onConnectOrDisconnect();
+      } else {
+        this.rpcClient = null;
+        this.updateViewState({ connectedTo: "" });
+        await this.onConnectOrDisconnect();
+      }
+    }
+    if (request.disconnect) {
+      this.rpcClient = null;
+      this.updateViewState({ connectedTo: "" });
+      await this.onConnectOrDisconnect();
+    }
+  }
+
+  private async onConnectOrDisconnect() {
+    // TODO
   }
 
   private async onFileUpdate() {

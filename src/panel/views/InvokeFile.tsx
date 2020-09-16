@@ -1,6 +1,7 @@
 import React from "react";
 
 import Dialog from "../components/Dialog";
+import InvocationConnection from "../components/InvocationConnection";
 import InvocationStep from "../components/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
@@ -54,7 +55,11 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           padding: 10,
         }}
       >
-        Instructions, etc.
+        <InvocationConnection
+          connectedTo={viewState.connectedTo}
+          initiateConnection={() => postMessage({ initiateConnection: true })}
+          disconnect={() => postMessage({ disconnect: true })}
+        />
       </div>
     </div>
   );

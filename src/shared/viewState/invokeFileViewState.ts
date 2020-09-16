@@ -7,6 +7,7 @@ type InvokeFileViewState = {
     args?: (string | number)[];
   }[];
   errorText: string;
+  connectedTo: string;
 };
 
 export default InvokeFileViewState;
