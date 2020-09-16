@@ -1,10 +1,51 @@
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../views/blockchainIdentifier";
+import ContractDetector from "../contractDetector";
 import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
 
 export default class NeoExpressCommands {
+  static async contractDeploy(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier,
+    contractDetector: ContractDetector
+  ) {
+    if (identifer.blockchainType !== "nxp3") {
+      return;
+    }
+    if (!contractDetector.contracts.length) {
+      vscode.window.showErrorMessage(
+        "No compiled contracts (*.nef files) were found in the current workspace."
+      );
+      return;
+    }
+    const account = await IoHelpers.multipleChoice(
+      "Select an account...",
+      "genesis",
+      ...identifer.wallets
+    );
+    if (!account) {
+      return;
+    }
+    const contractFile = await IoHelpers.multipleChoiceFiles(
+      `Use account "${account}" to deploy...`,
+      ...contractDetector.contracts
+    );
+    if (!contractFile) {
+      return;
+    }
+    const output = neoExpress.runSync(
+      "contract",
+      "deploy",
+      contractFile,
+      account,
+      "-i",
+      identifer.configPath
+    );
+    NeoExpressCommands.showResult(output);
+  }
+
   static async create(
     context: vscode.ExtensionContext,
     neoExpress: NeoExpress
@@ -162,7 +203,9 @@ export default class NeoExpressCommands {
     if (output.isError) {
       vscode.window.showErrorMessage(output.message || "Unknown error");
     } else {
-      vscode.window.showInformationMessage(output.message || "Command succeeded");
+      vscode.window.showInformationMessage(
+        output.message || "Command succeeded"
+      );
     }
   }
 }

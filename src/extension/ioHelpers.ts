@@ -1,3 +1,4 @@
+import * as path from "path";
 import * as vscode from "vscode";
 
 export default class IoHelpers {
@@ -23,6 +24,17 @@ export default class IoHelpers {
       canPickMany: false,
       placeHolder,
     });
+  }
+
+  static async multipleChoiceFiles(placeHolder: string, ...items: string[]) {
+    const selection = await vscode.window.showQuickPick(
+      items.map((_) => ({ detail: _, label: path.basename(_) })),
+      {
+        canPickMany: false,
+        placeHolder,
+      }
+    );
+    return selection?.detail || "";
   }
 
   static async pickFolder(

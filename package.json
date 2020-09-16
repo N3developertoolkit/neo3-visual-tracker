@@ -24,6 +24,7 @@
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
   },
   "activationEvents": [
+    "onCommand:neo3-visual-devtracker.nxp3.contractDeploy",
     "onCommand:neo3-visual-devtracker.nxp3.create",
     "onCommand:neo3-visual-devtracker.nxp3.reset",
     "onCommand:neo3-visual-devtracker.nxp3.run",
@@ -52,6 +53,11 @@
       }
     ],
     "commands": [
+      {
+        "command": "neo3-visual-devtracker.nxp3.contractDeploy",
+        "title": "Deploy contract",
+        "category": "Neo Express 3"
+      },
       {
         "command": "neo3-visual-devtracker.nxp3.create",
         "title": "Create instance",
@@ -93,6 +99,10 @@
     ],
     "menus": {
       "view/item/context": [
+        {
+          "command": "neo3-visual-devtracker.nxp3.contractDeploy",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+        },
         {
           "command": "neo3-visual-devtracker.nxp3.reset",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
