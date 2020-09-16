@@ -6,6 +6,7 @@ type InvokeFileViewState = {
     operation?: string;
     args?: (string | number)[];
   }[];
+  contracts: any[];
   errorText: string;
   connectedTo: string;
 };

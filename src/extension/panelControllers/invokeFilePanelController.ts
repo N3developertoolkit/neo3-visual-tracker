@@ -1,10 +1,13 @@
 import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
+import BlockchainIdentifier from "../views/blockchainIdentifier";
 import BlockchainsExplorer from "../views/blockchainsExplorer";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
+import NeoExpress from "../neoExpress/neoExpress";
+import NeoExpressIo from "../neoExpress/neoExpressIo";
 import PanelControllerBase from "./panelControllerBase";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
@@ -16,9 +19,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   private changeWatcher: vscode.Disposable | null;
   private closed: boolean;
   private rpcClient: neonCore.rpc.RPCClient | null;
+  private blockchainIdentifier: BlockchainIdentifier | null;
 
   constructor(
     context: vscode.ExtensionContext,
+    private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
     private readonly blockchainsExplorer: BlockchainsExplorer,
     panel: vscode.WebviewPanel
@@ -28,6 +33,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Loading...",
         fileContents: [],
+        contracts: [],
         errorText: "",
         connectedTo: "",
       },
@@ -42,6 +48,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
     });
     this.rpcClient = null;
+    this.blockchainIdentifier = null;
   }
 
   onClose() {
@@ -57,17 +64,18 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.onFileUpdate();
     }
     if (request.initiateConnection) {
-      const blockchain = await this.blockchainsExplorer.select();
-      let rpcUrl = blockchain?.rpcUrls[0];
-      if ((blockchain?.rpcUrls.length || 0) > 1) {
+      this.blockchainIdentifier =
+        (await this.blockchainsExplorer.select()) || null;
+      let rpcUrl = this.blockchainIdentifier?.rpcUrls[0];
+      if ((this.blockchainIdentifier?.rpcUrls.length || 0) > 1) {
         rpcUrl = await IoHelpers.multipleChoice(
           "Select an RPC server",
-          ...blockchain?.rpcUrls
+          ...this.blockchainIdentifier?.rpcUrls
         );
       }
       if (rpcUrl) {
         this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
-        this.updateViewState({ connectedTo: blockchain?.name });
+        this.updateViewState({ connectedTo: this.blockchainIdentifier?.name });
         await this.onConnectOrDisconnect();
       } else {
         this.rpcClient = null;
@@ -77,13 +85,23 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
     if (request.disconnect) {
       this.rpcClient = null;
+      this.blockchainIdentifier = null;
       this.updateViewState({ connectedTo: "" });
       await this.onConnectOrDisconnect();
     }
   }
 
   private async onConnectOrDisconnect() {
-    // TODO
+    if (this.blockchainIdentifier?.blockchainType === "nxp3") {
+      this.updateViewState({
+        contracts: await NeoExpressIo.getDeployedContracts(
+          this.neoExpress,
+          this.blockchainIdentifier
+        ),
+      });
+    } else {
+      this.updateViewState({ contracts: [] });
+    }
   }
 
   private async onFileUpdate() {
