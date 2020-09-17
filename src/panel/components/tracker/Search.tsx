@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import NavButton from "./NavButton";
+import NavButton from "../NavButton";
 
 type Props = {
   searchHistory: string[];

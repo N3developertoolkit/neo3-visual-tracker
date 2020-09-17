@@ -1,10 +1,10 @@
 import React from "react";
 
-import AddressDetails from "../components/AddressDetails";
-import BlockList from "../components/BlockList";
-import BlockNavigation from "../components/BlockNavigation";
+import AddressDetails from "../components/tracker/AddressDetails";
+import BlockList from "../components/tracker/BlockList";
+import BlockNavigation from "../components/tracker/BlockNavigation";
 import Dialog from "../components/Dialog";
-import Search from "../components/Search";
+import Search from "../components/tracker/Search";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 

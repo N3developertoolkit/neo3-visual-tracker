@@ -1,7 +1,7 @@
 import React from "react";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
-import NavButton from "./NavButton";
+import NavButton from "../NavButton";
 
 type Props = {
   blocks: BlockJson[];

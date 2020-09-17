@@ -1,6 +1,6 @@
 import React from "react";
 
-import AddressInfo from "../../shared/addressInfo";
+import AddressInfo from "../../../shared/addressInfo";
 
 type Props = {
   addressInfo: AddressInfo;

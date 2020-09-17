@@ -2,9 +2,9 @@ import React from "react";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
 import BlockDetails from "./BlockDetails";
-import Hash from "./Hash";
-import Table from "./Table";
-import Time from "./Time";
+import Hash from "../Hash";
+import Table from "../Table";
+import Time from "../Time";
 
 type Props = {
   blocks: BlockJson[];

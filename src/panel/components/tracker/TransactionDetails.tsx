@@ -1,9 +1,9 @@
 import React from "react";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
-import Hash from "./Hash";
-import MetadataBadge from "./MetadataBadge";
-import NavLink from "./NavLink";
+import Hash from "../Hash";
+import MetadataBadge from "../MetadataBadge";
+import NavLink from "../NavLink";
 
 type Props = {
   transaction: TransactionJson;

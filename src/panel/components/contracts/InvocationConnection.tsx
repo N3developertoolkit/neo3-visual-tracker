@@ -1,6 +1,6 @@
 import React from "react";
 
-import NavButton from "./NavButton";
+import NavButton from "../NavButton";
 
 type Props = {
   connectedTo: string;

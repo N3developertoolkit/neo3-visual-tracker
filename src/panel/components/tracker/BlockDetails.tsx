@@ -1,10 +1,10 @@
 import React from "react";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 
-import Hash from "./Hash";
-import MetadataBadge from "./MetadataBadge";
-import Table from "./Table";
-import Time from "./Time";
+import Hash from "../Hash";
+import MetadataBadge from "../MetadataBadge";
+import Table from "../Table";
+import Time from "../Time";
 import TransactionDetails from "./TransactionDetails";
 
 type Props = {

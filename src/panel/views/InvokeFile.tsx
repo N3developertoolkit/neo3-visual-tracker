@@ -1,8 +1,8 @@
 import React from "react";
 
 import Dialog from "../components/Dialog";
-import InvocationConnection from "../components/InvocationConnection";
-import InvocationStep from "../components/InvocationStep";
+import InvocationConnection from "../components/contracts/InvocationConnection";
+import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 
