@@ -1,12 +1,25 @@
 import React from "react";
+import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+
+import ContractInput from "./ContractInput";
 
 type Props = {
   contract?: string;
   operation?: string;
   args?: (string | number)[];
+  baseHref: string;
+  contracts: { [hashOrNefFile: string]: ContractManifestJson };
+  nefHints: { [hash: string]: string };
 };
 
-export default function InvocationStep({ contract, operation, args }: Props) {
+export default function InvocationStep({
+  contract,
+  operation,
+  args,
+  baseHref,
+  contracts,
+  nefHints,
+}: Props) {
   return (
     <div
       style={{
@@ -17,7 +30,13 @@ export default function InvocationStep({ contract, operation, args }: Props) {
         padding: 10,
       }}
     >
-      <div>{contract}</div>
+      <ContractInput
+        contract={contract}
+        baseHref={baseHref}
+        contracts={contracts}
+        nefHints={nefHints}
+        setContract={() => {}}
+      />
       <div>{operation}</div>
       <div>{args}</div>
     </div>

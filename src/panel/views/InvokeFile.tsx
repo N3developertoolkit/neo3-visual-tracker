@@ -44,6 +44,9 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             contract={_.contract}
             operation={_.operation}
             args={_.args}
+            baseHref={viewState.baseHref}
+            contracts={viewState.contracts}
+            nefHints={viewState.nefHints}
           />
         ))}
       </div>
