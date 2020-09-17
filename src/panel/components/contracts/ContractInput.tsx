@@ -11,10 +11,6 @@ type Props = {
 
 export default function ContractInput({
   contract,
-  baseHref,
-  contracts,
-  nefHints,
-  setContract,
 }: Props) {
   return <div>{contract}</div>;
 }
