@@ -21,7 +21,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewRequest
 > {
   private changeWatcher: vscode.Disposable | null;
-  private closed: boolean;
   private rpcClient: neonCore.rpc.RPCClient | null;
   private blockchainIdentifier: BlockchainIdentifier | null;
 
@@ -49,7 +48,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       panel
     );
     this.onFileUpdate();
-    this.closed = false;
     this.changeWatcher = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document.uri.toString() === document.uri.toString()) {
         this.onFileUpdate();
@@ -61,7 +59,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   onClose() {
-    this.closed = true;
     if (this.changeWatcher) {
       this.changeWatcher.dispose();
       this.changeWatcher = null;
@@ -104,7 +101,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async refreshLoop() {
-    if (this.closed) {
+    if (this.isClosed) {
       return;
     }
     try {
@@ -184,7 +181,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async onFileUpdate() {
-    if (this.closed) {
+    if (this.isClosed) {
       return;
     }
     try {

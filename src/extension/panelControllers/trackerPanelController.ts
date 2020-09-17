@@ -30,8 +30,6 @@ export default class TrackerPanelController extends PanelControllerBase<
   private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
 
-  private closed: boolean;
-
   constructor(context: vscode.ExtensionContext, rpcUrl: string) {
     super(
       {
@@ -48,7 +46,6 @@ export default class TrackerPanelController extends PanelControllerBase<
       },
       context
     );
-    this.closed = false;
     this.cachedBlocks = [];
     this.cachedTransactions = [];
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
@@ -57,9 +54,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.refreshLoop();
   }
 
-  onClose() {
-    this.closed = true;
-  }
+  onClose() {}
 
   protected async onRequest(request: TrackerViewRequest) {
     if (request.search) {
@@ -310,7 +305,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async refreshLoop() {
-    if (this.closed) {
+    if (this.isClosed) {
       return;
     }
     try {

@@ -12,7 +12,13 @@ export default abstract class PanelControllerBase<
   TViewState extends ViewStateBase,
   TViewRequest
 > {
+  protected get isClosed() {
+    return this.closed;
+  }
+
   protected viewState: TViewState;
+
+  private closed: boolean;
 
   private readonly postMessage: (request: ControllerRequest) => void;
 
@@ -23,6 +29,7 @@ export default abstract class PanelControllerBase<
     context: vscode.ExtensionContext,
     panel?: vscode.WebviewPanel
   ) {
+    this.closed = false;
     this.viewState = { ...initialViewState };
     if (!panel) {
       panel = vscode.window.createWebviewPanel(
@@ -32,8 +39,15 @@ export default abstract class PanelControllerBase<
         { enableScripts: true }
       );
       context.subscriptions.push(panel);
-      panel.onDidDispose(() => this.onClose(), this, context.subscriptions);
     }
+    panel.onDidDispose(
+      () => {
+        this.closed = true;
+        this.onClose();
+      },
+      null,
+      context.subscriptions
+    );
     panel.iconPath = vscode.Uri.file(
       path.join(context.extensionPath, "resources", "neo-logo.png")
     );
@@ -68,6 +82,9 @@ export default abstract class PanelControllerBase<
   protected abstract onRequest(request: TViewRequest): void;
 
   protected updateViewState(updates: Partial<TViewState>) {
+    if (this.closed) {
+      return;
+    }
     if (updates.panelTitle !== undefined) {
       this.setTitle(updates.panelTitle);
     }
