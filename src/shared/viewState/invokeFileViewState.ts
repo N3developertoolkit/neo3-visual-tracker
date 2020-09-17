@@ -13,6 +13,7 @@ type InvokeFileViewState = {
   nefHints: { [hash: string]: string };
   errorText: string;
   connectedTo: string;
+  connectionState: "ok" | "connecting" | "none";
 };
 
 export default InvokeFileViewState;

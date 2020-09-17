@@ -45,8 +45,7 @@ export default class NeoExpressIo {
       identifer.configPath
     );
     if (output.isError) {
-      console.warn(LOG_PREFIX, `List contract error: ${output.message}`);
-      return [];
+      throw Error(`List contract invoke error: ${output.message}`);
     }
     try {
       // TODO: This is a hack. Consider either:
@@ -57,7 +56,7 @@ export default class NeoExpressIo {
         .filter((_) => !!_?.trim())
         .map((_) => JSON.parse("{" + _ + "}") as ContractManifestJson);
     } catch (e) {
-      throw Error(`List contract error: ${e.message}`);
+      throw Error(`List contract parse error: ${e.message}`);
     }
   }
 }

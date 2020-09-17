@@ -4,12 +4,14 @@ import NavButton from "../NavButton";
 
 type Props = {
   connectedTo: string;
+  connectionState: "ok" | "connecting" | "none";
   initiateConnection: () => void;
   disconnect: () => void;
 };
 
 export default function InvocationConnection({
   connectedTo,
+  connectionState,
   initiateConnection,
   disconnect,
 }: Props) {
@@ -17,10 +19,22 @@ export default function InvocationConnection({
     <div style={{ textAlign: "center" }}>
       {!!connectedTo && (
         <>
-          <p>
-            Connected to <strong>{connectedTo}</strong>
-          </p>
-          <NavButton onClick={disconnect}>Disconnect</NavButton>
+          {connectionState === "ok" && (
+            <>
+              <p>
+                Connected to <strong>{connectedTo}</strong>
+              </p>
+              <NavButton onClick={disconnect}>Disconnect</NavButton>
+            </>
+          )}
+          {connectionState === "connecting" && (
+            <>
+              <p>
+                Connecting to <strong>{connectedTo}</strong>&hellip;
+              </p>
+              <NavButton onClick={disconnect}>Cancel</NavButton>
+            </>
+          )}
         </>
       )}
       {!connectedTo && (

@@ -60,6 +60,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       >
         <InvocationConnection
           connectedTo={viewState.connectedTo}
+          connectionState={viewState.connectionState}
           initiateConnection={() => postMessage({ initiateConnection: true })}
           disconnect={() => postMessage({ disconnect: true })}
         />
