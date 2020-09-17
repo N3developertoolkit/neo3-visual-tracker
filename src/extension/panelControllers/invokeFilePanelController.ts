@@ -42,7 +42,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         errorText: "",
         connectedTo: "",
         connectionState: "none",
-        baseHref: path.dirname(document.uri.fsPath),
       },
       context,
       panel
@@ -98,6 +97,26 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       this.updateViewState({ connectedTo: "", connectionState: "none" });
       await this.updateReleventContractManifests();
     }
+    if (request.update !== undefined) {
+      let newFileContents = this.viewState.fileContents.map((invocation, i) => {
+        if (i === request.update?.i) {
+          return {
+            contract: request.update.contract,
+            operation: request.update.operation,
+            args: request.update.args,
+          };
+        } else {
+          return invocation;
+        }
+      });
+      const edit = new vscode.WorkspaceEdit();
+      edit.replace(
+        this.document.uri,
+        new vscode.Range(0, 0, this.document.lineCount, 0),
+        JSON.stringify(newFileContents)
+      );
+      await vscode.workspace.applyEdit(edit);
+    }
   }
 
   private async refreshLoop() {
@@ -112,6 +131,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async updateReleventContractManifests() {
+    const baseHref = path.dirname(this.document.uri.fsPath);
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
     const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     if (this.blockchainIdentifier?.blockchainType === "nxp3") {
@@ -135,10 +155,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             nefFile
           );
           this.updateViewState({ connectionState: "ok" });
-          const nefFileRelativePath = path.relative(
-            this.viewState.baseHref,
-            nefFile
-          );
+          const nefFileRelativePath = path.relative(baseHref, nefFile);
           if (manifest) {
             contracts[nefFileRelativePath] = manifest;
             nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || {};
@@ -151,7 +168,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
       for (const nefFile of this.viewState.fileContents
         .filter((_) => !_.contract?.startsWith("0x"))
-        .map((_) => path.join(this.viewState.baseHref, _.contract || ""))) {
+        .map((_) => path.join(baseHref, _.contract || ""))) {
         try {
           const manifest = await NeoExpressIo.contractGet(
             this.neoExpress,

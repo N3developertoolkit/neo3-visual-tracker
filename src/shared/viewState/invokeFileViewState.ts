@@ -8,7 +8,6 @@ type InvokeFileViewState = {
     operation?: string;
     args?: (string | number)[];
   }[];
-  baseHref: string;
   contracts: { [hashOrNefFile: string]: ContractManifestJson };
   nefHints: { [hash: string]: { [nefPath: string]: boolean } };
   errorText: string;

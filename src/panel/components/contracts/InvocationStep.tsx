@@ -7,18 +7,22 @@ type Props = {
   contract?: string;
   operation?: string;
   args?: (string | number)[];
-  baseHref: string;
   contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: string };
+  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  onUpdate: (
+    contract?: string,
+    operation?: string,
+    args?: (string | number)[]
+  ) => void;
 };
 
 export default function InvocationStep({
   contract,
   operation,
   args,
-  baseHref,
   contracts,
   nefHints,
+  onUpdate,
 }: Props) {
   return (
     <div
@@ -32,10 +36,11 @@ export default function InvocationStep({
     >
       <ContractInput
         contract={contract}
-        baseHref={baseHref}
         contracts={contracts}
         nefHints={nefHints}
-        setContract={() => {}}
+        setContract={(newContract: string) =>
+          onUpdate(newContract, operation, args)
+        }
       />
       <div>{operation}</div>
       <div>{args}</div>

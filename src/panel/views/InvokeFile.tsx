@@ -39,14 +39,18 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           padding: 10,
         }}
       >
-        {viewState.fileContents.map((_) => (
+        {viewState.fileContents.map((_, i) => (
           <InvocationStep
             contract={_.contract}
             operation={_.operation}
             args={_.args}
-            baseHref={viewState.baseHref}
             contracts={viewState.contracts}
             nefHints={viewState.nefHints}
+            onUpdate={(contract, operation, args) =>
+              postMessage({
+                update: { i, contract, operation, args },
+              })
+            }
           />
         ))}
       </div>
