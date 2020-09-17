@@ -1,3 +1,5 @@
+import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+
 type InvokeFileViewState = {
   view: "invokeFile";
   panelTitle: string;
@@ -6,7 +8,9 @@ type InvokeFileViewState = {
     operation?: string;
     args?: (string | number)[];
   }[];
-  contracts: any[];
+  baseHref: string;
+  contracts: { [hashOrNefFile: string]: ContractManifestJson };
+  nefHints: { [hash: string]: string };
   errorText: string;
   connectedTo: string;
 };

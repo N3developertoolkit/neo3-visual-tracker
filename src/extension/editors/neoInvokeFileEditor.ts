@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainsExplorer from "../views/blockchainsExplorer";
+import ContractDetector from "../contractDetector";
 import InvokeFilePanelController from "../panelControllers/invokeFilePanelController";
 import NeoExpress from "../neoExpress/neoExpress";
 
@@ -9,7 +10,8 @@ export default class NeoInvokeFileEditor
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly blockchainsExplorer: BlockchainsExplorer,
-    private readonly neoExpress: NeoExpress
+    private readonly neoExpress: NeoExpress,
+    private readonly contractDetector: ContractDetector
   ) {}
 
   resolveCustomTextEditor(
@@ -22,6 +24,7 @@ export default class NeoInvokeFileEditor
       this.neoExpress,
       document,
       this.blockchainsExplorer,
+      this.contractDetector,
       panel
     );
   }

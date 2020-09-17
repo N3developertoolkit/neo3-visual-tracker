@@ -1,8 +1,11 @@
 import * as neonCore from "@cityofzion/neon-core";
+import * as path from "path";
 import * as vscode from "vscode";
+import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../views/blockchainIdentifier";
 import BlockchainsExplorer from "../views/blockchainsExplorer";
+import ContractDetector from "../contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
@@ -26,6 +29,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
     private readonly blockchainsExplorer: BlockchainsExplorer,
+    private readonly contractDetector: ContractDetector,
     panel: vscode.WebviewPanel
   ) {
     super(
@@ -33,9 +37,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Loading...",
         fileContents: [],
-        contracts: [],
+        contracts: {},
+        nefHints: {},
         errorText: "",
         connectedTo: "",
+        baseHref: path.dirname(document.uri.fsPath),
       },
       context,
       panel
@@ -92,16 +98,58 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async onConnectOrDisconnect() {
+    const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
+    const nefHints: { [hash: string]: string } = {};
     if (this.blockchainIdentifier?.blockchainType === "nxp3") {
-      this.updateViewState({
-        contracts: await NeoExpressIo.getDeployedContracts(
-          this.neoExpress,
-          this.blockchainIdentifier
-        ),
-      });
-    } else {
-      this.updateViewState({ contracts: [] });
+      const deployedContracts = await NeoExpressIo.contractList(
+        this.neoExpress,
+        this.blockchainIdentifier
+      );
+      for (const deployedContract of deployedContracts) {
+        contracts[deployedContract.abi.hash] = deployedContract;
+      }
+      for (const nefFile of this.contractDetector.contracts) {
+        try {
+          const manifest = await NeoExpressIo.contractGet(
+            this.neoExpress,
+            this.blockchainIdentifier,
+            nefFile
+          );
+          if (manifest) {
+            contracts[nefFile] = manifest;
+            nefHints[manifest.abi.hash] = nefFile;
+          }
+        } catch (e) {}
+      }
+      for (const nefFile of this.viewState.fileContents
+        .filter((_) => !_.contract?.startsWith("0x"))
+        .map((_) => path.join(this.viewState.baseHref, _.contract || ""))) {
+        try {
+          const manifest = await NeoExpressIo.contractGet(
+            this.neoExpress,
+            this.blockchainIdentifier,
+            nefFile
+          );
+          if (manifest) {
+            contracts[nefFile] = manifest;
+            nefHints[manifest.abi.hash] = nefFile;
+          }
+        } catch (e) {}
+      }
     }
+    if (this.rpcClient) {
+      for (const contractHash of this.viewState.fileContents
+        .filter((_) => _.contract?.startsWith("0x"))
+        .map((_) => _.contract || "")) {
+        try {
+          const manifest = (
+            await this.rpcClient.getContractState(contractHash)
+          ).toJson();
+          contracts[contractHash] = manifest;
+        } catch (e) {}
+      }
+    }
+    this.updateViewState({ contracts, nefHints });
   }
 
   private async onFileUpdate() {
@@ -117,7 +165,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         });
       } catch {
         this.updateViewState({
-          errorText: `There was parsing ${this.document.uri.fsPath}, try opening the file using the built-in editor and confirm that it contains valid JSON.`,
+          errorText: `There was a problem parsing "${path.basename(
+            this.document.uri.fsPath
+          )}", try opening the file using the built-in editor and confirm that it contains valid JSON.`,
         });
         return;
       }
