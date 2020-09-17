@@ -113,7 +113,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
 
   private async updateReleventContractManifests() {
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
-    const nefHints: { [hash: string]: string } = {};
+    const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     if (this.blockchainIdentifier?.blockchainType === "nxp3") {
       try {
         const deployedContracts = await NeoExpressIo.contractList(
@@ -135,9 +135,15 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             nefFile
           );
           this.updateViewState({ connectionState: "ok" });
+          const nefFileRelativePath = path.relative(
+            this.viewState.baseHref,
+            nefFile
+          );
           if (manifest) {
-            contracts[nefFile] = manifest;
-            nefHints[manifest.abi.hash] = nefFile;
+            contracts[nefFileRelativePath] = manifest;
+            nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || {};
+            nefHints[manifest.abi.hash][nefFileRelativePath] = true;
+            nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
           this.updateViewState({ connectionState: "connecting" });
@@ -155,7 +161,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           this.updateViewState({ connectionState: "ok" });
           if (manifest) {
             contracts[nefFile] = manifest;
-            nefHints[manifest.abi.hash] = nefFile;
+            nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || [];
+            nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
           this.updateViewState({ connectionState: "connecting" });
