@@ -1,22 +1,20 @@
 import React, { useState } from "react";
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
 
-import ContractTile from "./ContractTile";
+import OperationTile from "./OperationTile";
 
 type Props = {
   style?: React.CSSProperties;
-  contract?: string;
-  contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
-  setContract: (newValue: string) => void;
+  operation?: string;
+  operations: ContractMethodDefinitionJson[];
+  setOperation: (newValue: string) => void;
 };
 
-export default function ContractInput({
+export default function OperationInput({
   style,
-  contract,
-  contracts,
-  nefHints,
-  setContract,
+  operation,
+  operations,
+  setOperation,
 }: Props) {
   const [hasFocus, setHasFocus] = useState(false);
   const inputStyle: React.CSSProperties = {
@@ -25,8 +23,8 @@ export default function ContractInput({
     border: "1px solid var(--vscode-input-border)",
     boxSizing: "border-box",
     width: "calc(100% - 15px)",
-    fontSize: "1.1rem",
-    padding: 5,
+    fontSize: "0.9rem",
+    padding: 2,
     marginTop: 5,
     marginLeft: 15,
   };
@@ -41,28 +39,26 @@ export default function ContractInput({
     maxHeight: "80vh",
     overflow: "auto",
   };
-  const contractManifests = Object.values(contracts);
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
-        <strong>Contract:</strong>
+        <strong>Operation:</strong>
       </div>
       <input
         style={inputStyle}
         type="text"
-        value={contract}
-        onChange={(e) => setContract(e.target.value)}
+        value={operation}
+        onChange={(e) => setOperation(e.target.value)}
         onFocus={() => setHasFocus(true)}
         onBlur={() => setHasFocus(false)}
       />
-      {hasFocus && !!contractManifests.length && (
+      {hasFocus && !!operations.length && (
         <div style={dropdownStyle}>
-          {contractManifests.map((manifest) => (
-            <ContractTile
-              key={manifest.abi.hash}
-              manifest={manifest}
-              nefHints={nefHints}
-              onMouseDown={setContract}
+          {operations.map((operation) => (
+            <OperationTile
+              key={operation.name}
+              operation={operation}
+              onMouseDown={setOperation}
             />
           ))}
         </div>

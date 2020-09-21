@@ -1,7 +1,11 @@
 import React from "react";
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import {
+  ContractManifestJson,
+  ContractMethodDefinitionJson,
+} from "@cityofzion/neon-core/lib/sc";
 
 import ContractInput from "./ContractInput";
+import OperationInput from "./OperationInput";
 
 type Props = {
   contract?: string;
@@ -24,6 +28,10 @@ export default function InvocationStep({
   nefHints,
   onUpdate,
 }: Props) {
+  let operations: ContractMethodDefinitionJson[] = [];
+  if (contract && contracts[contract]) {
+    operations = contracts[contract].abi.methods;
+  }
   return (
     <div
       style={{
@@ -35,6 +43,7 @@ export default function InvocationStep({
       }}
     >
       <ContractInput
+        style={{ marginBottom: 10 }}
         contract={contract}
         contracts={contracts}
         nefHints={nefHints}
@@ -42,7 +51,14 @@ export default function InvocationStep({
           onUpdate(newContract, operation, args)
         }
       />
-      <div>{operation}</div>
+      <OperationInput
+        style={{ marginBottom: 10 }}
+        operations={operations}
+        operation={operation}
+        setOperation={(newOperation: string) =>
+          onUpdate(contract, newOperation, args)
+        }
+      />
       <div>{args}</div>
     </div>
   );
