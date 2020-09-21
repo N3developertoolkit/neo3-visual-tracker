@@ -98,7 +98,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.updateReleventContractManifests();
     }
     if (request.update !== undefined) {
-      let newFileContents = this.viewState.fileContents.map((invocation, i) => {
+      let newFileContents = [...this.viewState.fileContents];
+      if (request.update.i === newFileContents.length) {
+        newFileContents.push({});
+      }
+      newFileContents = newFileContents.map((invocation, i) => {
         if (i === request.update?.i) {
           return {
             contract: request.update.contract,
@@ -113,7 +117,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       edit.replace(
         this.document.uri,
         new vscode.Range(0, 0, this.document.lineCount, 0),
-        JSON.stringify(newFileContents)
+        JSON.stringify(newFileContents, undefined, 2)
       );
       await vscode.workspace.applyEdit(edit);
     }
