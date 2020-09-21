@@ -1,4 +1,5 @@
 import React from "react";
+
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 type Props = {
@@ -7,7 +8,11 @@ type Props = {
   onMouseDown?: (newValue: string) => void;
 };
 
-export default function ContractTile({ manifest, nefHints, onMouseDown }: Props) {
+export default function ContractTile({
+  manifest,
+  nefHints,
+  onMouseDown,
+}: Props) {
   const style: React.CSSProperties = {
     border: "1px solid var(--vscode-dropdown-border)",
     backgroundColor: "var(--vscode-dropdown-background)",
