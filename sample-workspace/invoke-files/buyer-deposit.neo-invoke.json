@@ -11,6 +11,8 @@
   {
     "contract": "../contract/bin/Debug/netstandard2.1/safe-purchase.nef",
     "operation": "buyerDeposit",
-    "args": ["0xc977a809e5014ed49192919eb6beed15"]
+    "args": [
+      "0xc977a809e5014ed49192919eb6beed15"
+    ]
   }
 ]
