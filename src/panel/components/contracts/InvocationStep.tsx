@@ -4,6 +4,7 @@ import {
   ContractMethodDefinitionJson,
 } from "@cityofzion/neon-core/lib/sc";
 
+import ArgumentsInput from "./ArgumentsInput";
 import ContractInput from "./ContractInput";
 import OperationInput from "./OperationInput";
 
@@ -59,7 +60,16 @@ export default function InvocationStep({
           onUpdate(contract, newOperation, args)
         }
       />
-      <div>{args}</div>
+      <ArgumentsInput
+        style={{ marginBottom: 10 }}
+        parameterDefinitions={
+          operations.find((_) => _.name === operation)?.parameters || []
+        }
+        args={args || []}
+        setArguments={(newArguments: (string | number)[]) =>
+          onUpdate(contract, operation, newArguments)
+        }
+      />
     </div>
   );
 }
