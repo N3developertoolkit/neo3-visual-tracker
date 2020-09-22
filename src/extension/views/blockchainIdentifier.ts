@@ -14,6 +14,7 @@ export default class BlockchainIdentifier {
     ["http://seed1t.neo.org:20332"],
     0,
     "",
+    [],
     []
   );
 
@@ -31,6 +32,18 @@ export default class BlockchainIdentifier {
         console.log(LOG_PREFIX, "No RPC ports found", configPath);
         return undefined;
       }
+      const wallets: string[] = [];
+      const walletAddresses: string[] = [];
+      for (const wallet of neoExpressConfig["wallets"]) {
+        if (wallet.name) {
+          wallets.push(wallet.name);
+        }
+        for (const account of wallet.accounts || []) {
+          if (account["script-hash"]) {
+            walletAddresses.push(account["script-hash"]);
+          }
+        }
+      }
       return new BlockchainIdentifier(
         "nxp3",
         "parent",
@@ -38,9 +51,8 @@ export default class BlockchainIdentifier {
         nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
         0,
         configPath,
-        neoExpressConfig["wallets"]
-          .map((_: any) => _.name)
-          .filter((_: string) => !!_)
+        wallets,
+        walletAddresses
       );
     } catch (e) {
       console.log(
@@ -60,7 +72,8 @@ export default class BlockchainIdentifier {
     public readonly rpcUrls: string[],
     public readonly index: number,
     public readonly configPath: string,
-    public readonly wallets: string[]
+    public readonly wallets: string[],
+    public readonly walletAddresses: string[]
   ) {}
 
   getChildren() {
@@ -74,7 +87,8 @@ export default class BlockchainIdentifier {
             [_],
             i,
             this.configPath,
-            this.wallets
+            this.wallets,
+            this.walletAddresses
           )
       );
     } else {

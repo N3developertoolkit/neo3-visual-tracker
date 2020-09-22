@@ -10,6 +10,7 @@ type InvokeFileViewState = {
   }[];
   contracts: { [hashOrNefFile: string]: ContractManifestJson };
   nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  addressSuggestions: string[];
   errorText: string;
   connectedTo: string;
   connectionState: "ok" | "connecting" | "none";

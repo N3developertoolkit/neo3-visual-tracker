@@ -35,10 +35,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     super(
       {
         view: "invokeFile",
-        panelTitle: "Loading...",
+        panelTitle: "Invoke File Editor",
         fileContents: [],
         contracts: {},
         nefHints: {},
+        addressSuggestions: [],
         errorText: "",
         connectedTo: "",
         connectionState: "none",
@@ -84,18 +85,18 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           connectedTo: this.blockchainIdentifier?.name,
           connectionState: "connecting",
         });
-        await this.updateReleventContractManifests();
+        await this.periodicViewStateUpdate();
       } else {
         this.rpcClient = null;
         this.updateViewState({ connectedTo: "", connectionState: "none" });
-        await this.updateReleventContractManifests();
+        await this.periodicViewStateUpdate();
       }
     }
     if (request.disconnect) {
       this.rpcClient = null;
       this.blockchainIdentifier = null;
       this.updateViewState({ connectedTo: "", connectionState: "none" });
-      await this.updateReleventContractManifests();
+      await this.periodicViewStateUpdate();
     }
     if (request.update !== undefined) {
       let newFileContents = [...this.viewState.fileContents];
@@ -128,28 +129,31 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       return;
     }
     try {
-      await this.updateReleventContractManifests();
+      await this.periodicViewStateUpdate();
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 
-  private async updateReleventContractManifests() {
+  private async periodicViewStateUpdate() {
     const baseHref = path.dirname(this.document.uri.fsPath);
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
     const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
+    let addressSuggestions: string[] = [];
+    let connectionState: "none" | "ok" | "connecting" = "none";
     if (this.blockchainIdentifier?.blockchainType === "nxp3") {
       try {
+        addressSuggestions = this.blockchainIdentifier.walletAddresses;
         const deployedContracts = await NeoExpressIo.contractList(
           this.neoExpress,
           this.blockchainIdentifier
         );
-        this.updateViewState({ connectionState: "ok" });
+        connectionState = "ok";
         for (const deployedContract of deployedContracts) {
           contracts[deployedContract.abi.hash] = deployedContract;
         }
       } catch {
-        this.updateViewState({ connectionState: "connecting" });
+        connectionState = "connecting";
       }
       for (const nefFile of this.contractDetector.contracts) {
         try {
@@ -158,7 +162,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             this.blockchainIdentifier,
             nefFile
           );
-          this.updateViewState({ connectionState: "ok" });
+          connectionState = "ok";
           const nefFileRelativePath = path.relative(baseHref, nefFile);
           if (manifest) {
             contracts[nefFileRelativePath] = manifest;
@@ -167,7 +171,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
-          this.updateViewState({ connectionState: "connecting" });
+          connectionState = "connecting";
         }
       }
       for (const nefFile of this.viewState.fileContents
@@ -179,14 +183,14 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             this.blockchainIdentifier,
             nefFile
           );
-          this.updateViewState({ connectionState: "ok" });
+          connectionState = "ok";
           if (manifest) {
             contracts[nefFile] = manifest;
             nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || [];
             nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
-          this.updateViewState({ connectionState: "connecting" });
+          connectionState = "connecting";
         }
       }
     }
@@ -198,14 +202,19 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           const manifest = (
             await this.rpcClient.getContractState(contractHash)
           ).toJson();
-          this.updateViewState({ connectionState: "ok" });
+          connectionState = "ok";
           contracts[contractHash] = manifest;
         } catch {
-          this.updateViewState({ connectionState: "connecting" });
+          connectionState = "connecting";
         }
       }
     }
-    this.updateViewState({ contracts, nefHints });
+    this.updateViewState({
+      connectionState,
+      contracts,
+      nefHints,
+      addressSuggestions,
+    });
   }
 
   private async onFileUpdate() {

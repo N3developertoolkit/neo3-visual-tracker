@@ -14,6 +14,7 @@ type Props = {
   args?: (string | number)[];
   contracts: { [hashOrNefFile: string]: ContractManifestJson };
   nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  argumentSuggestionListId: string;
   onUpdate: (
     contract?: string,
     operation?: string,
@@ -27,6 +28,7 @@ export default function InvocationStep({
   args,
   contracts,
   nefHints,
+  argumentSuggestionListId,
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
@@ -66,6 +68,7 @@ export default function InvocationStep({
           operations.find((_) => _.name === operation)?.parameters || []
         }
         args={args || []}
+        autoSuggestListId={argumentSuggestionListId}
         setArguments={(newArguments: (string | number)[]) =>
           onUpdate(contract, operation, newArguments)
         }

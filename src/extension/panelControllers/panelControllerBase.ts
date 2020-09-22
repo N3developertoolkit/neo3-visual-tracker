@@ -85,10 +85,15 @@ export default abstract class PanelControllerBase<
     if (this.closed) {
       return;
     }
+    const mergedViewState = { ...this.viewState, ...updates };
+    if (JSON.stringify(mergedViewState) === JSON.stringify(this.viewState)) {
+      return;
+    }
+    console.log(LOG_PREFIX, "Update:", this.viewState.panelTitle, updates);
     if (updates.panelTitle !== undefined) {
       this.setTitle(updates.panelTitle);
     }
-    this.viewState = { ...this.viewState, ...updates };
+    this.viewState = mergedViewState;
     this.sendRequest({ viewState: this.viewState });
   }
 

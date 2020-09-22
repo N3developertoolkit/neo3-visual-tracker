@@ -19,6 +19,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       </Dialog>
     );
   }
+  const argumentSuggestionListId = `list_${Math.random()}`;
   return (
     <div
       style={{
@@ -30,6 +31,14 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         borderTop: "1px solid var(--vscode-panel-border)",
       }}
     >
+      <datalist id={argumentSuggestionListId}>
+        {viewState.addressSuggestions.map((_) => (
+          <option key={_} value={`@${_}`} />
+        ))}
+        {Object.getOwnPropertyNames(viewState.contracts).map((_) => (
+          <option key={_} value={`#${_}`} />
+        ))}
+      </datalist>
       <div
         style={{
           flex: "2 0",
@@ -47,6 +56,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             args={_.args}
             contracts={viewState.contracts}
             nefHints={viewState.nefHints}
+            argumentSuggestionListId={argumentSuggestionListId}
             onUpdate={(contract, operation, args) =>
               postMessage({
                 update: { i, contract, operation, args },
@@ -58,6 +68,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           key={viewState.fileContents.length}
           contracts={viewState.contracts}
           nefHints={viewState.nefHints}
+          argumentSuggestionListId={argumentSuggestionListId}
           onUpdate={(contract, operation, args) =>
             postMessage({
               update: {

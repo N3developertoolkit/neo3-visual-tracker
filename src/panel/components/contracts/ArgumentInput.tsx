@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import NeoType from "./NeoType";
 
@@ -6,10 +6,18 @@ type Props = {
   name: string;
   type?: string | number;
   arg?: string | number;
+  autoSuggestListId: string;
   onUpdate: (newArgument: string | number) => void;
 };
 
-export default function ArgumentInput({ name, type, arg, onUpdate }: Props) {
+export default function ArgumentInput({
+  name,
+  type,
+  arg,
+  autoSuggestListId,
+  onUpdate,
+}: Props) {
+  const [value, setValue] = useState(`${arg || ""}`);
   const inputStyle: React.CSSProperties = {
     color: "var(--vscode-input-foreground)",
     backgroundColor: "var(--vscode-input-background)",
@@ -43,8 +51,16 @@ export default function ArgumentInput({ name, type, arg, onUpdate }: Props) {
       <input
         style={inputStyle}
         type="text"
-        value={arg}
-        onChange={(e) => onUpdate(coerceType(e.target.value))}
+        value={value}
+        list={autoSuggestListId}
+        onKeyDown={(e) => {
+          if (e.metaKey) {
+            // User may be about to save
+            onUpdate(coerceType(value));
+          }
+        }}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={(e) => onUpdate(coerceType(e.target.value))}
       />
     </div>
   );
