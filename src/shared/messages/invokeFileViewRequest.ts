@@ -8,6 +8,7 @@ type InvokeFileViewRequest = {
     operation?: string;
     args?: (string | number)[];
   };
+  run?: boolean;
 };
 
 export default InvokeFileViewRequest;

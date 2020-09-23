@@ -5,6 +5,7 @@ import InvocationConnection from "../components/contracts/InvocationConnection";
 import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
+import NavButton from "../components/NavButton";
 
 type Props = {
   viewState: InvokeFileViewState;
@@ -89,12 +90,23 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           padding: 10,
         }}
       >
-        <InvocationConnection
-          connectedTo={viewState.connectedTo}
-          connectionState={viewState.connectionState}
-          initiateConnection={() => postMessage({ initiateConnection: true })}
-          disconnect={() => postMessage({ disconnect: true })}
-        />
+        <div style={{ padding: 10, textAlign: "center" }}>
+          <InvocationConnection
+            connectedTo={viewState.connectedTo}
+            connectionState={viewState.connectionState}
+            initiateConnection={() => postMessage({ initiateConnection: true })}
+            disconnect={() => postMessage({ disconnect: true })}
+          />
+        </div>
+        <hr />
+        <div style={{ padding: 10, textAlign: "center" }}>
+          <NavButton
+            disabled={viewState.connectionState !== "ok"}
+            onClick={() => postMessage({ run: true })}
+          >
+            Run
+          </NavButton>
+        </div>
       </div>
     </div>
   );

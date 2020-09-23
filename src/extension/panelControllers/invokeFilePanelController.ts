@@ -122,6 +122,28 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       );
       await vscode.workspace.applyEdit(edit);
     }
+    if (request.run) {
+      if (this.blockchainIdentifier) {
+        const account = await IoHelpers.multipleChoice(
+          "Select an account...",
+          "genesis",
+          ...this.blockchainIdentifier.wallets
+        );
+        if (!account) {
+          return;
+        }
+        await this.document.save();
+        this.neoExpress.runInTerminal(
+          path.basename(this.document.uri.fsPath),
+          "contract",
+          "invoke",
+          "-i",
+          this.blockchainIdentifier.configPath,
+          this.document.uri.fsPath,
+          account
+        );
+      }
+    }
   }
 
   private async refreshLoop() {
