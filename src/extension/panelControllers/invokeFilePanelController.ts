@@ -244,7 +244,10 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       return;
     }
     try {
-      const fileText = this.document.getText();
+      let fileText = this.document.getText();
+      if (fileText?.trim().length === 0) {
+        fileText = "[]";
+      }
       try {
         this.updateViewState({
           fileContents: JSON.parse(fileText),
