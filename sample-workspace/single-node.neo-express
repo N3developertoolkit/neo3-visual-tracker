@@ -38,7 +38,7 @@
   ],
   "wallets": [
     {
-      "name": "test1",
+      "name": "seller",
       "accounts": [
         {
           "private-key": "db294ca0a5444745bf6ff4ab3d2bb37811315d38db2f0ef4515a6b53e2a9553e",
@@ -55,7 +55,7 @@
       ]
     },
     {
-      "name": "test2",
+      "name": "buyer",
       "accounts": [
         {
           "private-key": "b2a3ec8e3fb3c71d0c2420048aaee8bec2efec7d052e63b2533f1c82cf8f054e",

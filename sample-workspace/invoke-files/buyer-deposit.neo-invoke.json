@@ -3,7 +3,7 @@
     "contract": "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc",
     "operation": "transfer",
     "args": [
-      "@NaYLUBF9TuBrkXWHDcefRi3rAr4jBtYwyG",
+      "@NYDFMq9WVddv1whVLmBLmoHk3PuL8e7RUo",
       "#../contract/bin/Debug/netstandard2.1/safe-purchase.nef",
       100
     ]

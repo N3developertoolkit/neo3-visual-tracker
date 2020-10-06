@@ -148,15 +148,15 @@
   ],
   "wallets": [
     {
-      "name": "test1",
+      "name": "seller",
       "accounts": [
         {
-          "private-key": "f6c964fa252b22dfbe8ea6734802ea2994c2eb968e51af8e7c327ff7ffeb5c54",
-          "script-hash": "NM7wXWWrx2SCWh3HxpPEApegTMCWSGMwE8",
+          "private-key": "db294ca0a5444745bf6ff4ab3d2bb37811315d38db2f0ef4515a6b53e2a9553e",
+          "script-hash": "NSWmpUp8hvqPJnEFAxcVPYzntXs3mkmQJg",
           "label": null,
           "is-default": true,
           "contract": {
-            "script": "0c21034a2af4ac83d3b16e962f360457edbaf0eb942707c777654c5e01e86a7156f6850b4195440d78",
+            "script": "0c2103163a9734b71c273c8862ecf167e04eea0f3e42936fbe321093829b9b10301ae30b4195440d78",
             "parameters": [
               "Signature"
             ]
@@ -165,15 +165,15 @@
       ]
     },
     {
-      "name": "test2",
+      "name": "buyer",
       "accounts": [
         {
-          "private-key": "2ba2a257f1d8cda4d74dc71f0e3e8b276b70fc4091331fa604459458841b8782",
-          "script-hash": "NbVJvSBuqz5CryTCsEpRoSLMnCN8ft41RY",
+          "private-key": "b2a3ec8e3fb3c71d0c2420048aaee8bec2efec7d052e63b2533f1c82cf8f054e",
+          "script-hash": "NYDFMq9WVddv1whVLmBLmoHk3PuL8e7RUo",
           "label": null,
           "is-default": true,
           "contract": {
-            "script": "0c21030420ace5aa966627206f4dc2e89c95fbb1d44df1685c46e7a835eeb73c8a35d60b4195440d78",
+            "script": "0c2102df86fbdc7eedf4da92868de01d141a473aaf8944873d6cc3f88a5eb6a0ab8c3a0b4195440d78",
             "parameters": [
               "Signature"
             ]
