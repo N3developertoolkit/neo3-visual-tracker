@@ -1,11 +1,11 @@
 import DetectorBase from "./detectorBase";
 
-const SEARCH_PATTERN = "**/neo-servers.json";
+const SEARCH_PATTERN = "**/*.neo-express";
 
-export default class ServerListDetector extends DetectorBase {
+export default class NeoExpressDetector extends DetectorBase {
 
   // TODO: Return structured data instead
-  get jsonFiles() {
+  get neoExpressFiles() {
     return this.files;
   }
 

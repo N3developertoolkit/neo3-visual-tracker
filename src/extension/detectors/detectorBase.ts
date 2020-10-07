@@ -4,6 +4,10 @@ const LOG_PREFIX = "[DetectorBase]";
 
 export default abstract class DetectorBase {
   private readonly fileSystemWatcher: vscode.FileSystemWatcher;
+  
+  private readonly onChangeEmitter: vscode.EventEmitter<void>;
+  
+  onChange: vscode.Event<void>;
 
   private allFiles: string[] = [];
 
@@ -12,6 +16,8 @@ export default abstract class DetectorBase {
   }
 
   constructor(private readonly searchPattern: string) {
+    this.onChangeEmitter = new vscode.EventEmitter<void>();
+    this.onChange = this.onChangeEmitter.event;
     this.refresh();
     this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
       searchPattern
@@ -23,15 +29,17 @@ export default abstract class DetectorBase {
 
   dispose() {
     this.fileSystemWatcher.dispose();
+    this.onChangeEmitter.dispose();
   }
 
-  async onChange(): Promise<void> {}
+  protected async processFiles(): Promise<void> {}
 
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing file list...", this.searchPattern);
     this.allFiles = (await vscode.workspace.findFiles(this.searchPattern)).map(
       (_) => _.fsPath
     );
-    await this.onChange();
+    await this.processFiles();
+    this.onChangeEmitter.fire();
   }
 }

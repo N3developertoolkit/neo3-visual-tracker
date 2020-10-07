@@ -3,40 +3,28 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import IoHelpers from "../ioHelpers";
+import NeoExpressDetector from "../detectors/neoExpressDetector";
 
 const LOG_PREFIX = "[BlockchainsExplorer]";
-const SEARCH_PATTERN = "**/*.neo-express";
 
 export default class BlockchainsExplorer
   implements vscode.TreeDataProvider<BlockchainIdentifier> {
   onDidChangeTreeData: vscode.Event<void>;
 
-  private readonly fileSystemWatcher: vscode.FileSystemWatcher;
-
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void>;
 
   private rootElements: BlockchainIdentifier[] = [];
 
-  static async create() {
-    const blockchainsExplorer = new BlockchainsExplorer();
+  static async create(neoExpressDetector: NeoExpressDetector) {
+    const blockchainsExplorer = new BlockchainsExplorer(neoExpressDetector);
     await blockchainsExplorer.refresh();
     return blockchainsExplorer;
   }
 
-  private constructor() {
+  private constructor(private readonly neoExpressDetector: NeoExpressDetector) {
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
-    this.refresh();
-    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
-      SEARCH_PATTERN
-    );
-    this.fileSystemWatcher.onDidChange(this.refresh, this);
-    this.fileSystemWatcher.onDidCreate(this.refresh, this);
-    this.fileSystemWatcher.onDidDelete(this.refresh, this);
-  }
-
-  dispose() {
-    this.fileSystemWatcher.dispose();
+    neoExpressDetector.onChange(() => this.refresh());
   }
 
   getTreeItem(element: BlockchainIdentifier): vscode.TreeItem {
@@ -53,9 +41,9 @@ export default class BlockchainsExplorer
 
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing tree view...");
-    const allConfigFiles = await vscode.workspace.findFiles(SEARCH_PATTERN);
+    const allConfigFiles = this.neoExpressDetector.neoExpressFiles;
     const neoExpressEntries = allConfigFiles
-      .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_.fsPath))
+      .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_))
       .filter((_) => !!_) as BlockchainIdentifier[];
     this.rootElements = [BlockchainIdentifier.testNet, ...neoExpressEntries];
     this.onDidChangeTreeDataEmitter.fire();
