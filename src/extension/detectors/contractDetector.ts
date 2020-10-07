@@ -1,35 +1,13 @@
-import * as vscode from "vscode";
+import DetectorBase from "./detectorBase";
 
-const LOG_PREFIX = "[ContractDetector]";
 const SEARCH_PATTERN = "**/*.nef";
 
-export default class ContractDetector {
-  private readonly fileSystemWatcher: vscode.FileSystemWatcher;
-
-  private allContractFiles: string[] = [];
-
+export default class ContractDetector extends DetectorBase {
   get contracts() {
-    return [...this.allContractFiles];
+    return this.files;
   }
 
   constructor() {
-    this.refresh();
-    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
-      SEARCH_PATTERN
-    );
-    this.fileSystemWatcher.onDidChange(this.refresh, this);
-    this.fileSystemWatcher.onDidCreate(this.refresh, this);
-    this.fileSystemWatcher.onDidDelete(this.refresh, this);
-  }
-
-  dispose() {
-    this.fileSystemWatcher.dispose();
-  }
-
-  async refresh() {
-    console.log(LOG_PREFIX, "Refreshing contract list...");
-    this.allContractFiles = (
-      await vscode.workspace.findFiles(SEARCH_PATTERN)
-    ).map((_) => _.fsPath);
+    super(SEARCH_PATTERN);
   }
 }

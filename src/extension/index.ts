@@ -7,6 +7,7 @@ import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
+import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
 
 function registerBlockchainInstanceCommand(
@@ -35,6 +36,7 @@ function registerBlockchainInstanceCommand(
 export async function activate(context: vscode.ExtensionContext) {
   const blockchainsExplorer = await BlockchainsExplorer.create();
   const contractDetector = new ContractDetector();
+  const serverListDetector = new ServerListDetector();
   const neoExpress = new NeoExpress(context);
   const neoInvokeFileEditor = new NeoInvokeFileEditor(
     context,
@@ -45,6 +47,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(blockchainsExplorer);
   context.subscriptions.push(contractDetector);
+  context.subscriptions.push(serverListDetector);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
