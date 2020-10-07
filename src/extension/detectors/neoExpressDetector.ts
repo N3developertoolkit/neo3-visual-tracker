@@ -1,12 +1,13 @@
+import BlockchainIdentifier from "../views/blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 
 const SEARCH_PATTERN = "**/*.neo-express";
 
 export default class NeoExpressDetector extends DetectorBase {
+  private blockchainsSnapshot: BlockchainIdentifier[] = [];
 
-  // TODO: Return structured data instead
-  get neoExpressFiles() {
-    return this.files;
+  get blockchains(): BlockchainIdentifier[] {
+    return [...this.blockchainsSnapshot];
   }
 
   constructor() {
@@ -14,8 +15,8 @@ export default class NeoExpressDetector extends DetectorBase {
   }
 
   async processFiles() {
-    for (const file of this.files) {
-      // TODO: ...
-    }
+    this.blockchainsSnapshot = this.files
+      .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_))
+      .filter((_) => !!_) as BlockchainIdentifier[];
   }
 }

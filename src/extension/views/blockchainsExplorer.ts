@@ -41,11 +41,10 @@ export default class BlockchainsExplorer
 
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing tree view...");
-    const allConfigFiles = this.neoExpressDetector.neoExpressFiles;
-    const neoExpressEntries = allConfigFiles
-      .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_))
-      .filter((_) => !!_) as BlockchainIdentifier[];
-    this.rootElements = [BlockchainIdentifier.testNet, ...neoExpressEntries];
+    this.rootElements = [
+      BlockchainIdentifier.testNet,
+      ...this.neoExpressDetector.blockchains,
+    ];
     this.onDidChangeTreeDataEmitter.fire();
   }
 
