@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "./views/blockchainIdentifier";
 import BlockchainType from "./views/blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
-import ContractDetector from "./contractDetector";
+import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";

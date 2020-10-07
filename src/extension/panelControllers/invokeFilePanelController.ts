@@ -5,7 +5,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../views/blockchainIdentifier";
 import BlockchainsExplorer from "../views/blockchainsExplorer";
-import ContractDetector from "../contractDetector";
+import ContractDetector from "../detectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";

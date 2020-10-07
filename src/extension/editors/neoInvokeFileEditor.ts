@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainsExplorer from "../views/blockchainsExplorer";
-import ContractDetector from "../contractDetector";
+import ContractDetector from "../detectors/contractDetector";
 import InvokeFilePanelController from "../panelControllers/invokeFilePanelController";
 import NeoExpress from "../neoExpress/neoExpress";
 
