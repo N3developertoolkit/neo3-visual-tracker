@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
+import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../views/blockchainIdentifier";
 import DetectorBase from "./detectorBase";
@@ -71,7 +72,26 @@ export default class ServerListDetector extends DetectorBase {
         const rpcUrlsThisFile = contents["neo-rpc-uris"];
         if (rpcUrlsThisFile && Array.isArray(rpcUrlsThisFile)) {
           for (const url of rpcUrlsThisFile) {
-            rpcUrls[url] = true;
+            try {
+              const parsedUrl = vscode.Uri.parse(url, true);
+              if (parsedUrl.scheme === "http" || parsedUrl.scheme === "https") {
+                rpcUrls[url] = true;
+              } else {
+                console.log(
+                  LOG_PREFIX,
+                  "Ignoring malformed URL (bad scheme)",
+                  url,
+                  file
+                );
+              }
+            } catch (e) {
+              console.log(
+                LOG_PREFIX,
+                "Ignoring malformed URL (parse error)",
+                url,
+                file
+              );
+            }
           }
         }
       } catch (e) {
@@ -99,7 +119,12 @@ export default class ServerListDetector extends DetectorBase {
       const urls = urlsByBlockchain[genesisHash];
       const isWellKnown = !!WELL_KNOWN_BLOCKCHAINS[genesisHash];
       newBlockchainsSnapshot.push(
-        BlockchainIdentifier.fromNameAndUrls(this.extensionPath, name, urls, isWellKnown)
+        BlockchainIdentifier.fromNameAndUrls(
+          this.extensionPath,
+          name,
+          urls,
+          isWellKnown
+        )
       );
     }
     this.blockchainsSnapshot = newBlockchainsSnapshot;
