@@ -11,7 +11,7 @@ export default class NeoExpressCommands {
     identifer: BlockchainIdentifier,
     contractDetector: ContractDetector
   ) {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return;
     }
     if (!contractDetector.contracts.length) {
@@ -80,7 +80,7 @@ export default class NeoExpressCommands {
   }
 
   static async reset(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return;
     }
     const confirmed = await IoHelpers.yesNo(
@@ -103,7 +103,7 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ) {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return;
     }
     const children = identifer.getChildren();
@@ -136,7 +136,7 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ) {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return;
     }
     const asset = await IoHelpers.multipleChoice(
@@ -182,7 +182,7 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ) {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return;
     }
     const walletName = await IoHelpers.enterString("Wallet name");

@@ -18,7 +18,7 @@ export default class NeoExpress {
   constructor(private readonly context: vscode.ExtensionContext) {
     this.binaryPath = path.join(
       this.context.extensionPath,
-      "nxp3",
+      "nxp",
       "tools",
       "netcoreapp",
       "any",

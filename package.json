@@ -24,14 +24,14 @@
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
   },
   "activationEvents": [
-    "onCommand:neo3-visual-devtracker.nxp3.contractDeploy",
-    "onCommand:neo3-visual-devtracker.nxp3.create",
-    "onCommand:neo3-visual-devtracker.nxp3.reset",
-    "onCommand:neo3-visual-devtracker.nxp3.run",
-    "onCommand:neo3-visual-devtracker.nxp3.transfer",
-    "onCommand:neo3-visual-devtracker.nxp3.walletCreate",
+    "onCommand:neo3-visual-devtracker.express.contractDeploy",
+    "onCommand:neo3-visual-devtracker.express.create",
+    "onCommand:neo3-visual-devtracker.express.reset",
+    "onCommand:neo3-visual-devtracker.express.run",
+    "onCommand:neo3-visual-devtracker.express.transfer",
+    "onCommand:neo3-visual-devtracker.express.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
-    "onCustomEditor:neo3-visual-devtracker.nxp3.neo-invoke-json",
+    "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
     "onView:neo3-visual-devtracker.blockchainsExplorer"
   ],
   "keywords": [
@@ -42,7 +42,7 @@
   "contributes": {
     "customEditors": [
       {
-        "viewType": "neo3-visual-devtracker.nxp3.neo-invoke-json",
+        "viewType": "neo3-visual-devtracker.express.neo-invoke-json",
         "displayName": "Neo Express Contract Invoke File Editor",
         "selector": [
           {
@@ -54,22 +54,22 @@
     ],
     "commands": [
       {
-        "command": "neo3-visual-devtracker.nxp3.contractDeploy",
+        "command": "neo3-visual-devtracker.express.contractDeploy",
         "title": "Deploy contract",
         "category": "Neo Express 3"
       },
       {
-        "command": "neo3-visual-devtracker.nxp3.create",
+        "command": "neo3-visual-devtracker.express.create",
         "title": "Create instance",
         "category": "Neo Express 3"
       },
       {
-        "command": "neo3-visual-devtracker.nxp3.reset",
+        "command": "neo3-visual-devtracker.express.reset",
         "title": "Reset instance",
         "category": "Neo Express 3"
       },
       {
-        "command": "neo3-visual-devtracker.nxp3.run",
+        "command": "neo3-visual-devtracker.express.run",
         "title": "Run instance",
         "category": "Neo Express 3",
         "icon": {
@@ -78,12 +78,12 @@
         }
       },
       {
-        "command": "neo3-visual-devtracker.nxp3.transfer",
+        "command": "neo3-visual-devtracker.express.transfer",
         "title": "Transfer assets",
         "category": "Neo Express 3"
       },
       {
-        "command": "neo3-visual-devtracker.nxp3.walletCreate",
+        "command": "neo3-visual-devtracker.express.walletCreate",
         "title": "Create wallet",
         "category": "Neo Express 3"
       },
@@ -100,29 +100,29 @@
     "menus": {
       "view/item/context": [
         {
-          "command": "neo3-visual-devtracker.nxp3.contractDeploy",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+          "command": "neo3-visual-devtracker.express.contractDeploy",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
-          "command": "neo3-visual-devtracker.nxp3.reset",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+          "command": "neo3-visual-devtracker.express.reset",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
-          "command": "neo3-visual-devtracker.nxp3.run",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3",
+          "command": "neo3-visual-devtracker.express.run",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express",
           "group": "inline"
         },
         {
-          "command": "neo3-visual-devtracker.nxp3.run",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+          "command": "neo3-visual-devtracker.express.run",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
-          "command": "neo3-visual-devtracker.nxp3.transfer",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+          "command": "neo3-visual-devtracker.express.transfer",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
-          "command": "neo3-visual-devtracker.nxp3.walletCreate",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == nxp3"
+          "command": "neo3-visual-devtracker.express.walletCreate",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
@@ -136,7 +136,7 @@
       ],
       "view/title": [
         {
-          "command": "neo3-visual-devtracker.nxp3.create",
+          "command": "neo3-visual-devtracker.express.create",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         }
       ]
@@ -160,16 +160,16 @@
     }
   },
   "scripts": {
-    "bundle-nxp3": "npm run bundle-nxp3-download && npm run bundle-nxp3-extract",
-    "bundle-nxp3-download": "mkdir -p nxp3 && nwget https://github.com/neo-project/neo-express/releases/download/1.2.20-insiders/Neo.Express3.1.2.20-insiders.nupkg -O nxp3/nxp3.nupkg",
-    "bundle-nxp3-extract": "cd nxp3 && extract-zip nxp3.nupkg && mv tools/netcoreapp* tools/netcoreapp",
+    "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
+    "bundle-nxp-download": "mkdir -p nxp && nwget https://github.com/neo-project/neo-express/releases/download/1.2.20-insiders/Neo.Express3.1.2.20-insiders.nupkg -O nxp/nxp.nupkg",
+    "bundle-nxp-extract": "cd nxp && extract-zip nxp.nupkg && mv tools/netcoreapp* tools/netcoreapp",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
     "compile-panel": "webpack --config src/panel/webpack.config.js --mode development",
     "compile-prod": "npm run compile-prod-ext && npm run compile-prod-panel",
     "compile-prod-ext": "webpack --config src/extension/webpack.config.js --mode production",
     "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
-    "package": "npm run compile-prod && npm run bundle-nxp3 && vsce package",
+    "package": "npm run compile-prod && npm run bundle-nxp && vsce package",
     "setversion": "gulp setversion",
     "watch": "concurrently -r npm:watch-*",
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose",

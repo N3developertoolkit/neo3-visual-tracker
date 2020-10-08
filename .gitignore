@@ -2,6 +2,6 @@ dist
 out
 node_modules
 *.vsix
-nxp3
+nxp
 *.nupkg
 .DS_Store

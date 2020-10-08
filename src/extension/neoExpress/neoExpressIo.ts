@@ -11,7 +11,7 @@ export default class NeoExpressIo {
     identifer: BlockchainIdentifier,
     hashOrNefPath: string
   ): Promise<ContractManifestJson | null> {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return null;
     }
     const output = neoExpress.runSync(
@@ -35,7 +35,7 @@ export default class NeoExpressIo {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ): Promise<ContractManifestJson[]> {
-    if (identifer.blockchainType !== "nxp3") {
+    if (identifer.blockchainType !== "express") {
       return [];
     }
     const output = neoExpress.runSync(

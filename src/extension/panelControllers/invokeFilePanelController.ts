@@ -163,7 +163,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     let addressSuggestions: string[] = [];
     let connectionState: "none" | "ok" | "connecting" = "none";
-    if (this.blockchainIdentifier?.blockchainType === "nxp3") {
+    if (this.blockchainIdentifier?.blockchainType === "express") {
       try {
         addressSuggestions = this.blockchainIdentifier.walletAddresses;
         const deployedContracts = await NeoExpressIo.contractList(

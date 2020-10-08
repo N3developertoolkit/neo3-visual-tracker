@@ -71,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "neo3-visual-devtracker.nxp3.create",
+      "neo3-visual-devtracker.express.create",
       async () => {
         await NeoExpressCommands.create(context, neoExpress);
       }
@@ -80,16 +80,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(
-      "neo3-visual-devtracker.nxp3.neo-invoke-json",
+      "neo3-visual-devtracker.express.neo-invoke-json",
       neoInvokeFileEditor
     )
   );
 
   registerBlockchainInstanceCommand(
     context,
-    "nxp3",
+    "express",
     blockchainsExplorer,
-    "neo3-visual-devtracker.nxp3.contractDeploy",
+    "neo3-visual-devtracker.express.contractDeploy",
     (identifier) =>
       NeoExpressCommands.contractDeploy(
         neoExpress,
@@ -100,33 +100,33 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerBlockchainInstanceCommand(
     context,
-    "nxp3",
+    "express",
     blockchainsExplorer,
-    "neo3-visual-devtracker.nxp3.reset",
+    "neo3-visual-devtracker.express.reset",
     (identifier) => NeoExpressCommands.reset(neoExpress, identifier)
   );
 
   registerBlockchainInstanceCommand(
     context,
-    "nxp3",
+    "express",
     blockchainsExplorer,
-    "neo3-visual-devtracker.nxp3.run",
+    "neo3-visual-devtracker.express.run",
     (identifier) => NeoExpressCommands.run(context, neoExpress, identifier)
   );
 
   registerBlockchainInstanceCommand(
     context,
-    "nxp3",
+    "express",
     blockchainsExplorer,
-    "neo3-visual-devtracker.nxp3.transfer",
+    "neo3-visual-devtracker.express.transfer",
     (identifier) => NeoExpressCommands.transfer(neoExpress, identifier)
   );
 
   registerBlockchainInstanceCommand(
     context,
-    "nxp3",
+    "express",
     blockchainsExplorer,
-    "neo3-visual-devtracker.nxp3.walletCreate",
+    "neo3-visual-devtracker.express.walletCreate",
     (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
   );
 }

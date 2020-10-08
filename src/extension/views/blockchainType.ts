@@ -1,3 +1,3 @@
-type BlockchainType = "nxp3" | "private" | "public";
+type BlockchainType = "express" | "private" | "public";
 
 export default BlockchainType;

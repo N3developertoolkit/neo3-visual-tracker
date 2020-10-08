@@ -55,7 +55,7 @@ export default class BlockchainIdentifier {
       }
       return new BlockchainIdentifier(
         extensionPath,
-        "nxp3",
+        "express",
         "parent",
         path.basename(configPath),
         nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
