@@ -1,13 +1,26 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
+import * as path from "path";
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../views/blockchainIdentifier";
 import DetectorBase from "./detectorBase";
+import IoHelpers from "../ioHelpers";
 
 const LOG_PREFIX = "[ServerListDetector]";
 
 const SEARCH_PATTERN = "**/neo-servers.json";
+
+const DEFAULT_FILE = {
+  "neo-rpc-uris": [
+    "http://seed1.ngd.network:10332",
+    "http://seed2.ngd.network:10332",
+  ],
+  "neo-blockchain-names": {
+    "0x0000000000000000000000000000000000000000000000000000000000000000":
+      "My Private Blockchain",
+  },
+};
 
 const UNKNOWN_BLOCKCHAIN =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
@@ -49,6 +62,43 @@ export default class ServerListDetector extends DetectorBase {
 
   constructor(private readonly extensionPath: string) {
     super(SEARCH_PATTERN);
+  }
+
+  async customize() {
+    if (this.files.length === 1) {
+      await vscode.window.showTextDocument(vscode.Uri.file(this.files[0]));
+    } else if (this.files.length > 0) {
+      const fileToEdit = await IoHelpers.multipleChoiceFiles(
+        "There are multiple blockchain configurations in the current workspace, which would you like to edit?",
+        ...this.files
+      );
+      await vscode.window.showTextDocument(vscode.Uri.file(fileToEdit));
+    } else {
+      const workspaceFolders = vscode.workspace.workspaceFolders?.map(
+        (_) => _.uri.fsPath
+      );
+      if (!workspaceFolders?.length) {
+        vscode.window.showErrorMessage(
+          "Blockchain configuration is stored in a file in your active workspace. Please open a folder in VS Code before proceeding."
+        );
+      } else {
+        let workspaceFolder = workspaceFolders[0];
+        if (workspaceFolders.length > 0) {
+          workspaceFolder = await IoHelpers.multipleChoiceFiles(
+            "Please chose a location to store blockchain configuration.",
+            ...workspaceFolders
+          );
+        }
+        const fileToEdit = path.join(workspaceFolder, "neo-servers.json");
+        if (!fs.existsSync(fileToEdit)) {
+          fs.writeFileSync(
+            fileToEdit,
+            JSON.stringify(DEFAULT_FILE, undefined, 2)
+          );
+        }
+        await vscode.window.showTextDocument(vscode.Uri.file(fileToEdit));
+      }
+    }
   }
 
   async processFiles() {

@@ -71,6 +71,15 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      "neo3-visual-devtracker.customizeServerList",
+      async () => {
+        await serverListDetector.customize();
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       "neo3-visual-devtracker.express.create",
       async () => {
         await NeoExpressCommands.create(context, neoExpress);

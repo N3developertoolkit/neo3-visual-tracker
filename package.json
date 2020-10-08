@@ -24,6 +24,7 @@
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
   },
   "activationEvents": [
+    "onCommand:neo3-visual-devtracker.customizeServerList",
     "onCommand:neo3-visual-devtracker.express.contractDeploy",
     "onCommand:neo3-visual-devtracker.express.create",
     "onCommand:neo3-visual-devtracker.express.reset",
@@ -95,6 +96,11 @@
           "light": "resources/light/open.svg",
           "dark": "resources/dark/open.svg"
         }
+      },
+      {
+        "command": "neo3-visual-devtracker.customizeServerList",
+        "title": "Customize blockchain list",
+        "category": "Neo 3 Visual DevTracker"
       }
     ],
     "menus": {
@@ -135,6 +141,10 @@
         }
       ],
       "view/title": [
+        {
+          "command": "neo3-visual-devtracker.customizeServerList",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer"
+        },
         {
           "command": "neo3-visual-devtracker.express.create",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
