@@ -7,16 +7,21 @@ import BlockchainType from "./blockchainType";
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
 export default class BlockchainIdentifier {
-  static testNet = new BlockchainIdentifier(
-    "remote",
-    "parent",
-    "Neo 3 TestNet",
-    ["http://seed1t.neo.org:20332"],
-    0,
-    "",
-    [],
-    []
-  );
+  static fromNameAndUrls(
+    name: string,
+    rpcUrls: string[]
+  ): BlockchainIdentifier {
+    return new BlockchainIdentifier(
+      "remote",
+      "parent",
+      name,
+      rpcUrls,
+      0,
+      "",
+      [],
+      []
+    );
+  }
 
   static fromNeoExpressConfig(
     configPath: string

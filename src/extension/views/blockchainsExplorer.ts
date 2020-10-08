@@ -4,6 +4,7 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import IoHelpers from "../ioHelpers";
 import NeoExpressDetector from "../detectors/neoExpressDetector";
+import ServerListDetector from "../detectors/serverListDetector";
 
 const LOG_PREFIX = "[BlockchainsExplorer]";
 
@@ -15,16 +16,26 @@ export default class BlockchainsExplorer
 
   private rootElements: BlockchainIdentifier[] = [];
 
-  static async create(neoExpressDetector: NeoExpressDetector) {
-    const blockchainsExplorer = new BlockchainsExplorer(neoExpressDetector);
+  static async create(
+    neoExpressDetector: NeoExpressDetector,
+    serverListDetector: ServerListDetector
+  ) {
+    const blockchainsExplorer = new BlockchainsExplorer(
+      neoExpressDetector,
+      serverListDetector
+    );
     await blockchainsExplorer.refresh();
     return blockchainsExplorer;
   }
 
-  private constructor(private readonly neoExpressDetector: NeoExpressDetector) {
+  private constructor(
+    private readonly neoExpressDetector: NeoExpressDetector,
+    private readonly serverListDetector: ServerListDetector
+  ) {
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
     neoExpressDetector.onChange(() => this.refresh());
+    serverListDetector.onChange(() => this.refresh());
   }
 
   getTreeItem(element: BlockchainIdentifier): vscode.TreeItem {
@@ -42,7 +53,7 @@ export default class BlockchainsExplorer
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing tree view...");
     this.rootElements = [
-      BlockchainIdentifier.testNet,
+      ...this.serverListDetector.blockchains,
       ...this.neoExpressDetector.blockchains,
     ];
     this.onDidChangeTreeDataEmitter.fire();

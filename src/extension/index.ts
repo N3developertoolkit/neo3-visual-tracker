@@ -39,7 +39,8 @@ export async function activate(context: vscode.ExtensionContext) {
   const serverListDetector = new ServerListDetector();
   const neoExpressDetector = new NeoExpressDetector();
   const blockchainsExplorer = await BlockchainsExplorer.create(
-    neoExpressDetector
+    neoExpressDetector,
+    serverListDetector
   );
   const neoExpress = new NeoExpress(context);
   const neoInvokeFileEditor = new NeoInvokeFileEditor(
