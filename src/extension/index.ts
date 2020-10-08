@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import BlockchainIdentifier from "./views/blockchainIdentifier";
-import BlockchainType from "./views/blockchainType";
+import BlockchainIdentifier from "./blockchainIdentifier";
+import BlockchainType from "./blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
 import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";

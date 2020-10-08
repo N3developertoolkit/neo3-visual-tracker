@@ -3,7 +3,7 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import BlockchainIdentifier from "../views/blockchainIdentifier";
+import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../ioHelpers";
 

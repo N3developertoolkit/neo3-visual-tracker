@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import BlockchainIdentifier from "./views/blockchainIdentifier";
+import BlockchainIdentifier from "./blockchainIdentifier";
 import IoHelpers from "./ioHelpers";
 import TrackerPanelController from "./panelControllers/trackerPanelController";
 

@@ -3,7 +3,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
-import BlockchainIdentifier from "../views/blockchainIdentifier";
+import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainsExplorer from "../views/blockchainsExplorer";
 import ContractDetector from "../detectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";

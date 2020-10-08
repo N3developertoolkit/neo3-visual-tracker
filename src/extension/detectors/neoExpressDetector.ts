@@ -1,4 +1,4 @@
-import BlockchainIdentifier from "../views/blockchainIdentifier";
+import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 
 const SEARCH_PATTERN = "**/*.neo-express";
