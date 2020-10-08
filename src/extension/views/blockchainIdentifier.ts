@@ -8,11 +8,14 @@ const LOG_PREFIX = "[BlockchainIdentifier]";
 
 export default class BlockchainIdentifier {
   static fromNameAndUrls(
+    extensionPath: string,
     name: string,
-    rpcUrls: string[]
+    rpcUrls: string[],
+    isWellKnown: boolean
   ): BlockchainIdentifier {
     return new BlockchainIdentifier(
-      "remote",
+      extensionPath,
+      isWellKnown ? "public" : "private",
       "parent",
       name,
       rpcUrls,
@@ -24,6 +27,7 @@ export default class BlockchainIdentifier {
   }
 
   static fromNeoExpressConfig(
+    extensionPath: string,
     configPath: string
   ): BlockchainIdentifier | undefined {
     try {
@@ -50,6 +54,7 @@ export default class BlockchainIdentifier {
         }
       }
       return new BlockchainIdentifier(
+        extensionPath,
         "nxp3",
         "parent",
         path.basename(configPath),
@@ -71,6 +76,7 @@ export default class BlockchainIdentifier {
   }
 
   private constructor(
+    private readonly extensionPath: string,
     public readonly blockchainType: BlockchainType,
     public readonly nodeType: "parent" | "child",
     public readonly name: string,
@@ -86,6 +92,7 @@ export default class BlockchainIdentifier {
       return this.rpcUrls.map(
         (_, i) =>
           new BlockchainIdentifier(
+            this.extensionPath,
             this.blockchainType,
             "child",
             `${this.name}:${i}`,
@@ -108,6 +115,13 @@ export default class BlockchainIdentifier {
         vscode.TreeItemCollapsibleState.Expanded
       );
       treeItem.contextValue = this.blockchainType;
+      treeItem.iconPath = vscode.Uri.file(
+        path.join(
+          this.extensionPath,
+          "resources",
+          `blockchain-${this.blockchainType}.svg`
+        )
+      );
       return treeItem;
     } else {
       const treeItem = new vscode.TreeItem(
@@ -115,6 +129,7 @@ export default class BlockchainIdentifier {
         vscode.TreeItemCollapsibleState.None
       );
       treeItem.contextValue = this.blockchainType;
+      treeItem.iconPath = vscode.ThemeIcon.File;
       return treeItem;
     }
   }

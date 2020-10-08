@@ -10,13 +10,15 @@ export default class NeoExpressDetector extends DetectorBase {
     return [...this.blockchainsSnapshot];
   }
 
-  constructor() {
+  constructor(private readonly extensionPath: string) {
     super(SEARCH_PATTERN);
   }
 
   async processFiles() {
     this.blockchainsSnapshot = this.files
-      .map((_) => BlockchainIdentifier.fromNeoExpressConfig(_))
+      .map((_) =>
+        BlockchainIdentifier.fromNeoExpressConfig(this.extensionPath, _)
+      )
       .filter((_) => !!_) as BlockchainIdentifier[];
   }
 }

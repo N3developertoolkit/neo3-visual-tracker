@@ -46,7 +46,7 @@ export default class ServerListDetector extends DetectorBase {
     return [...this.blockchainsSnapshot];
   }
 
-  constructor() {
+  constructor(private readonly extensionPath: string) {
     super(SEARCH_PATTERN);
   }
 
@@ -97,8 +97,9 @@ export default class ServerListDetector extends DetectorBase {
     for (const genesisHash of Object.getOwnPropertyNames(urlsByBlockchain)) {
       const name = blockchainNames[genesisHash] || "Unknown Blockchain";
       const urls = urlsByBlockchain[genesisHash];
+      const isWellKnown = !!WELL_KNOWN_BLOCKCHAINS[genesisHash];
       newBlockchainsSnapshot.push(
-        BlockchainIdentifier.fromNameAndUrls(name, urls)
+        BlockchainIdentifier.fromNameAndUrls(this.extensionPath, name, urls, isWellKnown)
       );
     }
     this.blockchainsSnapshot = newBlockchainsSnapshot;

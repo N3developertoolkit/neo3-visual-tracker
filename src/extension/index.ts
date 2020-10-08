@@ -36,8 +36,8 @@ function registerBlockchainInstanceCommand(
 
 export async function activate(context: vscode.ExtensionContext) {
   const contractDetector = new ContractDetector();
-  const serverListDetector = new ServerListDetector();
-  const neoExpressDetector = new NeoExpressDetector();
+  const serverListDetector = new ServerListDetector(context.extensionPath);
+  const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
   const blockchainsExplorer = await BlockchainsExplorer.create(
     neoExpressDetector,
     serverListDetector
