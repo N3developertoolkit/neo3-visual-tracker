@@ -15,9 +15,8 @@ export default class WalletDetector extends DetectorBase {
   }
 
   async processFiles() {
-    this.walletsSnapshot = this.files
-      .map((_) => Wallet.fromJsonFile(_))
-      .filter((_) => !!_) as Wallet[];
-    console.log(this.walletsSnapshot);
+    this.walletsSnapshot = (
+      await Promise.all(this.files.map((_) => Wallet.fromJsonFile(_)))
+    ).filter((_) => !!_) as Wallet[];
   }
 }

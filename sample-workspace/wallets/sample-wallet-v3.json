@@ -1,0 +1,29 @@
+{
+  "name": "v3-sample-wallet",
+  "version": "1.0",
+  "scrypt": {
+    "n": 16384,
+    "r": 8,
+    "p": 8,
+    "size": 64
+  },
+  "accounts": [
+    {
+      "address": "NdgggM4np84vmPYGS1K6rgYE8Tkowpn99R",
+      "label": "V3 account with password",
+      "isdefault": true,
+      "lock": false,
+      "key": "6PYR8WK2NQx8CaATKfS19DNUu2Ln3sKfx2GhRVUKEfJ62a3cZ52o9ZEFMX",
+      "contract": {
+        "script": "0c2103a390191d48753d5e30bdc936fa179ee3825280003b9260ca83c9014305f2854f0b4195440d78",
+        "parameters": [
+          {
+            "name": "signature",
+            "type": "Signature"
+          }
+        ],
+        "deployed": false
+      }
+    }
+  ]
+}
