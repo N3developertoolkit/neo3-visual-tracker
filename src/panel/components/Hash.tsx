@@ -9,5 +9,15 @@ export default function Hash({ hash }: Props) {
     fontFamily: "monospace",
     wordBreak: "break-all",
   };
-  return <span style={hashStyle}>{hash}</span>;
+  if (hash.indexOf("\n") !== -1) {
+    return (
+      <span style={hashStyle}>
+        {hash.split("\n").map((_, i) => (
+          <div key={`${i}_${_}`}>{_}</div>
+        ))}
+      </span>
+    );
+  } else {
+    return <span style={hashStyle}>{hash}</span>;
+  }
 }

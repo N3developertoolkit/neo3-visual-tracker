@@ -1,12 +1,21 @@
 import React from "react";
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
+import * as neonCore from "@cityofzion/neon-core";
 
+import disassembleScript from "./disassembleScript";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
 import NavLink from "../NavLink";
 
+const tryDisassemble = (script: string) => {
+  try {
+    return disassembleScript(script) || script;
+  } catch {
+    return script;
+  }
+};
+
 type Props = {
-  transaction: TransactionJson;
+  transaction: neonCore.tx.TransactionJson;
   selectAddress: (address: string) => void;
 };
 
@@ -46,7 +55,7 @@ export default function TransactionDetails({
       <MetadataBadge title="Version">{transaction.version}</MetadataBadge>
       <div style={{ width: "100%" }}>
         <MetadataBadge title="Script">
-          <Hash hash={transaction.script} />
+          <Hash hash={tryDisassemble(transaction.script)} />
         </MetadataBadge>
       </div>
       {transaction.witnesses.map((witness) => (
