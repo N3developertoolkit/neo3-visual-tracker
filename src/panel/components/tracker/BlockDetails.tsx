@@ -41,29 +41,37 @@ export default function BlockDetails({
       <MetadataBadge title="Merkle root">
         <Hash hash={block.merkleroot} />
       </MetadataBadge>
-      <MetadataBadge title="Consensus data">
-        <Hash hash={block.consensusdata.nonce} /> &mdash;{" "}
-        {block.consensusdata.primary}
-      </MetadataBadge>
-      <MetadataBadge title="Witnesses">{block.witnesses.length}</MetadataBadge>
-      {block.witnesses.map((witness) => (
-        <MetadataBadge title="Witness">
-          <div>
-            <strong>
-              <small>Invocation</small>
-            </strong>
-            <br />
-            <Hash hash={witness.invocation} />
-          </div>
-          <div style={{ marginTop: 4 }}>
-            <strong>
-              <small>Verification</small>
-            </strong>
-            <br />
-            <Hash hash={witness.verification} />
-          </div>
+      {!!block.consensusdata && (
+        <MetadataBadge title="Consensus data">
+          <Hash hash={block.consensusdata.nonce} /> &mdash;{" "}
+          {block.consensusdata.primary}
         </MetadataBadge>
-      ))}
+      )}
+      {!!block.witnesses && (
+        <>
+          <MetadataBadge title="Witnesses">
+            {block.witnesses.length}
+          </MetadataBadge>
+          {block.witnesses.map((witness) => (
+            <MetadataBadge title="Witness">
+              <div>
+                <strong>
+                  <small>Invocation</small>
+                </strong>
+                <br />
+                <Hash hash={witness.invocation} />
+              </div>
+              <div style={{ marginTop: 4 }}>
+                <strong>
+                  <small>Verification</small>
+                </strong>
+                <br />
+                <Hash hash={witness.verification} />
+              </div>
+            </MetadataBadge>
+          ))}
+        </>
+      )}
       {!!block.tx.length && (
         <div style={{ width: "100%", marginTop: 10 }}>
           <Table
@@ -72,26 +80,25 @@ export default function BlockDetails({
               { content: <>Sender</> },
               { content: <>Size</> },
             ]}
-            rows={block.tx
-              .map((tx) => ({
-                onClick:
-                  selectedTransaction === tx.hash
-                    ? () => selectTransaction("")
-                    : () => selectTransaction(tx.hash || ""),
-                key: tx.hash,
-                cells: [
-                  { content: <Hash hash={tx.hash || ""} /> },
-                  { content: <Hash hash={tx.sender} /> },
-                  { content: <>{tx.size} bytes</> },
-                ],
-                annotation:
-                  selectedTransaction === tx.hash ? (
-                    <TransactionDetails
-                      transaction={tx}
-                      selectAddress={selectAddress}
-                    />
-                  ) : undefined,
-              }))}
+            rows={block.tx.map((tx) => ({
+              onClick:
+                selectedTransaction === tx.hash
+                  ? () => selectTransaction("")
+                  : () => selectTransaction(tx.hash || ""),
+              key: tx.hash,
+              cells: [
+                { content: <Hash hash={tx.hash || ""} /> },
+                { content: <Hash hash={tx.sender} /> },
+                { content: <>{tx.size} bytes</> },
+              ],
+              annotation:
+                selectedTransaction === tx.hash ? (
+                  <TransactionDetails
+                    transaction={tx}
+                    selectAddress={selectAddress}
+                  />
+                ) : undefined,
+            }))}
           />
         </div>
       )}

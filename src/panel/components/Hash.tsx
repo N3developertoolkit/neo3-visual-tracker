@@ -9,7 +9,7 @@ export default function Hash({ hash }: Props) {
     fontFamily: "monospace",
     wordBreak: "break-all",
   };
-  if (hash.indexOf("\n") !== -1) {
+  if (!!hash && hash.indexOf("\n") !== -1) {
     return (
       <span style={hashStyle}>
         {hash.split("\n").map((_, i) => (
