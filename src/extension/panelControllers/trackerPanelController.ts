@@ -145,6 +145,36 @@ export default class TrackerPanelController extends PanelControllerBase<
     await this.state.update(`history_${await this.blockchainId}`, history);
   }
 
+  // TODO: Investigate if there will be any Neo2-Neo3 side-by-side support
+  //       in the @cityofzion/neon-js package and hopefully remove the
+  //       applyV2ToV3TransformsToXxxxx() methods (they are hacks).
+
+  private applyV2ToV3TransformsToBlock(block: BlockJson): BlockJson {
+    block = { ...block };
+    const v2Nonce = (block as any).nonce;
+    const isV2 = !!v2Nonce;
+    if (isV2) {
+      block.consensusdata = { nonce: v2Nonce, primary: 0 };
+      block.time = block.time * 1000;
+      block.tx = block.tx.map((_) => this.applyV2ToV3TransformsToTx(_));
+    }
+    return block;
+  }
+
+  private applyV2ToV3TransformsToTx(tx: TransactionJson): TransactionJson {
+    tx = { ...tx };
+    const v2Tx = tx as any;
+    const v2Txid = v2Tx.txid;
+    const isV2 = !!v2Txid;
+    if (isV2) {
+      tx.hash = v2Txid;
+      tx.sender = v2Tx.type;
+      tx.sysfee = v2Tx.sys_fee;
+      tx.netfee = v2Tx.net_fee;
+    }
+    return tx;
+  }
+
   private async getAddress(address: string): Promise<AddressInfo> {
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
       console.log(
@@ -217,7 +247,9 @@ export default class TrackerPanelController extends PanelControllerBase<
         retry + 1
       );
       try {
-        const block = await this.rpcClient.getBlock(indexOrHash, true);
+        const block = this.applyV2ToV3TransformsToBlock(
+          await this.rpcClient.getBlock(indexOrHash, true)
+        );
         if (block.index < this.viewState.blockHeight - 1) {
           // never cache head block
           if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
@@ -273,7 +305,9 @@ export default class TrackerPanelController extends PanelControllerBase<
     for (let retry = 0; retry < MAX_RETRIES; retry++) {
       console.log(LOG_PREFIX, "Retrieving tx", hash, "- attempt", retry + 1);
       try {
-        const transaction = await this.rpcClient.getRawTransaction(hash, true);
+        const transaction = this.applyV2ToV3TransformsToTx(
+          await this.rpcClient.getRawTransaction(hash, true)
+        );
         if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
           this.cachedTransactions.shift();
         }

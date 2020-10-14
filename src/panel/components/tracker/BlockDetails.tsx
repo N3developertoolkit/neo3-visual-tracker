@@ -1,14 +1,16 @@
 import React from "react";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
+import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
+import Script from "./Script";
 import Table from "../Table";
 import Time from "../Time";
 import TransactionDetails from "./TransactionDetails";
 
 type Props = {
-  block: BlockJson;
+  block: Partial<BlockJson>;
   selectedTransaction: string;
   selectAddress: (address: string) => void;
   selectTransaction: (txid: string) => void;
@@ -30,49 +32,49 @@ export default function BlockDetails({
       }}
     >
       <MetadataBadge title="Index">{block.index}</MetadataBadge>
-      <MetadataBadge title="Time">
-        <Time ts={block.time} />
-      </MetadataBadge>
-      <MetadataBadge title="Block hash">
-        <Hash hash={block.hash} />
-      </MetadataBadge>
+      {!!block.time && (
+        <MetadataBadge title="Time">
+          <Time ts={block.time} />
+        </MetadataBadge>
+      )}
+      {!!block.hash && (
+        <MetadataBadge title="Block hash">
+          <Hash hash={block.hash} />
+        </MetadataBadge>
+      )}
       <MetadataBadge title="Size">{block.size} bytes</MetadataBadge>
       <MetadataBadge title="Version">{block.version}</MetadataBadge>
-      <MetadataBadge title="Merkle root">
-        <Hash hash={block.merkleroot} />
-      </MetadataBadge>
+      {!!block.merkleroot && (
+        <MetadataBadge title="Merkle root">
+          <Hash hash={block.merkleroot} />
+        </MetadataBadge>
+      )}
       {!!block.consensusdata && (
         <MetadataBadge title="Consensus data">
           <Hash hash={block.consensusdata.nonce} /> &mdash;{" "}
           {block.consensusdata.primary}
         </MetadataBadge>
       )}
-      {!!block.witnesses && (
-        <>
-          <MetadataBadge title="Witnesses">
-            {block.witnesses.length}
+      {!!block.witnesses &&
+        block.witnesses.map((witness) => (
+          <MetadataBadge title="Witness">
+            <div>
+              <strong>
+                <small>Invocation</small>
+              </strong>
+              <br />
+              <Script script={witness.invocation} />
+            </div>
+            <div style={{ marginTop: 4 }}>
+              <strong>
+                <small>Verification</small>
+              </strong>
+              <br />
+              <Script script={witness.verification} />
+            </div>
           </MetadataBadge>
-          {block.witnesses.map((witness) => (
-            <MetadataBadge title="Witness">
-              <div>
-                <strong>
-                  <small>Invocation</small>
-                </strong>
-                <br />
-                <Hash hash={witness.invocation} />
-              </div>
-              <div style={{ marginTop: 4 }}>
-                <strong>
-                  <small>Verification</small>
-                </strong>
-                <br />
-                <Hash hash={witness.verification} />
-              </div>
-            </MetadataBadge>
-          ))}
-        </>
-      )}
-      {!!block.tx.length && (
+        ))}
+      {!!block.tx?.length && (
         <div style={{ width: "100%", marginTop: 10 }}>
           <Table
             headings={[
@@ -80,7 +82,7 @@ export default function BlockDetails({
               { content: <>Sender</> },
               { content: <>Size</> },
             ]}
-            rows={block.tx.map((tx) => ({
+            rows={block.tx.map((tx: Partial<TransactionJson>) => ({
               onClick:
                 selectedTransaction === tx.hash
                   ? () => selectTransaction("")
@@ -88,7 +90,13 @@ export default function BlockDetails({
               key: tx.hash,
               cells: [
                 { content: <Hash hash={tx.hash || ""} /> },
-                { content: <Hash hash={tx.sender} /> },
+                {
+                  content: !!tx.sender ? (
+                    <Hash hash={tx.sender} />
+                  ) : (
+                    <>Unknown sender</>
+                  ),
+                },
                 { content: <>{tx.size} bytes</> },
               ],
               annotation:

@@ -67,11 +67,13 @@ export default function Table({ headings, rows }: Props) {
     <table style={tableStyle}>
       {!!headings && (
         <thead style={theadStyle}>
-          {headings.map((heading) => (
-            <th style={cellStyle} key={heading.key || undefined}>
-              {heading.content}
-            </th>
-          ))}
+          <tr>
+            {headings.map((heading, i) => (
+              <th style={cellStyle} key={heading.key || i}>
+                {heading.content}
+              </th>
+            ))}
+          </tr>
         </thead>
       )}
       <tbody>
@@ -91,9 +93,9 @@ export default function Table({ headings, rows }: Props) {
               }}
               onClick={row.onClick}
             >
-              {row.cells.map((cell) => (
+              {row.cells.map((cell, i) => (
                 <td
-                  key={cell.key || undefined}
+                  key={cell.key || i}
                   style={cellStyle}
                   colSpan={cell.colSpan}
                 >

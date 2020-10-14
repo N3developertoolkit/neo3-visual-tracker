@@ -40,7 +40,7 @@ export default function Search({ searchHistory, onSearch }: Props) {
       />
       <datalist id={dataListId}>
         {searchHistory.map((_) => (
-          <option value={_} />
+          <option key={_} value={_} />
         ))}
       </datalist>
       <div
