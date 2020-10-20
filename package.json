@@ -201,6 +201,7 @@
     "file-loader": "^6.1.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
+    "neon-core-neo2": "git+https://github.com/ngdseattle/neon-core-neo2.git",
     "nerdbank-gitversioning": "^3.2.31",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
