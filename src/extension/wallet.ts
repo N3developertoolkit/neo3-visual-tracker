@@ -47,7 +47,7 @@ export default class Wallet {
         }
       } catch (e) {
         // TODO: Current version of neonCore package will not decrypt
-        //       Neo 2 wallets. Investigate.
+        //       Neo 2 wallets. Surface a more useful error in this case.
         console.log(
           LOG_PREFIX,
           this.wallet.name,
