@@ -18,6 +18,7 @@ type Props = {
     onClick?: () => void;
     cells: { key?: string; colSpan?: number; content: JSX.Element }[];
     annotation?: JSX.Element;
+    selected?: boolean;
   }[];
 };
 
@@ -89,7 +90,7 @@ export default function Table({ headings, rows }: Props) {
                   ? trStyleEven
                   : trStyleOdd),
                 cursor: row.onClick ? "pointer" : undefined,
-                fontWeight: !!row.annotation ? "bold" : undefined,
+                fontWeight: row.selected ? "bold" : undefined,
               }}
               onClick={row.onClick}
             >

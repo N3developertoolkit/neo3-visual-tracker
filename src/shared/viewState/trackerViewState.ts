@@ -7,7 +7,7 @@ type TrackerViewState = {
   panelTitle: string;
   blockHeight: number;
   selectedAddress: AddressInfo | null;
-  selectedBlock: string;
+  selectedBlock: BlockJson | null;
   selectedTransaction: string;
   startAtBlock: number;
   blocks: BlockJson[];

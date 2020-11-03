@@ -21,6 +21,7 @@ export default function Dialog({ children, onClose }: Props) {
         backgroundColor: "rgba(255,255,255,0.50)",
         justifyContent: "center",
         alignItems: "center",
+        zIndex: 100,
       }}
       onClick={onClose}
     >
@@ -30,6 +31,8 @@ export default function Dialog({ children, onClose }: Props) {
           backgroundColor: "var(--vscode-editor-background)",
           color: "var(--vscode-editor-foreground)",
           border: "1px solid var(--vscode-focusBorder)",
+          boxShadow: "-1px 1px 3px 0px var(--vscode-focusBorder)",
+          borderRadius: 10,
           padding: 20,
           maxHeight: "80vh",
           maxWidth: "80vw",

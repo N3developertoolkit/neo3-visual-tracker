@@ -14,7 +14,7 @@ const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "[TrackerPanelController]";
 const MAX_RETRIES = 3;
-const PAGINATION_DISTANCE = 15;
+const PAGINATION_DISTANCE = 5;
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
@@ -40,7 +40,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         blocks: [],
         selectedAddress: null,
         selectedTransaction: "",
-        selectedBlock: "",
+        selectedBlock: null,
         startAtBlock: -1,
         searchHistory: [],
       },
@@ -86,22 +86,13 @@ export default class TrackerPanelController extends PanelControllerBase<
     if (request.selectBlock !== undefined) {
       if (request.selectBlock) {
         const selectedBlock = await this.getBlock(request.selectBlock, true);
-        const startAtBlock = Math.min(
-          this.viewState.blockHeight - 1,
-          selectedBlock.index + 2
-        );
         await this.updateViewState({
-          selectedBlock: selectedBlock.hash,
-          startAtBlock,
-          blocks: await this.getBlocks(
-            startAtBlock,
-            this.viewState.blockHeight
-          ),
+          selectedBlock,
           searchHistory: await this.getSearchHistory(),
         });
       } else {
         await this.updateViewState({
-          selectedBlock: "",
+          selectedBlock: null,
           searchHistory: await this.getSearchHistory(),
         });
       }
@@ -115,18 +106,9 @@ export default class TrackerPanelController extends PanelControllerBase<
           (selectedTransaction as any).blockhash,
           false
         );
-        const startAtBlock = Math.min(
-          this.viewState.blockHeight - 1,
-          selectedBlock.index + 2
-        );
         await this.updateViewState({
           selectedTransaction: selectedTransaction.hash,
-          selectedBlock: selectedBlock.hash,
-          startAtBlock,
-          blocks: await this.getBlocks(
-            startAtBlock,
-            this.viewState.blockHeight
-          ),
+          selectedBlock,
           searchHistory: await this.getSearchHistory(),
         });
       } else {

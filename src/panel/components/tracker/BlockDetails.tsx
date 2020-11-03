@@ -99,6 +99,7 @@ export default function BlockDetails({
                 },
                 { content: <>{tx.size} bytes</> },
               ],
+              selected: selectedTransaction === tx.hash,
               annotation:
                 selectedTransaction === tx.hash ? (
                   <TransactionDetails
