@@ -12,10 +12,7 @@ const LOG_PREFIX = "[ServerListDetector]";
 const SEARCH_PATTERN = "**/neo-servers.json";
 
 const DEFAULT_FILE = {
-  "neo-rpc-uris": [
-    "http://seed1.ngd.network:10332",
-    "http://seed2.ngd.network:10332",
-  ],
+  "neo-rpc-uris": ["http://localhost:20332"],
   "neo-blockchain-names": {
     "0x0000000000000000000000000000000000000000000000000000000000000000":
       "My Private Blockchain",
@@ -31,10 +28,6 @@ const UNKNOWN_BLOCKCHAIN =
 // names the user has supplied through neo-servers.json file(s) in the
 // current workspace):
 const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
-  "0xd42561e3d30e15be6400b6df2f328e02d2bf6354c41dce433bc57687c82144bf":
-    "Neo 2 MainNet",
-  "0xb3181718ef6167105b70920e4a8fbbd0a0a56aacf460d70e10ba6fa1668f1fef":
-    "Neo 2 TestNet",
   "0xc359030132be10fd19cfd0a27e289fe04acb0c5c4ca5254af8a2d99498c7da45":
     "Neo 3 TestNet",
 };
@@ -42,13 +35,9 @@ const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
 // These are the RPC URLs made available to users who do not have their
 // own neo-servers.json file(s) in their workspace:
 const SEED_URLS: { [url: string]: boolean } = {
-  // V2 MainNet:
-  "https://m1.neo.nash.io": true,
-  "https://m2.neo.nash.io": true,
-  "http://seed1.ngd.network:10332": true,
-  "http://seed2.ngd.network:10332": true,
-  // V2 TestNet:
-  "http://seed5.ngd.network:20332": true,
+  //
+  // TODO: Add MainNet URLs and alternative TestNet endpoints.
+  //
   // V3 TestNet:
   "http://seed1t.neo.org:20332": true,
 };
