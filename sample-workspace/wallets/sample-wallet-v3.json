@@ -1,4 +1,12 @@
 {
+  "NOTE_0": "                                                ",
+  "NOTE_1": "    The password for this wallet file is:       ",
+  "NOTE_2": "        neo                                     ",
+  "NOTE_3": "    (without any whitespace or punctuation)     ",
+  "NOTE_4": "                                                ",
+  "NOTE_5": "    DO NOT USE IN PRODUCTION!                   ",
+  "NOTE_6": "                                                ",
+
   "name": "v3-sample-wallet",
   "version": "1.0",
   "scrypt": {
