@@ -101,6 +101,16 @@
         "command": "neo3-visual-devtracker.customizeServerList",
         "title": "Customize blockchain list",
         "category": "Neo 3 Visual DevTracker"
+      },
+      {
+        "command": "neo3-visual-devtracker.connect",
+        "title": "Connect to a Neo blockchain",
+        "category": "Neo 3 Visual DevTracker"
+      },
+      {
+        "command": "neo3-visual-devtracker.disconnect",
+        "title": "Disconnect from current Neo blockchain",
+        "category": "Neo 3 Visual DevTracker"
       }
     ],
     "menus": {

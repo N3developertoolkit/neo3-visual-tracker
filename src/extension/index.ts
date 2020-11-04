@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "./activeConnection";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
@@ -44,6 +45,7 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpressDetector,
     serverListDetector
   );
+  const activeConnection = new ActiveConnection(blockchainsExplorer);
   const neoExpress = new NeoExpress(context);
   const neoInvokeFileEditor = new NeoInvokeFileEditor(
     context,
@@ -52,9 +54,10 @@ export async function activate(context: vscode.ExtensionContext) {
     contractDetector
   );
 
+  context.subscriptions.push(activeConnection);
   context.subscriptions.push(contractDetector);
-  context.subscriptions.push(serverListDetector);
   context.subscriptions.push(neoExpressDetector);
+  context.subscriptions.push(serverListDetector);
   context.subscriptions.push(walletDetector);
 
   context.subscriptions.push(
@@ -75,9 +78,21 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "neo3-visual-devtracker.customizeServerList",
-      async () => {
-        await serverListDetector.customize();
-      }
+      async () => await serverListDetector.customize()
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "neo3-visual-devtracker.connect",
+      async () => await activeConnection.connect()
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "neo3-visual-devtracker.disconnect",
+      async () => await activeConnection.disconnect()
     )
   );
 
