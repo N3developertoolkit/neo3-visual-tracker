@@ -7,19 +7,16 @@ import MetadataBadge from "../MetadataBadge";
 import Script from "./Script";
 import Table from "../Table";
 import Time from "../Time";
-import TransactionDetails from "./TransactionDetails";
 
 type Props = {
   block: Partial<BlockJson>;
-  selectedTransaction: string;
-  selectAddress: (address: string) => void;
+  selectedTransactionHash?: string;
   selectTransaction: (txid: string) => void;
 };
 
 export default function BlockDetails({
   block,
-  selectedTransaction,
-  selectAddress,
+  selectedTransactionHash,
   selectTransaction,
 }: Props) {
   return (
@@ -31,7 +28,6 @@ export default function BlockDetails({
         alignItems: "stretch",
       }}
     >
-      <MetadataBadge title="Index">{block.index}</MetadataBadge>
       {!!block.time && (
         <MetadataBadge title="Time">
           <Time ts={block.time} />
@@ -84,7 +80,7 @@ export default function BlockDetails({
             ]}
             rows={block.tx.map((tx: Partial<TransactionJson>) => ({
               onClick:
-                selectedTransaction === tx.hash
+                selectedTransactionHash === tx.hash
                   ? () => selectTransaction("")
                   : () => selectTransaction(tx.hash || ""),
               key: tx.hash,
@@ -99,14 +95,7 @@ export default function BlockDetails({
                 },
                 { content: <>{tx.size} bytes</> },
               ],
-              selected: selectedTransaction === tx.hash,
-              annotation:
-                selectedTransaction === tx.hash ? (
-                  <TransactionDetails
-                    transaction={tx}
-                    selectAddress={selectAddress}
-                  />
-                ) : undefined,
+              selected: selectedTransactionHash === tx.hash,
             }))}
           />
         </div>

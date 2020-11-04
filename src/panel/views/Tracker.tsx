@@ -9,6 +9,7 @@ import NavButton from "../components/NavButton";
 import Search from "../components/tracker/Search";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
+import TransactionDetails from "../components/tracker/TransactionDetails";
 
 type Props = {
   viewState: TrackerViewState;
@@ -52,39 +53,66 @@ export default function Tracker({ viewState, postMessage }: Props) {
                 position: "absolute",
                 top: 40,
                 bottom: 40,
-                padding: 15,
                 right: 0,
                 minWidth: "50vw",
                 maxWidth: "80vw",
-                overflowY: "scroll",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                overflow: "hidden",
               }}
             >
               <div
                 style={{
-                  fontWeight: "bold",
-                  fontSize: "1.25rem",
-                  textAlign: "right",
-                  paddingBottom: 15,
+                  flex: "2 1 content",
+                  overflowY: "scroll",
+                  padding: 15,
                 }}
               >
-                <NavButton
-                  style={{ float: "left" }}
-                  onClick={() => postMessage({ selectBlock: "" })}
+                <div
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: "1.25rem",
+                    textAlign: "right",
+                    paddingBottom: 15,
+                  }}
                 >
-                  Close
-                </NavButton>
-                Block {viewState.selectedBlock.index}
+                  <NavButton
+                    style={{ float: "left" }}
+                    onClick={() => postMessage({ selectBlock: "" })}
+                  >
+                    Close
+                  </NavButton>
+                  Block {viewState.selectedBlock.index}
+                </div>
+                <BlockDetails
+                  block={viewState.selectedBlock}
+                  selectedTransactionHash={viewState.selectedTransaction?.hash}
+                  selectTransaction={(txid) =>
+                    postMessage({ selectTransaction: txid })
+                  }
+                />
               </div>
-              <BlockDetails
-                block={viewState.selectedBlock}
-                selectedTransaction={viewState.selectedTransaction}
-                selectAddress={(address) =>
-                  postMessage({ selectAddress: address })
-                }
-                selectTransaction={(txid) =>
-                  postMessage({ selectTransaction: txid })
-                }
-              />
+              {!!viewState.selectedTransaction && (
+                <div
+                  style={{
+                    flex: "1 1 content",
+                    minHeight: 150,
+                    overflowY: "scroll",
+                    padding: 15,
+                    borderTop: "1px solid var(--vscode-focusBorder)",
+                    backgroundColor:
+                      "var(--vscode-editor-inactiveSelectionBackground)",
+                  }}
+                >
+                  <TransactionDetails
+                    transaction={viewState.selectedTransaction}
+                    selectAddress={(address) =>
+                      postMessage({ selectAddress: address })
+                    }
+                  />
+                </div>
+              )}
             </div>
           )}
           <div style={{ minHeight: "100vh" }}>

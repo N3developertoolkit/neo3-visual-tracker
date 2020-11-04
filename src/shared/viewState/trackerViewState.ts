@@ -1,4 +1,5 @@
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
+import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../addressInfo";
 
@@ -8,7 +9,7 @@ type TrackerViewState = {
   blockHeight: number;
   selectedAddress: AddressInfo | null;
   selectedBlock: BlockJson | null;
-  selectedTransaction: string;
+  selectedTransaction: TransactionJson | null;
   startAtBlock: number;
   blocks: BlockJson[];
   paginationDistance: number;

@@ -39,7 +39,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         paginationDistance: PAGINATION_DISTANCE,
         blocks: [],
         selectedAddress: null,
-        selectedTransaction: "",
+        selectedTransaction: null,
         selectedBlock: null,
         startAtBlock: -1,
         searchHistory: [],
@@ -88,11 +88,13 @@ export default class TrackerPanelController extends PanelControllerBase<
         const selectedBlock = await this.getBlock(request.selectBlock, true);
         await this.updateViewState({
           selectedBlock,
+          selectedTransaction: null,
           searchHistory: await this.getSearchHistory(),
         });
       } else {
         await this.updateViewState({
           selectedBlock: null,
+          selectedTransaction: null,
           searchHistory: await this.getSearchHistory(),
         });
       }
@@ -107,13 +109,13 @@ export default class TrackerPanelController extends PanelControllerBase<
           false
         );
         await this.updateViewState({
-          selectedTransaction: selectedTransaction.hash,
+          selectedTransaction,
           selectedBlock,
           searchHistory: await this.getSearchHistory(),
         });
       } else {
         await this.updateViewState({
-          selectedTransaction: "",
+          selectedTransaction: null,
           searchHistory: await this.getSearchHistory(),
         });
       }
