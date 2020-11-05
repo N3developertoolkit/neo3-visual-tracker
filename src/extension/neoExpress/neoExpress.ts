@@ -1,6 +1,7 @@
 import * as childProcess from "child_process";
 import * as path from "path";
 import * as vscode from "vscode";
+import * as which from "which";
 
 type Command =
   | "checkpoint"
@@ -16,6 +17,7 @@ const LOG_PREFIX = "[NeoExpress]";
 
 export default class NeoExpress {
   private readonly binaryPath: string;
+  private readonly dotnetPath: string;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this.binaryPath = path.join(
@@ -27,16 +29,17 @@ export default class NeoExpress {
       "any",
       "nxp3.dll"
     );
+    this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
   }
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
-    if (!NeoExpress.checkForDotNet()) {
+    if (!this.checkForDotNet()) {
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
     const terminal = vscode.window.createTerminal({
       name,
-      shellPath: "dotnet",
+      shellPath: this.dotnetPath,
       shellArgs: dotNetArguments,
       hideFromUser: false,
     });
@@ -48,14 +51,14 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): { message: string; isError?: boolean } {
-    if (!NeoExpress.checkForDotNet()) {
+    if (!this.checkForDotNet()) {
       return { message: "Could not launch Neo Express", isError: true };
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
     try {
       return {
         message: childProcess
-          .execFileSync("dotnet", dotNetArguments)
+          .execFileSync(this.dotnetPath, dotNetArguments)
           .toString(),
       };
     } catch (e) {
@@ -70,12 +73,12 @@ export default class NeoExpress {
     }
   }
 
-  private static async checkForDotNet() {
+  private async checkForDotNet() {
     let ok = false;
     try {
       ok =
         parseInt(
-          childProcess.execFileSync("dotnet", ["--version"]).toString()
+          childProcess.execFileSync(this.dotnetPath, ["--version"]).toString()
         ) >= 3;
     } catch (e) {
       console.error(LOG_PREFIX, "checkForDotNet error:", e.message);
