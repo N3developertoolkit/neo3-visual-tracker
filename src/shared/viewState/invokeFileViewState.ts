@@ -1,4 +1,4 @@
-import AutoCompleteData from "../autocompleteData";
+import AutoCompleteData from "../autoCompleteData";
 
 type InvokeFileViewState = {
   view: "invokeFile";
