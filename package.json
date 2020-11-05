@@ -181,8 +181,8 @@
   },
   "scripts": {
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "rm -rf deps/nxp && mkdir -p deps/nxp && nwget https://bit.ly/3jXh7iR -O deps/nxp/nxp.nupkg",
-    "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg && mv tools/netcoreapp* tools/netcoreapp && rm nxp.nupkg",
+    "bundle-nxp-download": "mkdir -p deps/nxp.tmp && nwget https://bit.ly/3jXh7iR -O deps/nxp.tmp/nxp.nupkg",
+    "bundle-nxp-extract": "cd deps/nxp.tmp && extract-zip nxp.nupkg && mv tools/netcoreapp* tools/netcoreapp && rm nxp.nupkg && cd .. && mv nxp.tmp nxp",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
     "compile-panel": "webpack --config src/panel/webpack.config.js --mode development",
