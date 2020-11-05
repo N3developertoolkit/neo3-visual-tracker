@@ -36,11 +36,10 @@ jobs:
           cp *.vsix neo3-visual-tracker.vsix
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - name: 🌎 Release
-        uses: djnicholson/release-action@v2.4
+        uses: djnicholson/release-action@v2.10
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag-name: v0.0-${{ steps.package.outputs.branch }}
           release-name: "Rolling build"
           asset-name: "neo3-visual-tracker.vsix"
           file: "neo3-visual-tracker.vsix"
-
