@@ -181,7 +181,7 @@
   },
   "scripts": {
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "mkdir -p deps/nxp && nwget \"https://u6ovsblobprodcus377.blob.core.windows.net/b-7832342271c446909a07950499cf8aa8/B1536CB30F5EC46CBF151C7D84DC11B3CD6867B69AA42B7B058E24D02838654A00.blob?sv=2019-02-02&sr=b&si=1&sig=oaVfml3DC%2F2s9H5DrtW6zrRzaJhkIPVNfi6mC7PHp64%3D&spr=https&se=2020-11-05T23%3A57%3A24Z&rscl=x-e2eid-8ee01b82-e1074db3-a05dd059-74fcfd98-session-8ee01b82-e1074db3-a05dd059-74fcfd98&rscd=attachment%3B%20filename%3D%22neo.express3.1.2.31-insiders.nupkg%22\" -O deps/nxp/nxp.nupkg",
+    "bundle-nxp-download": "mkdir -p deps/nxp && nwget \"https://5rqvsblobprodcus385.blob.core.windows.net/b-7832342271c446909a07950499cf8aa8/D35C1E7F8D1C59C2A08F891FE4612931A4E5931A3CECD5F2002D1B0877EF870D00.blob?sv=2019-02-02&sr=b&si=1&sig=F6zcNjRc0QCpHgvovg2auXRrF47qo9ijzlnHP1J9Xdc%3D&spr=https&se=2020-11-06T02%3A35%3A17Z&rscl=x-e2eid-7bd2017a-b6b14b42-a04811a9-a502aa56-session-7bd2017a-b6b14b42-a04811a9-a502aa56&rscd=attachment%3B%20filename%3D%22neo.express3.1.2.32-insiders.nupkg%22\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg && mv tools/netcoreapp* tools/netcoreapp && rm nxp.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
