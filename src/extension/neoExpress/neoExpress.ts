@@ -25,7 +25,7 @@ export default class NeoExpress {
       "deps",
       "nxp",
       "tools",
-      "netcoreapp",
+      "netcoreapp3.1",
       "any",
       "nxp3.dll"
     );
