@@ -45,7 +45,8 @@ export default class NeoExpressIo {
       identifer.configPath
     );
     if (output.isError) {
-      throw Error(`List contract invoke error: ${output.message}`);
+      console.error(LOG_PREFIX, "List contract invoke error", output.message);
+      return [];
     }
     try {
       // TODO: This is a hack. Consider either:
