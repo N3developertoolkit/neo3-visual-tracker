@@ -180,7 +180,8 @@
     }
   },
   "scripts": {
-    "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
+    "bundle-nxp": "[ -d deps/nxp ] || npm run bundle-nxp-go",
+    "bundle-nxp-go": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
     "bundle-nxp-download": "mkdir -p deps/nxp && nwget \"https://5rqvsblobprodcus385.blob.core.windows.net/b-7832342271c446909a07950499cf8aa8/D35C1E7F8D1C59C2A08F891FE4612931A4E5931A3CECD5F2002D1B0877EF870D00.blob?sv=2019-02-02&sr=b&si=1&sig=F6zcNjRc0QCpHgvovg2auXRrF47qo9ijzlnHP1J9Xdc%3D&spr=https&se=2020-11-06T02%3A35%3A17Z&rscl=x-e2eid-7bd2017a-b6b14b42-a04811a9-a502aa56-session-7bd2017a-b6b14b42-a04811a9-a502aa56&rscd=attachment%3B%20filename%3D%22neo.express3.1.2.32-insiders.nupkg%22\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg && mv tools/netcoreapp* tools/netcoreapp && rm nxp.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
@@ -191,7 +192,7 @@
     "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
     "package": "npm run compile-prod && npm run bundle-nxp && vsce package",
     "setversion": "gulp setversion",
-    "vscode-start": "npm install && npm run watch",
+    "vscode-start": "npm install && npm run bundle-nxp && npm run watch",
     "watch": "concurrently -r npm:watch-*",
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose",
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --info-verbosity verbose"
