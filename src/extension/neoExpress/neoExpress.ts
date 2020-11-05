@@ -12,6 +12,8 @@ type Command =
   | "transfer"
   | "wallet";
 
+const LOG_PREFIX = "[NeoExpress]";
+
 export default class NeoExpress {
   private readonly binaryPath: string;
 
@@ -28,6 +30,9 @@ export default class NeoExpress {
   }
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
+    if (!NeoExpress.checkForDotNet()) {
+      return null;
+    }
     const dotNetArguments = [this.binaryPath, command, ...options];
     const terminal = vscode.window.createTerminal({
       name,
@@ -43,6 +48,9 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): { message: string; isError?: boolean } {
+    if (!NeoExpress.checkForDotNet()) {
+      return { message: "Could not launch Neo Express", isError: true };
+    }
     const dotNetArguments = [this.binaryPath, command, ...options];
     try {
       return {
@@ -60,5 +68,31 @@ export default class NeoExpress {
           "Unknown failure",
       };
     }
+  }
+
+  private static async checkForDotNet() {
+    let ok = false;
+    try {
+      ok =
+        parseInt(
+          childProcess.execFileSync("dotnet", ["--version"]).toString()
+        ) >= 3;
+    } catch (e) {
+      console.error(LOG_PREFIX, "checkForDotNet error:", e.message);
+      ok = false;
+    }
+    if (!ok) {
+      const response = await vscode.window.showErrorMessage(
+        ".NET Core 3 or higher is required to use this functionality.",
+        "Dismiss",
+        "More info"
+      );
+      if (response === "More info") {
+        await vscode.env.openExternal(
+          vscode.Uri.parse("https://dotnet.microsoft.com/download")
+        );
+      }
+    }
+    return ok;
   }
 }
