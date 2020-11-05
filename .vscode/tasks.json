@@ -1,19 +1,18 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-      {
-        "type": "npm",
-        "script": "watch",
-        "problemMatcher": ["$ts-webpack-watch", "$tslint-webpack-watch"],
-        "presentation": {
-          "reveal": "always"
-        },
-        "isBackground": true,
-        "group": {
-          "kind": "build",
-          "isDefault": true
-        }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "vscode-start",
+      "problemMatcher": ["$ts-webpack-watch", "$tslint-webpack-watch"],
+      "presentation": {
+        "reveal": "always"
+      },
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
       }
-    ]
-  }
-  
+    }
+  ]
+}

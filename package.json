@@ -181,6 +181,7 @@
     "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
     "package": "npm run compile-prod && npm run bundle-nxp && vsce package",
     "setversion": "gulp setversion",
+    "vscode-start": "npm install && npm run watch",
     "watch": "concurrently -r npm:watch-*",
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --info-verbosity verbose",
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --info-verbosity verbose"
