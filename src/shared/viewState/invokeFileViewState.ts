@@ -1,4 +1,4 @@
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import AutoCompleteData from "../autocompleteData";
 
 type InvokeFileViewState = {
   view: "invokeFile";
@@ -8,9 +8,7 @@ type InvokeFileViewState = {
     operation?: string;
     args?: (string | number)[];
   }[];
-  contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
-  addressSuggestions: string[];
+  autoCompleteData: AutoCompleteData;
   errorText: string;
   connectedTo: string;
   connectionState: "ok" | "connecting" | "none";

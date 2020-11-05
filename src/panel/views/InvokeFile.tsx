@@ -33,12 +33,14 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       }}
     >
       <datalist id={argumentSuggestionListId}>
-        {viewState.addressSuggestions.map((_) => (
+        {viewState.autoCompleteData.addressSuggestions.map((_) => (
           <option key={_} value={`@${_}`} />
         ))}
-        {Object.getOwnPropertyNames(viewState.contracts).map((_) => (
-          <option key={_} value={`#${_}`} />
-        ))}
+        {Object.getOwnPropertyNames(viewState.autoCompleteData.contracts).map(
+          (_) => (
+            <option key={_} value={`#${_}`} />
+          )
+        )}
       </datalist>
       <div
         style={{
@@ -55,8 +57,8 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             contract={_.contract}
             operation={_.operation}
             args={_.args}
-            contracts={viewState.contracts}
-            nefHints={viewState.nefHints}
+            contracts={viewState.autoCompleteData.contracts}
+            nefHints={viewState.autoCompleteData.nefHints}
             argumentSuggestionListId={argumentSuggestionListId}
             onUpdate={(contract, operation, args) =>
               postMessage({
@@ -67,8 +69,8 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         ))}
         <InvocationStep
           key={viewState.fileContents.length}
-          contracts={viewState.contracts}
-          nefHints={viewState.nefHints}
+          contracts={viewState.autoCompleteData.contracts}
+          nefHints={viewState.autoCompleteData.nefHints}
           argumentSuggestionListId={argumentSuggestionListId}
           onUpdate={(contract, operation, args) =>
             postMessage({

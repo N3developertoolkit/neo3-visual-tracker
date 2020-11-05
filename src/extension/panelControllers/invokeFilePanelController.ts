@@ -33,9 +33,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Invoke File Editor",
         fileContents: [],
-        contracts: {},
-        nefHints: {},
-        addressSuggestions: [],
+        autoCompleteData: {
+          contracts: {},
+          nefHints: {},
+          addressSuggestions: [],
+        },
         errorText: "",
         connectedTo: "",
         connectionState: "none",
@@ -214,9 +216,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     this.updateViewState({
       connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
-      contracts,
-      nefHints,
-      addressSuggestions,
+      autoCompleteData: {
+        contracts,
+        nefHints,
+        addressSuggestions,
+      },
     });
   }
 
