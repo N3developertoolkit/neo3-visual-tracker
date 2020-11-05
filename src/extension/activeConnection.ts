@@ -10,10 +10,11 @@ const PREFIX = "NEO:";
 const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class ActiveConnection {
-  private connection: {
+  connection: {
     blockchainIdentifier: BlockchainIdentifier;
     rpcClient: neonCore.rpc.RPCClient;
   } | null;
+
   private disposed = false;
   private statusBarItem: vscode.StatusBarItem;
   private visible = false;

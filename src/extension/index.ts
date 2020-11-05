@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const neoExpress = new NeoExpress(context);
   const neoInvokeFileEditor = new NeoInvokeFileEditor(
     context,
-    blockchainsExplorer,
+    activeConnection,
     neoExpress,
     contractDetector
   );

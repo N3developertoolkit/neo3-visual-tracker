@@ -1,10 +1,8 @@
-import * as neonCore from "@cityofzion/neon-core";
 import * as path from "path";
 import * as vscode from "vscode";
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
-import BlockchainIdentifier from "../blockchainIdentifier";
-import BlockchainsExplorer from "../views/blockchainsExplorer";
+import ActiveConnection from "../activeConnection";
 import ContractDetector from "../detectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
@@ -21,14 +19,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewRequest
 > {
   private changeWatcher: vscode.Disposable | null;
-  private rpcClient: neonCore.rpc.RPCClient | null;
-  private blockchainIdentifier: BlockchainIdentifier | null;
 
   constructor(
     context: vscode.ExtensionContext,
     private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
-    private readonly blockchainsExplorer: BlockchainsExplorer,
+    private readonly activeConnection: ActiveConnection,
     private readonly contractDetector: ContractDetector,
     panel: vscode.WebviewPanel
   ) {
@@ -53,8 +49,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         this.onFileUpdate();
       }
     });
-    this.rpcClient = null;
-    this.blockchainIdentifier = null;
     this.refreshLoop();
   }
 
@@ -70,32 +64,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.onFileUpdate();
     }
     if (request.initiateConnection) {
-      this.blockchainIdentifier =
-        (await this.blockchainsExplorer.select()) || null;
-      let rpcUrl = this.blockchainIdentifier?.rpcUrls[0];
-      if ((this.blockchainIdentifier?.rpcUrls.length || 0) > 1) {
-        rpcUrl = await IoHelpers.multipleChoice(
-          "Select an RPC server",
-          ...this.blockchainIdentifier?.rpcUrls
-        );
-      }
-      if (rpcUrl) {
-        this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
-        this.updateViewState({
-          connectedTo: this.blockchainIdentifier?.name,
-          connectionState: "connecting",
-        });
-        await this.periodicViewStateUpdate();
-      } else {
-        this.rpcClient = null;
-        this.updateViewState({ connectedTo: "", connectionState: "none" });
-        await this.periodicViewStateUpdate();
-      }
+      await this.activeConnection.connect();
+      await this.periodicViewStateUpdate();
     }
     if (request.disconnect) {
-      this.rpcClient = null;
-      this.blockchainIdentifier = null;
-      this.updateViewState({ connectedTo: "", connectionState: "none" });
+      await this.activeConnection.disconnect();
       await this.periodicViewStateUpdate();
     }
     if (request.update !== undefined) {
@@ -123,25 +96,31 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await vscode.workspace.applyEdit(edit);
     }
     if (request.run) {
-      if (this.blockchainIdentifier) {
+      const connection = this.activeConnection.connection;
+      if (
+        connection &&
+        connection.blockchainIdentifier.blockchainType === "express"
+      ) {
         const account = await IoHelpers.multipleChoice(
           "Select an account...",
           "genesis",
-          ...this.blockchainIdentifier.wallets
+          ...connection.blockchainIdentifier.wallets
         );
         if (!account) {
           return;
         }
         await this.document.save();
-        this.neoExpress.runInTerminal(
-          path.basename(this.document.uri.fsPath),
+        const result = this.neoExpress.runSync(
           "contract",
           "invoke",
           "-i",
-          this.blockchainIdentifier.configPath,
+          connection.blockchainIdentifier.configPath,
           this.document.uri.fsPath,
           account
         );
+        (result.isError
+          ? vscode.window.showErrorMessage
+          : vscode.window.showInformationMessage)(result.message);
       }
     }
   }
@@ -163,12 +142,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     let addressSuggestions: string[] = [];
     let connectionState: "none" | "ok" | "connecting" = "none";
-    if (this.blockchainIdentifier?.blockchainType === "express") {
+    const connection = this.activeConnection.connection;
+    if (connection?.blockchainIdentifier?.blockchainType === "express") {
       try {
-        addressSuggestions = this.blockchainIdentifier.walletAddresses;
+        addressSuggestions = connection.blockchainIdentifier.walletAddresses;
         const deployedContracts = await NeoExpressIo.contractList(
           this.neoExpress,
-          this.blockchainIdentifier
+          connection.blockchainIdentifier
         );
         connectionState = "ok";
         for (const deployedContract of deployedContracts) {
@@ -181,7 +161,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         try {
           const manifest = await NeoExpressIo.contractGet(
             this.neoExpress,
-            this.blockchainIdentifier,
+            connection.blockchainIdentifier,
             nefFile
           );
           connectionState = "ok";
@@ -202,7 +182,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         try {
           const manifest = await NeoExpressIo.contractGet(
             this.neoExpress,
-            this.blockchainIdentifier,
+            connection.blockchainIdentifier,
             nefFile
           );
           connectionState = "ok";
@@ -216,13 +196,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         }
       }
     }
-    if (this.rpcClient) {
+    if (connection?.rpcClient) {
       for (const contractHash of this.viewState.fileContents
         .filter((_) => _.contract?.startsWith("0x"))
         .map((_) => _.contract || "")) {
         try {
           const manifest = (
-            await this.rpcClient.getContractState(contractHash)
+            await connection.rpcClient.getContractState(contractHash)
           ).toJson();
           connectionState = "ok";
           contracts[contractHash] = manifest;
@@ -232,6 +212,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
     }
     this.updateViewState({
+      connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
       contracts,
       nefHints,
