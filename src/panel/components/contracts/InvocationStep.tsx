@@ -1,10 +1,8 @@
 import React from "react";
-import {
-  ContractManifestJson,
-  ContractMethodDefinitionJson,
-} from "@cityofzion/neon-core/lib/sc";
+import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
 
 import ArgumentsInput from "./ArgumentsInput";
+import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractInput from "./ContractInput";
 import OperationInput from "./OperationInput";
 
@@ -12,7 +10,7 @@ type Props = {
   contract?: string;
   operation?: string;
   args?: (string | number)[];
-  contractMetadata: { [hashOrNefFile: string]: ContractManifestJson };
+  autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
   onUpdate: (
     contract?: string,
@@ -25,13 +23,17 @@ export default function InvocationStep({
   contract,
   operation,
   args,
-  contractMetadata,
+  autoCompleteData,
   argumentSuggestionListId,
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
-  if (contract && contractMetadata[contract]) {
-    operations = contractMetadata[contract].abi.methods;
+  if (contract) {
+    const contractHash = autoCompleteData.contractHashes[contract] || contract;
+    const manifest = autoCompleteData.contractManifests[contractHash];
+    if (manifest?.abi) {
+      operations = manifest.abi.methods;
+    }
   }
   return (
     <div
@@ -46,7 +48,7 @@ export default function InvocationStep({
       <ContractInput
         style={{ marginBottom: 10 }}
         contract={contract}
-        contractMetadata={contractMetadata}
+        autoCompleteData={autoCompleteData}
         setContract={(newContract: string) =>
           onUpdate(newContract, operation, args)
         }

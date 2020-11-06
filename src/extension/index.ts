@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "./activeConnection";
+import AutoCompleteWatcher from "./autoCompleteWatcher";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
@@ -38,15 +39,21 @@ function registerBlockchainInstanceCommand(
 
 export async function activate(context: vscode.ExtensionContext) {
   const contractDetector = new ContractDetector();
+  const walletDetector = new WalletDetector();
+  const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
-  const walletDetector = new WalletDetector();
   const blockchainsExplorer = await BlockchainsExplorer.create(
     neoExpressDetector,
     serverListDetector
   );
   const activeConnection = new ActiveConnection(blockchainsExplorer);
-  const neoExpress = new NeoExpress(context);
+  const autoCompleteWatcher = new AutoCompleteWatcher(
+    neoExpress,
+    activeConnection,
+    contractDetector,
+    walletDetector
+  );
   const neoInvokeFileEditor = new NeoInvokeFileEditor(
     context,
     activeConnection,
@@ -55,6 +62,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(activeConnection);
+  context.subscriptions.push(autoCompleteWatcher);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(serverListDetector);

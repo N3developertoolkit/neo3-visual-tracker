@@ -3,7 +3,7 @@ import React from "react";
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 type Props = {
-  manifest: ContractManifestJson;
+  manifest: Partial<ContractManifestJson>;
   onMouseDown?: (newValue: string) => void;
 };
 
@@ -14,12 +14,15 @@ export default function ContractTile({ manifest, onMouseDown }: Props) {
     padding: 5,
     cursor: onMouseDown ? "pointer" : undefined,
   };
-  const methods = manifest.abi.methods.map((_) => _.name);
+  if (!manifest.abi) {
+    return <></>;
+  }
+  const methods = manifest.abi?.methods.map((_) => _.name);
   return (
     <div
       style={style}
       onMouseDown={() => {
-        if (onMouseDown) {
+        if (onMouseDown && manifest.abi?.hash) {
           onMouseDown(manifest.abi.hash);
         }
       }}

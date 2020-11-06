@@ -31,7 +31,7 @@ export default class NeoExpressCommands {
     }
     const contractFile = await IoHelpers.multipleChoiceFiles(
       `Use account "${account}" to deploy...`,
-      ...contractDetector.contracts
+      ...Object.keys(contractDetector.contracts)
     );
     if (!contractFile) {
       return;

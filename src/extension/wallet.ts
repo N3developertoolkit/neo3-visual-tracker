@@ -16,7 +16,7 @@ export default class Wallet {
         // Probably not a wallet
         return undefined;
       }
-      const result = new Wallet(new neonCore.wallet.Wallet(json));
+      const result = new Wallet(path, new neonCore.wallet.Wallet(json));
       await result.tryUnlockWithoutPassword();
       return result;
     } catch (e) {
@@ -25,7 +25,14 @@ export default class Wallet {
     }
   }
 
-  constructor(private readonly wallet: neonCore.wallet.Wallet) {}
+  constructor(
+    public readonly path: string,
+    private readonly wallet: neonCore.wallet.Wallet
+  ) {}
+
+  get addresses() {
+    return this.wallet.accounts.map((_) => _.address);
+  }
 
   async tryUnlockWithoutPassword() {
     for (let i = 0; i < this.wallet.accounts.length; i++) {

@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
+import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
 
 type Props = {
   style?: React.CSSProperties;
   contract?: string;
-  contractMetadata: { [hashOrNefFile: string]: ContractManifestJson };
+  autoCompleteData: AutoCompleteData;
   setContract: (newValue: string) => void;
 };
 
 export default function ContractInput({
   style,
   contract,
-  contractMetadata,
+  autoCompleteData,
   setContract,
 }: Props) {
   const [hasFocus, setHasFocus] = useState(false);
@@ -39,7 +39,7 @@ export default function ContractInput({
     maxHeight: "80vh",
     overflow: "auto",
   };
-  const contractManifests = Object.values(contractMetadata);
+  const contractManifests = Object.values(autoCompleteData.contractManifests);
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
@@ -55,9 +55,9 @@ export default function ContractInput({
       />
       {hasFocus && !!contractManifests.length && (
         <div style={dropdownStyle}>
-          {contractManifests.map((manifest) => (
+          {contractManifests.map((manifest, i) => (
             <ContractTile
-              key={manifest.abi.hash}
+              key={`${i}_${manifest.abi?.hash}`}
               manifest={manifest}
               onMouseDown={setContract}
             />

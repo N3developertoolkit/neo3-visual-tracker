@@ -1,18 +1,18 @@
 import * as path from "path";
 import * as vscode from "vscode";
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import ActiveConnection from "../activeConnection";
+import AutoCompleteData from "../../shared/autoCompleteData";
+import AutoCompleteWatcher from "../autoCompleteWatcher";
 import ContractDetector from "../detectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
-import NeoExpressIo from "../neoExpress/neoExpressIo";
 import PanelControllerBase from "./panelControllerBase";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
-const REFRESH_INTERVAL_MS = 1000 * 15; // check for new contracts every 15 seconds when connected
+const REFRESH_INTERVAL_MS = 1000 * 5; // TODO: Use an event instead of polling
 
 export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewState,
@@ -25,7 +25,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
     private readonly activeConnection: ActiveConnection,
-    private readonly contractDetector: ContractDetector,
+    private readonly autoCompleteWatcher: AutoCompleteWatcher,
     panel: vscode.WebviewPanel
   ) {
     super(
@@ -33,10 +33,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Invoke File Editor",
         fileContents: [],
-        autoCompleteData: {
-          contractMetadata: {},
-          addressSuggestions: [],
-        },
+        autoCompleteData: autoCompleteWatcher.data,
         errorText: "",
         connectedTo: "",
         connectionState: "none",
@@ -129,6 +126,45 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
   }
 
+  private async augmentAutoCompleteData(
+    data: AutoCompleteData
+  ): Promise<AutoCompleteData> {
+    const result = { ...data };
+    result.contractManifests = { ...result.contractManifests };
+    result.contractHashes = { ...result.contractHashes };
+
+    const baseHref = path.dirname(this.document.uri.fsPath);
+    for (const fullPathToNef of this.viewState.fileContents
+      .filter((_) => !_.contract?.startsWith("0x"))
+      .map((_) => path.join(baseHref, _.contract || ""))) {
+      const manifest = ContractDetector.tryGetManifest(fullPathToNef);
+      if (manifest?.abi?.hash) {
+        result.contractManifests[manifest.abi.hash] = manifest;
+        result.contractHashes[fullPathToNef] = manifest.abi.hash;
+        result.contractPaths[manifest.abi.hash] = [
+          ...(result.contractPaths[manifest.abi.hash] || []),
+        ];
+        result.contractPaths[manifest.abi.hash].push(fullPathToNef);
+      }
+    }
+
+    const connection = this.activeConnection.connection;
+    if (connection?.rpcClient) {
+      for (const contractHash of this.viewState.fileContents
+        .filter((_) => _.contract?.startsWith("0x"))
+        .map((_) => _.contract || "")) {
+        try {
+          const manifest = (
+            await connection.rpcClient.getContractState(contractHash)
+          ).toJson();
+          result.contractManifests[manifest.abi.hash] = manifest;
+        } catch {}
+      }
+    }
+
+    return result;
+  }
+
   private async refreshLoop() {
     if (this.isClosed) {
       return;
@@ -141,83 +177,18 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async periodicViewStateUpdate() {
-    const baseHref = path.dirname(this.document.uri.fsPath);
-    const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
-    let addressSuggestions: string[] = [];
     let connectionState: "none" | "ok" | "connecting" = "none";
     const connection = this.activeConnection.connection;
-    if (connection?.blockchainIdentifier?.blockchainType === "express") {
-      try {
-        addressSuggestions = Object.values(
-          connection?.blockchainIdentifier.getWalletAddresses() || {}
-        );
-        const deployedContracts = await NeoExpressIo.contractList(
-          this.neoExpress,
-          connection.blockchainIdentifier
-        );
-        connectionState = "ok";
-        for (const deployedContract of deployedContracts) {
-          contracts[deployedContract.abi.hash] = deployedContract;
-        }
-      } catch {
-        connectionState = "connecting";
-      }
-      for (const nefFile of this.contractDetector.contracts) {
-        try {
-          const manifest = await NeoExpressIo.contractGet(
-            this.neoExpress,
-            connection.blockchainIdentifier,
-            nefFile
-          );
-          connectionState = "ok";
-          const nefFileRelativePath = path.relative(baseHref, nefFile);
-          if (manifest) {
-            contracts[nefFileRelativePath] = manifest;
-          }
-        } catch {
-          connectionState = "connecting";
-        }
-      }
-      for (const nefFile of this.viewState.fileContents
-        .filter((_) => !_.contract?.startsWith("0x"))
-        .map((_) => path.join(baseHref, _.contract || ""))) {
-        try {
-          const manifest = await NeoExpressIo.contractGet(
-            this.neoExpress,
-            connection.blockchainIdentifier,
-            nefFile
-          );
-          connectionState = "ok";
-          if (manifest) {
-            contracts[nefFile] = manifest;
-          }
-        } catch {
-          connectionState = "connecting";
-        }
-      }
+    if (connection) {
+      connectionState = connection.healthy ? "ok" : "connecting";
     }
-    if (connection?.rpcClient) {
-      for (const contractHash of this.viewState.fileContents
-        .filter((_) => _.contract?.startsWith("0x"))
-        .map((_) => _.contract || "")) {
-        try {
-          const manifest = (
-            await connection.rpcClient.getContractState(contractHash)
-          ).toJson();
-          connectionState = "ok";
-          contracts[contractHash] = manifest;
-        } catch {
-          connectionState = "connecting";
-        }
-      }
-    }
+
     this.updateViewState({
       connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
-      autoCompleteData: {
-        contractMetadata: contracts,
-        addressSuggestions,
-      },
+      autoCompleteData: await this.augmentAutoCompleteData(
+        this.autoCompleteWatcher.data
+      ),
     });
   }
 

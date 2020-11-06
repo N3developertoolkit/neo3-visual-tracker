@@ -1,10 +1,9 @@
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
-
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
 import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
+import WalletDetector from "./detectors/walletDetector";
 
 const LOG_PREFIX = "[AutoCompleteWatcher]";
 const REFRESH_INTERVAL_MS = 1000 * 5;
@@ -20,9 +19,16 @@ export default class AutoCompleteWatcher {
   constructor(
     private readonly neoExpress: NeoExpress,
     private readonly activeConnection: ActiveConnection,
-    private readonly contractDetector: ContractDetector
+    private readonly contractDetector: ContractDetector,
+    private readonly walletDetector: WalletDetector
   ) {
-    this.latestData = { addressSuggestions: [], contractMetadata: {} };
+    this.latestData = {
+      contractManifests: {},
+      contractHashes: {},
+      contractPaths: {},
+      wellKnownAddresses: {},
+      addressNames: {},
+    };
     this.refreshLoop();
   }
 
@@ -36,19 +42,51 @@ export default class AutoCompleteWatcher {
     }
     try {
       await this.periodicUpdate();
+      // console.debug(LOG_PREFIX, this.latestData);
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 
   private async periodicUpdate() {
+    const newData: AutoCompleteData = {
+      contractManifests: { ...this.contractDetector.contracts },
+      contractHashes: {},
+      contractPaths: {},
+      wellKnownAddresses: {},
+      addressNames: {},
+    };
+
+    const wallets = [...this.walletDetector.wallets];
+    for (const wallet of wallets) {
+      for (const address of wallet.addresses) {
+        newData.addressNames[address] = newData.addressNames[address] || [];
+        newData.addressNames[address].push(wallet.path);
+      }
+    }
+
+    for (const contractPath of Object.keys(newData.contractManifests)) {
+      const manifest = newData.contractManifests[contractPath];
+      const contractHash = manifest.abi?.hash;
+      if (contractHash) {
+        newData.contractHashes[contractPath] = contractHash;
+        newData.contractPaths[contractHash] =
+          newData.contractPaths[contractHash] || [];
+        newData.contractPaths[contractHash].push(contractPath);
+      }
+    }
+
     const connection = this.activeConnection.connection;
 
-    const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
+    newData.wellKnownAddresses =
+      connection?.blockchainIdentifier.getWalletAddresses() || {};
 
-    const addressSuggestions: string[] = Object.values(
-      connection?.blockchainIdentifier.getWalletAddresses() || {}
-    );
+    for (const walletName of Object.keys(newData.wellKnownAddresses)) {
+      const walletAddress = newData.wellKnownAddresses[walletName];
+      newData.addressNames[walletAddress] =
+        newData.addressNames[walletAddress] || [];
+      newData.addressNames[walletAddress].push(walletName);
+    }
 
     if (connection?.blockchainIdentifier?.blockchainType === "express") {
       try {
@@ -57,7 +95,9 @@ export default class AutoCompleteWatcher {
           connection.blockchainIdentifier
         );
         for (const deployedContract of deployedContracts) {
-          contracts[deployedContract.abi.hash] = deployedContract;
+          newData.contractManifests[
+            deployedContract.abi.hash
+          ] = deployedContract;
         }
       } catch (e) {
         console.warn(
@@ -68,9 +108,7 @@ export default class AutoCompleteWatcher {
         );
       }
     }
-    this.latestData = {
-      addressSuggestions,
-      contractMetadata: contracts,
-    };
+
+    this.latestData = newData;
   }
 }

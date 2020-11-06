@@ -33,13 +33,18 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       }}
     >
       <datalist id={argumentSuggestionListId}>
-        {viewState.autoCompleteData.addressSuggestions.map((_) => (
-          <option key={_} value={`@${_}`} />
-        ))}
-        {Object.getOwnPropertyNames(
-          viewState.autoCompleteData.contractMetadata
-        ).map((_) => (
-          <option key={_} value={`#${_}`} />
+        {Object.keys(viewState.autoCompleteData.wellKnownAddresses).map(
+          (addressName) => (
+            <option key={`name_${addressName}`} value={`@${addressName}`} />
+          )
+        )}
+        {Object.values(viewState.autoCompleteData.wellKnownAddresses).map(
+          (address) => (
+            <option key={`adr1_${address}`} value={`@${address}`} />
+          )
+        )}
+        {Object.keys(viewState.autoCompleteData.addressNames).map((address) => (
+          <option key={`adr2_${address}`} value={`@${address}`} />
         ))}
       </datalist>
       <div
@@ -57,7 +62,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             contract={_.contract}
             operation={_.operation}
             args={_.args}
-            contractMetadata={viewState.autoCompleteData.contractMetadata}
+            autoCompleteData={viewState.autoCompleteData}
             argumentSuggestionListId={argumentSuggestionListId}
             onUpdate={(contract, operation, args) =>
               postMessage({
@@ -68,7 +73,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         ))}
         <InvocationStep
           key={viewState.fileContents.length}
-          contractMetadata={viewState.autoCompleteData.contractMetadata}
+          autoCompleteData={viewState.autoCompleteData}
           argumentSuggestionListId={argumentSuggestionListId}
           onUpdate={(contract, operation, args) =>
             postMessage({
