@@ -6,16 +6,14 @@ import ContractTile from "./ContractTile";
 type Props = {
   style?: React.CSSProperties;
   contract?: string;
-  contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  contractMetadata: { [hashOrNefFile: string]: ContractManifestJson };
   setContract: (newValue: string) => void;
 };
 
 export default function ContractInput({
   style,
   contract,
-  contracts,
-  nefHints,
+  contractMetadata,
   setContract,
 }: Props) {
   const [hasFocus, setHasFocus] = useState(false);
@@ -41,7 +39,7 @@ export default function ContractInput({
     maxHeight: "80vh",
     overflow: "auto",
   };
-  const contractManifests = Object.values(contracts);
+  const contractManifests = Object.values(contractMetadata);
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
@@ -61,7 +59,6 @@ export default function ContractInput({
             <ContractTile
               key={manifest.abi.hash}
               manifest={manifest}
-              nefHints={nefHints}
               onMouseDown={setContract}
             />
           ))}

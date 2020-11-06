@@ -22,7 +22,7 @@ export default class AutoCompleteWatcher {
     private readonly activeConnection: ActiveConnection,
     private readonly contractDetector: ContractDetector
   ) {
-    this.latestData = { addressSuggestions: [], contracts: {}, nefHints: {} };
+    this.latestData = { addressSuggestions: [], contractMetadata: {} };
     this.refreshLoop();
   }
 
@@ -45,7 +45,6 @@ export default class AutoCompleteWatcher {
     const connection = this.activeConnection.connection;
 
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
-    const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     const addressSuggestions: string[] =
       connection?.blockchainIdentifier.walletAddresses || [];
 
@@ -66,29 +65,10 @@ export default class AutoCompleteWatcher {
           e
         );
       }
-
-      for (const nefFile of this.contractDetector.contracts) {
-        try {
-          const manifest = await NeoExpressIo.contractGet(
-            this.neoExpress,
-            connection.blockchainIdentifier,
-            nefFile
-          );
-          if (manifest) {
-            nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || {};
-            nefHints[manifest.abi.hash][nefFile] = true;
-          }
-        } catch (e) {
-          console.warn(
-            LOG_PREFIX,
-            "Could not get neo-express contract",
-            nefFile,
-            connection.blockchainIdentifier.configPath,
-            e
-          );
-        }
-      }
     }
-    this.latestData = { addressSuggestions, contracts, nefHints };
+    this.latestData = {
+      addressSuggestions,
+      contractMetadata: contracts,
+    };
   }
 }

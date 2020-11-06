@@ -1,8 +1,7 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 type AutoCompleteData = {
-  contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  contractMetadata: { [hashOrNefFile: string]: ContractManifestJson };
   addressSuggestions: string[];
 };
 

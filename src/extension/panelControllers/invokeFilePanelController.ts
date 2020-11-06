@@ -34,8 +34,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         panelTitle: "Invoke File Editor",
         fileContents: [],
         autoCompleteData: {
-          contracts: {},
-          nefHints: {},
+          contractMetadata: {},
           addressSuggestions: [],
         },
         errorText: "",
@@ -217,8 +216,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
       autoCompleteData: {
-        contracts,
-        nefHints,
+        contractMetadata: contracts,
         addressSuggestions,
       },
     });

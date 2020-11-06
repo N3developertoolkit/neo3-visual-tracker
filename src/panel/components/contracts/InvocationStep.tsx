@@ -12,8 +12,7 @@ type Props = {
   contract?: string;
   operation?: string;
   args?: (string | number)[];
-  contracts: { [hashOrNefFile: string]: ContractManifestJson };
-  nefHints: { [hash: string]: { [nefPath: string]: boolean } };
+  contractMetadata: { [hashOrNefFile: string]: ContractManifestJson };
   argumentSuggestionListId: string;
   onUpdate: (
     contract?: string,
@@ -26,14 +25,13 @@ export default function InvocationStep({
   contract,
   operation,
   args,
-  contracts,
-  nefHints,
+  contractMetadata,
   argumentSuggestionListId,
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
-  if (contract && contracts[contract]) {
-    operations = contracts[contract].abi.methods;
+  if (contract && contractMetadata[contract]) {
+    operations = contractMetadata[contract].abi.methods;
   }
   return (
     <div
@@ -48,8 +46,7 @@ export default function InvocationStep({
       <ContractInput
         style={{ marginBottom: 10 }}
         contract={contract}
-        contracts={contracts}
-        nefHints={nefHints}
+        contractMetadata={contractMetadata}
         setContract={(newContract: string) =>
           onUpdate(newContract, operation, args)
         }
