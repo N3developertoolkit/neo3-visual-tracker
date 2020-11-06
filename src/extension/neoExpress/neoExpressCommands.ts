@@ -118,40 +118,6 @@ export default class NeoExpressCommands {
     NeoExpressCommands.showResult(output);
   }
 
-  static async run(
-    context: vscode.ExtensionContext,
-    neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier
-  ) {
-    if (identifer.blockchainType !== "express") {
-      return;
-    }
-    const children = identifer.getChildren();
-    if (children.length === 1) {
-      NeoExpressCommands.run(context, neoExpress, children[0]);
-    } else if (children.length > 1) {
-      const selection = await IoHelpers.multipleChoice(
-        "Select a node",
-        ...children.map((_, i) => `${i} - ${_.name}`)
-      );
-      if (!selection) {
-        return;
-      }
-      const selectedIndex = parseInt(selection);
-      NeoExpressCommands.run(context, neoExpress, children[selectedIndex]);
-    } else {
-      neoExpress.runInTerminal(
-        identifer.name,
-        "run",
-        "-i",
-        identifer.configPath,
-        "-s",
-        "15",
-        `${identifer.index}`
-      );
-    }
-  }
-
   static async transfer(
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier

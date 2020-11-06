@@ -9,6 +9,7 @@ import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
+import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
 import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
@@ -40,6 +41,7 @@ function registerBlockchainInstanceCommand(
 export async function activate(context: vscode.ExtensionContext) {
   const contractDetector = new ContractDetector();
   const walletDetector = new WalletDetector();
+  const neoExpressInstanceManager = new NeoExpressInstanceManager();
   const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
@@ -65,6 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(autoComplete);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
+  context.subscriptions.push(neoExpressInstanceManager);
   context.subscriptions.push(serverListDetector);
   context.subscriptions.push(walletDetector);
 
@@ -154,7 +157,8 @@ export async function activate(context: vscode.ExtensionContext) {
     "express",
     blockchainsExplorer,
     "neo3-visual-devtracker.express.run",
-    (identifier) => NeoExpressCommands.run(context, neoExpress, identifier)
+    (identifier) =>
+      neoExpressInstanceManager.run(context, neoExpress, identifier)
   );
 
   registerBlockchainInstanceCommand(
