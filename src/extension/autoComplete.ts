@@ -5,10 +5,10 @@ import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
 import WalletDetector from "./detectors/walletDetector";
 
-const LOG_PREFIX = "[AutoCompleteWatcher]";
+const LOG_PREFIX = "[AutoComplete]";
 const REFRESH_INTERVAL_MS = 1000 * 5;
 
-export default class AutoCompleteWatcher {
+export default class AutoComplete {
   private disposed = false;
   private latestData: AutoCompleteData;
 

@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "./activeConnection";
-import AutoCompleteWatcher from "./autoCompleteWatcher";
+import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
@@ -48,7 +48,7 @@ export async function activate(context: vscode.ExtensionContext) {
     serverListDetector
   );
   const activeConnection = new ActiveConnection(blockchainsExplorer);
-  const autoCompleteWatcher = new AutoCompleteWatcher(
+  const autoComplete = new AutoComplete(
     neoExpress,
     activeConnection,
     contractDetector,
@@ -58,11 +58,11 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     activeConnection,
     neoExpress,
-    autoCompleteWatcher
+    autoComplete
   );
 
   context.subscriptions.push(activeConnection);
-  context.subscriptions.push(autoCompleteWatcher);
+  context.subscriptions.push(autoComplete);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(serverListDetector);

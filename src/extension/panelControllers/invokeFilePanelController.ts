@@ -2,8 +2,8 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
+import AutoComplete from "../autoComplete";
 import AutoCompleteData from "../../shared/autoCompleteData";
-import AutoCompleteWatcher from "../autoCompleteWatcher";
 import ContractDetector from "../detectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
@@ -25,7 +25,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
     private readonly activeConnection: ActiveConnection,
-    private readonly autoCompleteWatcher: AutoCompleteWatcher,
+    private readonly autoComplete: AutoComplete,
     panel: vscode.WebviewPanel
   ) {
     super(
@@ -33,7 +33,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Invoke File Editor",
         fileContents: [],
-        autoCompleteData: autoCompleteWatcher.data,
+        autoCompleteData: autoComplete.data,
         errorText: "",
         connectedTo: "",
         connectionState: "none",
@@ -192,7 +192,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
       autoCompleteData: await this.augmentAutoCompleteData(
-        this.autoCompleteWatcher.data
+        this.autoComplete.data
       ),
     });
   }
