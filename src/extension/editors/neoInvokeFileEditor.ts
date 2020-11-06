@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
-import ContractDetector from "../detectors/contractDetector";
+import AutoCompleteWatcher from "../autoCompleteWatcher";
 import InvokeFilePanelController from "../panelControllers/invokeFilePanelController";
 import NeoExpress from "../neoExpress/neoExpress";
 
@@ -11,7 +11,7 @@ export default class NeoInvokeFileEditor
     private readonly context: vscode.ExtensionContext,
     private readonly activeConnection: ActiveConnection,
     private readonly neoExpress: NeoExpress,
-    private readonly contractDetector: ContractDetector
+    private readonly autoCompleteWatcher: AutoCompleteWatcher
   ) {}
 
   resolveCustomTextEditor(
@@ -24,7 +24,7 @@ export default class NeoInvokeFileEditor
       this.neoExpress,
       document,
       this.activeConnection,
-      this.contractDetector,
+      this.autoCompleteWatcher,
       panel
     );
   }

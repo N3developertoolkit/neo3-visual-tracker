@@ -58,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     activeConnection,
     neoExpress,
-    contractDetector
+    autoCompleteWatcher
   );
 
   context.subscriptions.push(activeConnection);
