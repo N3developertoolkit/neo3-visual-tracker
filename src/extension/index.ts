@@ -157,8 +157,7 @@ export async function activate(context: vscode.ExtensionContext) {
     "express",
     blockchainsExplorer,
     "neo3-visual-devtracker.express.run",
-    (identifier) =>
-      neoExpressInstanceManager.run(context, neoExpress, identifier)
+    (identifier) => neoExpressInstanceManager.run(neoExpress, identifier)
   );
 
   registerBlockchainInstanceCommand(

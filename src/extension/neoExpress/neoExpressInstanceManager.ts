@@ -1,35 +1,51 @@
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
-import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
 
+const LOG_PREFIX = "[NeoExpressInstanceManager]";
+
 export default class NeoExpressInstanceManager {
+  private running: BlockchainIdentifier | null;
+
+  private terminals: vscode.Terminal[];
+
+  constructor() {
+    this.running = null;
+    this.terminals = [];
+  }
+
   dispose() {}
 
-  async run(
-    context: vscode.ExtensionContext,
-    neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier
-  ) {
+  async run(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
     if (identifer.blockchainType !== "express") {
       return;
     }
+
+    if (this.running?.name === identifer.name) {
+      return;
+    }
+
+    await this.stop();
+
     const children = identifer.getChildren();
-    if (children.length === 1) {
-      this.run(context, neoExpress, children[0]);
-    } else if (children.length > 1) {
-      const selection = await IoHelpers.multipleChoice(
-        "Select a node",
-        ...children.map((_, i) => `${i} - ${_.name}`)
-      );
-      if (!selection) {
-        return;
+    if (children.length) {
+      for (const child of children) {
+        const terminal = neoExpress.runInTerminal(
+          child.name,
+          "run",
+          "-i",
+          child.configPath,
+          "-s",
+          "15",
+          `${child.index}`
+        );
+        if (terminal) {
+          this.terminals.push(terminal);
+        }
       }
-      const selectedIndex = parseInt(selection);
-      this.run(context, neoExpress, children[selectedIndex]);
     } else {
-      neoExpress.runInTerminal(
+      const terminal = neoExpress.runInTerminal(
         identifer.name,
         "run",
         "-i",
@@ -38,6 +54,31 @@ export default class NeoExpressInstanceManager {
         "15",
         `${identifer.index}`
       );
+      if (terminal) {
+        this.terminals.push(terminal);
+      }
+    }
+
+    this.running = identifer;
+  }
+
+  async stop() {
+    try {
+      for (const terminal of this.terminals) {
+        if (!terminal.exitStatus) {
+          terminal.dispose();
+        }
+      }
+    } catch (e) {
+      console.warn(
+        LOG_PREFIX,
+        "Could not stop",
+        this.running?.name || "unknown",
+        e.message
+      );
+    } finally {
+      this.terminals = [];
+      this.running = null;
     }
   }
 }
