@@ -20,9 +20,7 @@ export default class BlockchainIdentifier {
       name,
       rpcUrls,
       0,
-      "",
-      [],
-      []
+      ""
     );
   }
 
@@ -41,18 +39,6 @@ export default class BlockchainIdentifier {
         console.log(LOG_PREFIX, "No RPC ports found", configPath);
         return undefined;
       }
-      const wallets: string[] = [];
-      const walletAddresses: string[] = [];
-      for (const wallet of neoExpressConfig["wallets"]) {
-        if (wallet.name) {
-          wallets.push(wallet.name);
-        }
-        for (const account of wallet.accounts || []) {
-          if (account["script-hash"]) {
-            walletAddresses.push(account["script-hash"]);
-          }
-        }
-      }
       return new BlockchainIdentifier(
         extensionPath,
         "express",
@@ -60,9 +46,7 @@ export default class BlockchainIdentifier {
         path.basename(configPath),
         nodePorts.map((_: number) => `http://127.0.0.1:${_}`),
         0,
-        configPath,
-        wallets,
-        walletAddresses
+        configPath
       );
     } catch (e) {
       console.log(
@@ -82,9 +66,7 @@ export default class BlockchainIdentifier {
     public readonly name: string,
     public readonly rpcUrls: string[],
     public readonly index: number,
-    public readonly configPath: string,
-    public readonly wallets: string[],
-    public readonly walletAddresses: string[]
+    public readonly configPath: string
   ) {}
 
   getChildren() {
@@ -98,14 +80,42 @@ export default class BlockchainIdentifier {
             `${this.name}:${i}`,
             [_],
             i,
-            this.configPath,
-            this.wallets,
-            this.walletAddresses
+            this.configPath
           )
       );
     } else {
       return [];
     }
+  }
+
+  getWalletAddresses(): { [walletName: string]: string } {
+    if (this.blockchainType !== "express") {
+      return {};
+    }
+    let result: { [walletName: string]: string } = {};
+    try {
+      const neoExpressConfig = JSON.parse(
+        fs.readFileSync(this.configPath).toString()
+      );
+      for (const wallet of neoExpressConfig["wallets"]) {
+        if (
+          wallet.name &&
+          wallet.accounts &&
+          wallet.accounts[0] &&
+          wallet.accounts[0]["script-hash"]
+        ) {
+          result[wallet.name] = wallet.accounts[0]["script-hash"];
+        }
+      }
+    } catch (e) {
+      console.log(
+        LOG_PREFIX,
+        "Error parsing neo-express wallets",
+        this.configPath,
+        e.message
+      );
+    }
+    return result;
   }
 
   getTreeItem() {

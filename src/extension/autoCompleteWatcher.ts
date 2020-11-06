@@ -45,8 +45,10 @@ export default class AutoCompleteWatcher {
     const connection = this.activeConnection.connection;
 
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
-    const addressSuggestions: string[] =
-      connection?.blockchainIdentifier.walletAddresses || [];
+
+    const addressSuggestions: string[] = Object.values(
+      connection?.blockchainIdentifier.getWalletAddresses() || {}
+    );
 
     if (connection?.blockchainIdentifier?.blockchainType === "express") {
       try {

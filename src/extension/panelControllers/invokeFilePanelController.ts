@@ -102,10 +102,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         connection &&
         connection.blockchainIdentifier.blockchainType === "express"
       ) {
+        const walletNames = Object.keys(
+          connection.blockchainIdentifier.getWalletAddresses()
+        );
         const account = await IoHelpers.multipleChoice(
           "Select an account...",
           "genesis",
-          ...connection.blockchainIdentifier.wallets
+          ...walletNames
         );
         if (!account) {
           return;
@@ -145,7 +148,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     const connection = this.activeConnection.connection;
     if (connection?.blockchainIdentifier?.blockchainType === "express") {
       try {
-        addressSuggestions = connection.blockchainIdentifier.walletAddresses;
+        addressSuggestions = Object.values(
+          connection?.blockchainIdentifier.getWalletAddresses() || {}
+        );
         const deployedContracts = await NeoExpressIo.contractList(
           this.neoExpress,
           connection.blockchainIdentifier
