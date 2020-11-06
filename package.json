@@ -61,17 +61,17 @@
       },
       {
         "command": "neo3-visual-devtracker.express.create",
-        "title": "Create instance",
+        "title": "Create private blockchain",
         "category": "Neo Express 3"
       },
       {
         "command": "neo3-visual-devtracker.express.reset",
-        "title": "Reset instance",
+        "title": "Reset blockchain",
         "category": "Neo Express 3"
       },
       {
         "command": "neo3-visual-devtracker.express.run",
-        "title": "Run instance",
+        "title": "Start blockchain",
         "category": "Neo Express 3",
         "icon": {
           "light": "resources/light/play.svg",
