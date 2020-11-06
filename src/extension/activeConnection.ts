@@ -13,6 +13,7 @@ export default class ActiveConnection {
   connection: {
     blockchainIdentifier: BlockchainIdentifier;
     rpcClient: neonCore.rpc.RPCClient;
+    healthy: boolean;
   } | null;
 
   private disposed = false;
@@ -45,6 +46,7 @@ export default class ActiveConnection {
       this.connection = {
         blockchainIdentifier,
         rpcClient: new neonCore.rpc.RPCClient(rpcUrl),
+        healthy: false,
       };
     } else {
       this.connection = null;
@@ -80,12 +82,14 @@ export default class ActiveConnection {
     if (this.connection) {
       try {
         await this.connection.rpcClient.getBlockCount();
+        this.connection.healthy = true;
         this.statusBarItem.text = `${PREFIX} Connected to ${this.connection.blockchainIdentifier.name}`;
         this.statusBarItem.tooltip = "Click to disconnect";
         this.statusBarItem.color = new vscode.ThemeColor(
           "statusBarItem.prominentForeground"
         );
       } catch {
+        this.connection.healthy = false;
         this.statusBarItem.text = `${PREFIX} Connecting to ${this.connection.blockchainIdentifier.name}...`;
         this.statusBarItem.tooltip =
           "A connection cannot currently be established to the Neo blockchain RPC server";
