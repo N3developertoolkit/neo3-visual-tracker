@@ -65,6 +65,11 @@
         "category": "Neo Express 3"
       },
       {
+        "command": "neo3-visual-devtracker.express.customCommand",
+        "title": "Run custom Neo Express command",
+        "category": "Neo Express 3"
+      },
+      {
         "command": "neo3-visual-devtracker.express.reset",
         "title": "Reset blockchain",
         "category": "Neo Express 3"
@@ -117,6 +122,10 @@
       "view/item/context": [
         {
           "command": "neo3-visual-devtracker.express.contractDeploy",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.customCommand",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {

@@ -51,10 +51,21 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): { message: string; isError?: boolean } {
+    return this.runSyncUnsafe(command, ...options);
+  }
+
+  runSyncUnsafe(
+    command: string,
+    ...options: string[]
+  ): { message: string; isError?: boolean } {
     if (!this.checkForDotNet()) {
       return { message: "Could not launch Neo Express", isError: true };
     }
-    const dotNetArguments = [this.binaryPath, command, ...options];
+    const dotNetArguments = [
+      this.binaryPath,
+      ...command.split(/\s/),
+      ...options,
+    ];
     try {
       return {
         message: childProcess

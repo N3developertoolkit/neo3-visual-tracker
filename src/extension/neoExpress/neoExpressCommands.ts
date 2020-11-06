@@ -79,6 +79,25 @@ export default class NeoExpressCommands {
     NeoExpressCommands.showResult(output);
   }
 
+  static async customCommand(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier
+  ) {
+    if (identifer.blockchainType !== "express") {
+      return;
+    }
+    const command = await IoHelpers.enterString("Enter a neo-express command");
+    if (!command) {
+      return;
+    }
+    const output = neoExpress.runSyncUnsafe(
+      command,
+      "-i",
+      identifer.configPath
+    );
+    NeoExpressCommands.showResult(output);
+  }
+
   static async reset(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
     if (identifer.blockchainType !== "express") {
       return;
