@@ -134,17 +134,22 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     result.contractHashes = { ...result.contractHashes };
 
     const baseHref = path.dirname(this.document.uri.fsPath);
-    for (const fullPathToNef of this.viewState.fileContents
+    for (const relativePathToNef of this.viewState.fileContents
       .filter((_) => !_.contract?.startsWith("0x"))
-      .map((_) => path.join(baseHref, _.contract || ""))) {
-      const manifest = ContractDetector.tryGetManifest(fullPathToNef);
-      if (manifest?.abi?.hash) {
-        result.contractManifests[manifest.abi.hash] = manifest;
-        result.contractHashes[fullPathToNef] = manifest.abi.hash;
-        result.contractPaths[manifest.abi.hash] = [
-          ...(result.contractPaths[manifest.abi.hash] || []),
-        ];
-        result.contractPaths[manifest.abi.hash].push(fullPathToNef);
+      .map((_) => _.contract)) {
+      if (relativePathToNef) {
+        const fullPathToNef = path.join(baseHref, relativePathToNef);
+        const manifest = ContractDetector.tryGetManifest(fullPathToNef);
+        if (manifest?.abi?.hash) {
+          result.contractManifests[manifest.abi.hash] = manifest;
+          result.contractHashes[fullPathToNef] = manifest.abi.hash;
+          result.contractHashes[relativePathToNef] = manifest.abi.hash;
+          result.contractPaths[manifest.abi.hash] = [
+            ...(result.contractPaths[manifest.abi.hash] || []),
+          ];
+          result.contractPaths[manifest.abi.hash].push(relativePathToNef);
+          result.contractPaths[manifest.abi.hash].push(fullPathToNef);
+        }
       }
     }
 
