@@ -140,7 +140,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   private async periodicViewStateUpdate() {
     const baseHref = path.dirname(this.document.uri.fsPath);
     const contracts: { [hashOrNefFile: string]: ContractManifestJson } = {};
-    const nefHints: { [hash: string]: { [nefPath: string]: boolean } } = {};
     let addressSuggestions: string[] = [];
     let connectionState: "none" | "ok" | "connecting" = "none";
     const connection = this.activeConnection.connection;
@@ -169,9 +168,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           const nefFileRelativePath = path.relative(baseHref, nefFile);
           if (manifest) {
             contracts[nefFileRelativePath] = manifest;
-            nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || {};
-            nefHints[manifest.abi.hash][nefFileRelativePath] = true;
-            nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
           connectionState = "connecting";
@@ -189,8 +185,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           connectionState = "ok";
           if (manifest) {
             contracts[nefFile] = manifest;
-            nefHints[manifest.abi.hash] = nefHints[manifest.abi.hash] || [];
-            nefHints[manifest.abi.hash][nefFile] = true;
           }
         } catch {
           connectionState = "connecting";
