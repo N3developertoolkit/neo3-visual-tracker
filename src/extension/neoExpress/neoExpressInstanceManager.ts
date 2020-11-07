@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import NeoExpress from "./neoExpress";
 
@@ -10,7 +11,7 @@ export default class NeoExpressInstanceManager {
 
   private terminals: vscode.Terminal[];
 
-  constructor() {
+  constructor(private readonly activeConnection: ActiveConnection) {
     this.running = null;
     this.terminals = [];
   }
@@ -22,11 +23,15 @@ export default class NeoExpressInstanceManager {
       return;
     }
 
-    if (this.running?.name === identifer.name) {
-      return;
-    }
-
+    const runningPreviously = this.running;
     await this.stop();
+
+    if (
+      this.activeConnection.connection?.blockchainIdentifier.name ===
+      runningPreviously?.name
+    ) {
+      await this.activeConnection.disconnect(true);
+    }
 
     const children = identifer.getChildren();
     if (children.length) {
@@ -60,6 +65,10 @@ export default class NeoExpressInstanceManager {
     }
 
     this.running = identifer;
+
+    if (!this.activeConnection.connection?.healthy) {
+      await this.activeConnection.connect(identifer);
+    }
   }
 
   async stop() {

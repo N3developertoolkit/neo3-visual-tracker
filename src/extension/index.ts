@@ -41,7 +41,6 @@ function registerBlockchainInstanceCommand(
 export async function activate(context: vscode.ExtensionContext) {
   const contractDetector = new ContractDetector();
   const walletDetector = new WalletDetector();
-  const neoExpressInstanceManager = new NeoExpressInstanceManager();
   const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
@@ -50,6 +49,9 @@ export async function activate(context: vscode.ExtensionContext) {
     serverListDetector
   );
   const activeConnection = new ActiveConnection(blockchainsExplorer);
+  const neoExpressInstanceManager = new NeoExpressInstanceManager(
+    activeConnection
+  );
   const autoComplete = new AutoComplete(
     neoExpress,
     activeConnection,

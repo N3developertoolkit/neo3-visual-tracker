@@ -32,13 +32,13 @@ export default class ActiveConnection {
     this.disposed = true;
   }
 
-  async connect() {
-    const blockchainIdentifier =
-      (await this.blockchainsExplorer.select()) || null;
+  async connect(blockchainIdentifier?: BlockchainIdentifier) {
+    blockchainIdentifier =
+      blockchainIdentifier || (await this.blockchainsExplorer.select());
     let rpcUrl = blockchainIdentifier?.rpcUrls[0];
     if ((blockchainIdentifier?.rpcUrls.length || 0) > 1) {
       rpcUrl = await IoHelpers.multipleChoice(
-        "Select an RPC server",
+        "Select an RPC server to connect to",
         ...blockchainIdentifier?.rpcUrls
       );
     }
@@ -54,12 +54,13 @@ export default class ActiveConnection {
     await this.updateConnectionState();
   }
 
-  async disconnect() {
+  async disconnect(force?: boolean) {
     if (this.connection) {
       if (
-        await IoHelpers.yesNo(
+        force ||
+        (await IoHelpers.yesNo(
           `Disconnect from ${this.connection.blockchainIdentifier.name}?`
-        )
+        ))
       ) {
         this.connection = null;
         await this.updateConnectionState();
@@ -67,18 +68,7 @@ export default class ActiveConnection {
     }
   }
 
-  private async refreshLoop() {
-    if (this.disposed) {
-      return;
-    }
-    try {
-      await this.updateConnectionState();
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
-    }
-  }
-
-  private async updateConnectionState() {
+  async updateConnectionState() {
     if (this.connection) {
       try {
         await this.connection.rpcClient.getBlockCount();
@@ -107,6 +97,17 @@ export default class ActiveConnection {
     if (!this.visible) {
       this.statusBarItem.show();
       this.visible = true;
+    }
+  }
+
+  private async refreshLoop() {
+    if (this.disposed) {
+      return;
+    }
+    try {
+      await this.updateConnectionState();
+    } finally {
+      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 }
