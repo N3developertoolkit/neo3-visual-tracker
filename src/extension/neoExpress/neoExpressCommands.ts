@@ -71,11 +71,10 @@ export default class NeoExpressCommands {
     }
     const output = neoExpress.runSync(
       "create",
+      "-f",
       "-c",
       nodeCount,
-      "-o",
-      configSavePath,
-      "-f"
+      configSavePath
     );
     NeoExpressCommands.showResult(output);
   }
