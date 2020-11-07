@@ -3,6 +3,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 type AutoCompleteData = {
   contractManifests: { [contractHash: string]: Partial<ContractManifestJson> };
   contractHashes: { [contractPath: string]: string };
+  contractNames: { [contractHash: string]: string[] };
   contractPaths: { [contractHash: string]: string[] };
   wellKnownAddresses: { [addressName: string]: string };
   addressNames: { [walletAddress: string]: string[] };

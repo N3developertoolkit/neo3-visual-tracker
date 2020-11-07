@@ -1,3 +1,5 @@
+import * as path from "path";
+
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
 import ContractDetector from "./detectors/contractDetector";
@@ -7,6 +9,10 @@ import WalletDetector from "./detectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
 const REFRESH_INTERVAL_MS = 1000 * 5;
+const WELL_KNOWN_NAMES = {
+  "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc": ["GAS"],
+  "0xde5f57d430d3dece511cf975a8d37848cb9e0525": ["NEO"],
+};
 
 export default class AutoComplete {
   private disposed = false;
@@ -25,6 +31,7 @@ export default class AutoComplete {
     this.latestData = {
       contractManifests: {},
       contractHashes: {},
+      contractNames: { ...WELL_KNOWN_NAMES },
       contractPaths: {},
       wellKnownAddresses: {},
       addressNames: {},
@@ -53,6 +60,7 @@ export default class AutoComplete {
       contractManifests: { ...this.contractDetector.contracts },
       contractHashes: {},
       contractPaths: {},
+      contractNames: { ...WELL_KNOWN_NAMES },
       wellKnownAddresses: {},
       addressNames: {},
     };
@@ -73,6 +81,9 @@ export default class AutoComplete {
         newData.contractPaths[contractHash] =
           newData.contractPaths[contractHash] || [];
         newData.contractPaths[contractHash].push(contractPath);
+        newData.contractNames[contractHash] =
+          newData.contractNames[contractHash] || [];
+        newData.contractNames[contractHash].push(path.basename(contractPath));
       }
     }
 
