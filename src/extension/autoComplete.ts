@@ -83,7 +83,9 @@ export default class AutoComplete {
         newData.contractPaths[contractHash].push(contractPath);
         newData.contractNames[contractHash] =
           newData.contractNames[contractHash] || [];
-        newData.contractNames[contractHash].push(path.basename(contractPath));
+        newData.contractNames[contractHash].push(
+          path.basename(contractPath).replace(/\.nef$/, "")
+        );
       }
     }
 

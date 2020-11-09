@@ -23,7 +23,13 @@ export default function ContractInput({
     border: "1px solid var(--vscode-input-border)",
     boxSizing: "border-box",
     width: "calc(100% - 15px)",
-    fontSize: "1.1rem",
+    fontSize: "1.0rem",
+    padding: 5,
+    marginTop: 5,
+    marginLeft: 15,
+  };
+  const descriptionStyle: React.CSSProperties = {
+    width: "calc(100% - 15px)",
     padding: 5,
     marginTop: 5,
     marginLeft: 15,
@@ -40,6 +46,15 @@ export default function ContractInput({
     overflow: "auto",
   };
   const contractManifests = Object.values(autoCompleteData.contractManifests);
+  const hash =
+    autoCompleteData.contractHashes[contract || ""] || contract || "";
+  const names = autoCompleteData.contractNames[hash];
+  const paths = autoCompleteData.contractPaths[hash];
+  const title = names?.length
+    ? names[0]
+    : paths?.length
+    ? paths[0]
+    : "Unknown contract";
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
@@ -64,6 +79,7 @@ export default function ContractInput({
           ))}
         </div>
       )}
+      <div style={descriptionStyle}>{title}</div>
     </div>
   );
 }
