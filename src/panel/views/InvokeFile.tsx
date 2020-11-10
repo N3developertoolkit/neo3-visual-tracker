@@ -58,12 +58,13 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       >
         {viewState.fileContents.map((_, i) => (
           <InvocationStep
-            key={i}
+            key={JSON.stringify(_)}
             contract={_.contract}
             operation={_.operation}
             args={_.args}
             autoCompleteData={viewState.autoCompleteData}
             argumentSuggestionListId={argumentSuggestionListId}
+            onDelete={() => postMessage({ deleteStep: { i } })}
             onUpdate={(contract, operation, args) =>
               postMessage({
                 update: { i, contract, operation, args },
@@ -71,21 +72,11 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             }
           />
         ))}
-        <InvocationStep
-          key={viewState.fileContents.length}
-          autoCompleteData={viewState.autoCompleteData}
-          argumentSuggestionListId={argumentSuggestionListId}
-          onUpdate={(contract, operation, args) =>
-            postMessage({
-              update: {
-                i: viewState.fileContents.length,
-                contract,
-                operation,
-                args,
-              },
-            })
-          }
-        />
+        <div style={{ textAlign: "center" }}>
+          <NavButton onClick={() => postMessage({ addStep: true })}>
+            Add step
+          </NavButton>
+        </div>
       </div>
       <div
         style={{

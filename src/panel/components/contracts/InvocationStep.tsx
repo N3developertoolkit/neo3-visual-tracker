@@ -5,6 +5,7 @@ import ArgumentsInput from "./ArgumentsInput";
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractInput from "./ContractInput";
 import OperationInput from "./OperationInput";
+import NavButton from "../NavButton";
 
 type Props = {
   contract?: string;
@@ -12,6 +13,7 @@ type Props = {
   args?: (string | number)[];
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
+  onDelete: () => void;
   onUpdate: (
     contract?: string,
     operation?: string,
@@ -25,6 +27,7 @@ export default function InvocationStep({
   args,
   autoCompleteData,
   argumentSuggestionListId,
+  onDelete,
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
@@ -72,6 +75,9 @@ export default function InvocationStep({
           onUpdate(contract, operation, newArguments)
         }
       />
+      <div style={{ textAlign: "right" }}>
+        <NavButton onClick={onDelete}>Delete this step</NavButton>
+      </div>
     </div>
   );
 }

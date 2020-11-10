@@ -71,9 +71,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
     if (request.update !== undefined) {
       let newFileContents = [...this.viewState.fileContents];
-      if (request.update.i === newFileContents.length) {
-        newFileContents.push({});
-      }
       newFileContents = newFileContents.map((invocation, i) => {
         if (i === request.update?.i) {
           return {
@@ -85,13 +82,18 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           return invocation;
         }
       });
-      const edit = new vscode.WorkspaceEdit();
-      edit.replace(
-        this.document.uri,
-        new vscode.Range(0, 0, this.document.lineCount, 0),
-        JSON.stringify(newFileContents, undefined, 2)
+      await this.applyEdit(newFileContents);
+    }
+    if (request.addStep) {
+      let newFileContents = [...this.viewState.fileContents];
+      newFileContents.push({});
+      await this.applyEdit(newFileContents);
+    }
+    if (request.deleteStep) {
+      let newFileContents = this.viewState.fileContents.filter(
+        (_, i) => i !== request.deleteStep?.i
       );
-      await vscode.workspace.applyEdit(edit);
+      await this.applyEdit(newFileContents);
     }
     if (request.run) {
       const connection = this.activeConnection.connection;
@@ -124,6 +126,16 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           : vscode.window.showInformationMessage)(result.message);
       }
     }
+  }
+
+  private async applyEdit(newFileContents: any) {
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(
+      this.document.uri,
+      new vscode.Range(0, 0, this.document.lineCount, 0),
+      JSON.stringify(newFileContents, undefined, 2)
+    );
+    await vscode.workspace.applyEdit(edit);
   }
 
   private async augmentAutoCompleteData(
