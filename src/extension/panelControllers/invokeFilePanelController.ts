@@ -95,6 +95,20 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       );
       await this.applyEdit(newFileContents);
     }
+    if (request.moveStep) {
+      let { from, to } = request.moveStep;
+      let oldFileContents = [...this.viewState.fileContents];
+      let newFileContents = oldFileContents.filter((_, i) => i !== from);
+      if (to > from) {
+        to--;
+      }
+      newFileContents = [
+        ...newFileContents.filter((_, i) => i < to),
+        oldFileContents[from],
+        ...newFileContents.filter((_, i) => i >= to),
+      ];
+      await this.applyEdit(newFileContents);
+    }
     if (request.run) {
       const connection = this.activeConnection.connection;
       if (

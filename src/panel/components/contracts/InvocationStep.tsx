@@ -8,12 +8,15 @@ import OperationInput from "./OperationInput";
 import NavButton from "../NavButton";
 
 type Props = {
+  i: number;
   contract?: string;
   operation?: string;
   args?: (string | number)[];
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
   onDelete: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
   onUpdate: (
     contract?: string,
     operation?: string,
@@ -22,12 +25,15 @@ type Props = {
 };
 
 export default function InvocationStep({
+  i,
   contract,
   operation,
   args,
   autoCompleteData,
   argumentSuggestionListId,
   onDelete,
+  onDragStart,
+  onDragEnd,
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
@@ -40,12 +46,20 @@ export default function InvocationStep({
   }
   return (
     <div
+      draggable
+      onDragStart={(e) => {
+        e.dataTransfer.setData("InvocationStep", `${i}`);
+        onDragStart();
+      }}
+      onDragEnd={onDragEnd}
       style={{
         backgroundColor: "var(--vscode-editorWidget-background)",
         color: "var(--vscode-editorWidget-foreground)",
         border: "var(--vscode-editorWidget-border)",
-        margin: 10,
+        marginLeft: 10,
+        marginRight: 10,
         padding: 10,
+        cursor: "move",
       }}
     >
       <ContractInput

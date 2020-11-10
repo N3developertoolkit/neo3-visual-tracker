@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 
 import Dialog from "../components/Dialog";
+import DropTarget from "../components/DropTarget";
 import InvocationConnection from "../components/contracts/InvocationConnection";
 import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
@@ -13,6 +14,7 @@ type Props = {
 };
 
 export default function InvokeFile({ viewState, postMessage }: Props) {
+  const [dragActive, setDragActive] = useState(false);
   if (!!viewState.errorText) {
     return (
       <Dialog onClose={() => postMessage({ dismissError: true })}>
@@ -21,6 +23,8 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
     );
   }
   const argumentSuggestionListId = `list_${Math.random()}`;
+  const moveStep = (from: number, to: number) =>
+    postMessage({ moveStep: { from, to } });
   return (
     <div
       style={{
@@ -57,21 +61,32 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         }}
       >
         {viewState.fileContents.map((_, i) => (
-          <InvocationStep
-            key={JSON.stringify(_)}
-            contract={_.contract}
-            operation={_.operation}
-            args={_.args}
-            autoCompleteData={viewState.autoCompleteData}
-            argumentSuggestionListId={argumentSuggestionListId}
-            onDelete={() => postMessage({ deleteStep: { i } })}
-            onUpdate={(contract, operation, args) =>
-              postMessage({
-                update: { i, contract, operation, args },
-              })
-            }
-          />
+          <>
+            <DropTarget i={i} onDrop={moveStep} dragActive={dragActive} />
+            <InvocationStep
+              i={i}
+              key={JSON.stringify(_)}
+              contract={_.contract}
+              operation={_.operation}
+              args={_.args}
+              autoCompleteData={viewState.autoCompleteData}
+              argumentSuggestionListId={argumentSuggestionListId}
+              onDragStart={() => setDragActive(true)}
+              onDragEnd={() => setDragActive(false)}
+              onDelete={() => postMessage({ deleteStep: { i } })}
+              onUpdate={(contract, operation, args) =>
+                postMessage({
+                  update: { i, contract, operation, args },
+                })
+              }
+            />
+          </>
         ))}
+        <DropTarget
+          i={viewState.fileContents.length}
+          onDrop={moveStep}
+          dragActive={dragActive}
+        />
         <div style={{ textAlign: "center" }}>
           <NavButton onClick={() => postMessage({ addStep: true })}>
             Add step

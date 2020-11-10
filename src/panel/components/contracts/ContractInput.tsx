@@ -22,11 +22,11 @@ export default function ContractInput({
     backgroundColor: "var(--vscode-input-background)",
     border: "1px solid var(--vscode-input-border)",
     boxSizing: "border-box",
-    width: "calc(100% - 15px)",
+    width: "100%",
     fontSize: "1.0rem",
+    fontWeight: "bold",
     padding: 5,
     marginTop: 5,
-    marginLeft: 15,
   };
   const descriptionStyle: React.CSSProperties = {
     marginTop: 5,
@@ -65,9 +65,6 @@ export default function ContractInput({
   const aka = [contractHash, ...paths].filter((_) => !!_ && _ !== contract);
   return (
     <div style={{ ...style, position: "relative" }}>
-      <div>
-        <strong>Contract:</strong>
-      </div>
       <input
         style={inputStyle}
         type="text"
