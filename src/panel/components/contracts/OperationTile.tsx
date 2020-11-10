@@ -9,7 +9,7 @@ type Props = {
 
 export default function OperatonTile({ operation, onMouseDown }: Props) {
   const style: React.CSSProperties = {
-    border: "1px solid var(--vscode-dropdown-border)",
+    borderBottom: "1px solid var(--vscode-dropdown-border)",
     backgroundColor: "var(--vscode-dropdown-background)",
     padding: 5,
     cursor: onMouseDown ? "pointer" : undefined,

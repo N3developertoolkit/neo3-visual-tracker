@@ -50,7 +50,9 @@ export default function ContractInput({
     right: 20,
     color: "var(--vscode-dropdown-foreground)",
     backgroundColor: "var(--vscode-dropdown-background)",
-    border: "1px solid var(--vscode-dropdown-border)",
+    borderBottom: "1px solid var(--vscode-dropdown-border)",
+    borderLeft: "1px solid var(--vscode-dropdown-border)",
+    borderRight: "1px solid var(--vscode-dropdown-border)",
     maxHeight: "80vh",
     overflow: "auto",
   };
@@ -83,6 +85,7 @@ export default function ContractInput({
                 key={hash}
                 hash={hash}
                 abi={manifest.abi}
+                autoCompleteData={autoCompleteData}
                 onMouseDown={setContract}
               />
             ) : (
