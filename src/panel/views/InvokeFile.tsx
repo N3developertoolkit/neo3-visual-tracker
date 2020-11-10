@@ -7,7 +7,7 @@ import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import NavButton from "../components/NavButton";
-import TransactionList from "../components/TransactionList";
+import TransactionList from "../components/contracts/TransactionList";
 
 type Props = {
   viewState: InvokeFileViewState;
