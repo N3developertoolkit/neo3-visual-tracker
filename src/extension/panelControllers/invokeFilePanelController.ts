@@ -145,7 +145,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             /\s0x[0-9a-f]+\s/gi
           )) {
             const txid = txidMatch[0].trim();
-            recentTransactions.unshift({ txid });
+            recentTransactions.unshift({
+              txid,
+              blockchain: connection.blockchainIdentifier.name,
+              state: "pending",
+            });
           }
           if (recentTransactions.length > MAX_RECENT_TXS) {
             recentTransactions.length = MAX_RECENT_TXS;
@@ -224,13 +228,25 @@ export default class InvokeFilePanelController extends PanelControllerBase<
 
     const recentTransactions = await Promise.all(
       this.viewState.recentTransactions.map(async (_) => {
-        if (_.tx) {
+        if (_.tx && (_.tx as any).confirmations) {
           return _;
         } else {
           try {
+            const tx = await connection?.rpcClient.getRawTransaction(
+              _.txid,
+              true
+            );
+            const vmstate = (tx as any).vmstate;
             return {
               txid: _.txid,
-              tx: await connection?.rpcClient.getRawTransaction(_.txid, true),
+              blockchain: _.blockchain,
+              tx,
+              state:
+                vmstate === "FAULT"
+                  ? "error"
+                  : vmstate
+                  ? "ok"
+                  : ("pending" as "pending" | "error" | "ok"),
             };
           } catch (e) {
             return _;

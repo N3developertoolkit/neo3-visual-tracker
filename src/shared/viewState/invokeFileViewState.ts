@@ -14,7 +14,12 @@ type InvokeFileViewState = {
   errorText: string;
   connectedTo: string;
   connectionState: "ok" | "connecting" | "none";
-  recentTransactions: { txid: string; tx?: TransactionJson }[];
+  recentTransactions: {
+    blockchain: string;
+    txid: string;
+    state: "pending" | "error" | "ok";
+    tx?: TransactionJson;
+  }[];
 };
 
 export default InvokeFileViewState;
