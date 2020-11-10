@@ -5,6 +5,7 @@ import AutoCompleteData from "../shared/autoCompleteData";
 import ContractDetector from "./detectors/contractDetector";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
+import dedupeAndSort from "./dedupeAndSort";
 import WalletDetector from "./detectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
@@ -70,6 +71,9 @@ export default class AutoComplete {
       for (const address of wallet.addresses) {
         newData.addressNames[address] = newData.addressNames[address] || [];
         newData.addressNames[address].push(wallet.path);
+        newData.addressNames[address] = dedupeAndSort(
+          newData.addressNames[address]
+        );
       }
     }
 
@@ -81,10 +85,16 @@ export default class AutoComplete {
         newData.contractPaths[contractHash] =
           newData.contractPaths[contractHash] || [];
         newData.contractPaths[contractHash].push(contractPath);
+        newData.contractPaths[contractHash] = dedupeAndSort(
+          newData.contractPaths[contractHash]
+        );
         newData.contractNames[contractHash] =
           newData.contractNames[contractHash] || [];
         newData.contractNames[contractHash].push(
           path.basename(contractPath).replace(/\.nef$/, "")
+        );
+        newData.contractNames[contractHash] = dedupeAndSort(
+          newData.contractNames[contractHash]
         );
       }
     }
@@ -99,6 +109,9 @@ export default class AutoComplete {
       newData.addressNames[walletAddress] =
         newData.addressNames[walletAddress] || [];
       newData.addressNames[walletAddress].push(walletName);
+      newData.addressNames[walletAddress] = dedupeAndSort(
+        newData.addressNames[walletAddress]
+      );
     }
 
     if (connection?.blockchainIdentifier?.blockchainType === "express") {

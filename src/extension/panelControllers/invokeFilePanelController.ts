@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import AutoCompleteData from "../../shared/autoCompleteData";
-import ContractDetector from "../detectors/contractDetector";
+import dedupeAndSort from "../dedupeAndSort";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
@@ -134,23 +134,19 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     result.contractHashes = { ...result.contractHashes };
 
     const baseHref = path.dirname(this.document.uri.fsPath);
-    for (const relativePathToNef of this.viewState.fileContents
-      .filter((_) => !_.contract?.startsWith("0x"))
-      .map((_) => _.contract)) {
-      if (relativePathToNef) {
-        const fullPathToNef = path.join(baseHref, relativePathToNef);
-        const manifest = ContractDetector.tryGetManifest(fullPathToNef);
-        if (manifest?.abi?.hash) {
-          result.contractManifests[manifest.abi.hash] = manifest;
-          result.contractHashes[fullPathToNef] = manifest.abi.hash;
-          result.contractHashes[relativePathToNef] = manifest.abi.hash;
-          result.contractPaths[manifest.abi.hash] = [
-            ...(result.contractPaths[manifest.abi.hash] || []),
-          ];
-          result.contractPaths[manifest.abi.hash].push(relativePathToNef);
-          result.contractPaths[manifest.abi.hash].push(fullPathToNef);
+    for (const hash of Object.keys(data.contractPaths)) {
+      const contractPaths = [...data.contractPaths[hash]];
+      for (const contractPath of contractPaths) {
+        if (path.isAbsolute(contractPath)) {
+          const relativePath = path.relative(baseHref, contractPath);
+          contractPaths.push(relativePath);
+          result.contractManifests[relativePath] =
+            result.contractManifests[contractPath];
+          result.contractHashes[relativePath] =
+            result.contractHashes[contractPath];
         }
       }
+      data.contractPaths[hash] = dedupeAndSort(contractPaths);
     }
 
     const connection = this.activeConnection.connection;

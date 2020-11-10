@@ -29,10 +29,19 @@ export default function ContractInput({
     marginLeft: 15,
   };
   const descriptionStyle: React.CSSProperties = {
-    width: "calc(100% - 15px)",
-    padding: 5,
     marginTop: 5,
     marginLeft: 15,
+    fontWeight: "bold",
+  };
+  const akaStyle: React.CSSProperties = {
+    marginTop: 5,
+    marginLeft: 30,
+    fontStyle: "italic",
+  };
+  const akaItemStyle: React.CSSProperties = {
+    textDecoration: "underline",
+    cursor: "pointer",
+    marginTop: 3,
   };
   const dropdownStyle: React.CSSProperties = {
     position: "absolute",
@@ -48,13 +57,10 @@ export default function ContractInput({
   const contractManifests = Object.values(autoCompleteData.contractManifests);
   const hash =
     autoCompleteData.contractHashes[contract || ""] || contract || "";
-  const names = autoCompleteData.contractNames[hash];
-  const paths = autoCompleteData.contractPaths[hash];
-  const title = names?.length
-    ? names[0]
-    : paths?.length
-    ? paths[0]
-    : "Unknown contract";
+  const names = autoCompleteData.contractNames[hash] || [];
+  const paths = autoCompleteData.contractPaths[hash] || [];
+  const title = names[0] ? names[0] : paths[0] ? paths[0] : "Unknown contract";
+  const aka = [hash, ...paths].filter((_) => !!_ && _ !== contract);
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
@@ -80,6 +86,18 @@ export default function ContractInput({
         </div>
       )}
       <div style={descriptionStyle}>{title}</div>
+      {!!aka.length && (
+        <div style={akaStyle}>
+          <div>This contract can also be referred to as:</div>
+          <ul style={{ marginTop: 0 }}>
+            {aka.map((_) => (
+              <li key={_} style={akaItemStyle} onClick={() => setContract(_)}>
+                {_}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
