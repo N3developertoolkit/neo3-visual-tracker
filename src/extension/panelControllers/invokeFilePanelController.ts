@@ -112,7 +112,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       ];
       await this.applyEdit(newFileContents);
     }
-    if (request.run) {
+    if (request.runAll) {
       let connection = this.activeConnection.connection;
       if (!connection) {
         await this.activeConnection.connect();

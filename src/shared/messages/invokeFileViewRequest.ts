@@ -5,7 +5,7 @@ type InvokeFileViewRequest = {
   dismissError?: boolean;
   initiateConnection?: boolean;
   moveStep?: { from: number; to: number };
-  run?: boolean;
+  runAll?: boolean;
   update?: {
     i: number;
     contract?: string;

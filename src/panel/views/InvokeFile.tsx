@@ -92,7 +92,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           <NavButton onClick={() => postMessage({ addStep: true })}>
             Add step
           </NavButton>{" "}
-          <NavButton onClick={() => postMessage({ run: true })}>
+          <NavButton onClick={() => postMessage({ runAll: true })}>
             Run all steps
           </NavButton>
         </div>
