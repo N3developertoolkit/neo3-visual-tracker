@@ -57,8 +57,10 @@ export default class AutoComplete {
   }
 
   private async periodicUpdate() {
+    const workspaceContracts = { ...this.contractDetector.contracts };
+
     const newData: AutoCompleteData = {
-      contractManifests: { ...this.contractDetector.contracts },
+      contractManifests: {},
       contractHashes: {},
       contractPaths: {},
       contractNames: { ...WELL_KNOWN_NAMES },
@@ -77,10 +79,12 @@ export default class AutoComplete {
       }
     }
 
-    for (const contractPath of Object.keys(newData.contractManifests)) {
-      const manifest = newData.contractManifests[contractPath];
+    for (const workspaceContract of Object.values(workspaceContracts)) {
+      const manifest = workspaceContract.manifest;
       const contractHash = manifest.abi?.hash;
+      const contractPath = workspaceContract.absolutePathToNef;
       if (contractHash) {
+        newData.contractManifests[contractHash] = manifest;
         newData.contractHashes[contractPath] = contractHash;
         newData.contractPaths[contractHash] =
           newData.contractPaths[contractHash] || [];

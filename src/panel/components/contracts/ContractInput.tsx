@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
@@ -54,13 +54,13 @@ export default function ContractInput({
     maxHeight: "80vh",
     overflow: "auto",
   };
-  const contractManifests = Object.values(autoCompleteData.contractManifests);
-  const hash =
+  const allHashes = Object.keys(autoCompleteData.contractManifests);
+  const contractHash =
     autoCompleteData.contractHashes[contract || ""] || contract || "";
-  const names = autoCompleteData.contractNames[hash] || [];
-  const paths = autoCompleteData.contractPaths[hash] || [];
+  const names = autoCompleteData.contractNames[contractHash] || [];
+  const paths = autoCompleteData.contractPaths[contractHash] || [];
   const title = names[0] ? names[0] : paths[0] ? paths[0] : "Unknown contract";
-  const aka = [hash, ...paths].filter((_) => !!_ && _ !== contract);
+  const aka = [contractHash, ...paths].filter((_) => !!_ && _ !== contract);
   return (
     <div style={{ ...style, position: "relative" }}>
       <div>
@@ -74,15 +74,21 @@ export default function ContractInput({
         onFocus={() => setHasFocus(true)}
         onBlur={() => setHasFocus(false)}
       />
-      {hasFocus && !!contractManifests.length && (
+      {hasFocus && !!allHashes.length && (
         <div style={dropdownStyle}>
-          {contractManifests.map((manifest, i) => (
-            <ContractTile
-              key={`${i}_${manifest.abi?.hash}`}
-              manifest={manifest}
-              onMouseDown={setContract}
-            />
-          ))}
+          {allHashes.map((hash, i) => {
+            const manifest = autoCompleteData.contractManifests[hash];
+            return manifest?.abi ? (
+              <ContractTile
+                key={hash}
+                hash={hash}
+                abi={manifest.abi}
+                onMouseDown={setContract}
+              />
+            ) : (
+              <Fragment key={`missing_${i}`}></Fragment>
+            );
+          })}
         </div>
       )}
       <div style={descriptionStyle}>{title}</div>

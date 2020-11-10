@@ -6,21 +6,27 @@ import DetectorBase from "./detectorBase";
 const LOG_PREFIX = "[ContractDetector]";
 const SEARCH_PATTERN = "**/*.nef";
 
+type ContractMap = {
+  [contractHash: string]: {
+    manifest: Partial<ContractManifestJson>;
+    absolutePathToNef: string;
+  };
+};
+
 export default class ContractDetector extends DetectorBase {
-  contracts: { [fullPathToNef: string]: Partial<ContractManifestJson> } = {};
+  contracts: ContractMap = {};
 
   constructor() {
     super(SEARCH_PATTERN);
   }
 
   async processFiles() {
-    const newSnapshot: {
-      [fullPathToNef: string]: Partial<ContractManifestJson>;
-    } = {};
-    for (const fullPathToNef of this.files) {
-      const manifest = ContractDetector.tryGetManifest(fullPathToNef);
-      if (manifest) {
-        newSnapshot[fullPathToNef] = manifest;
+    const newSnapshot: ContractMap = {};
+    for (const absolutePathToNef of this.files) {
+      const manifest = ContractDetector.tryGetManifest(absolutePathToNef);
+      if (manifest?.abi?.hash) {
+        const contractHash = manifest.abi.hash;
+        newSnapshot[contractHash] = { manifest, absolutePathToNef };
       }
     }
     this.contracts = newSnapshot;

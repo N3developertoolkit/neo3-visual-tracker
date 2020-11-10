@@ -130,7 +130,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     data: AutoCompleteData
   ): Promise<AutoCompleteData> {
     const result = { ...data };
-    result.contractManifests = { ...result.contractManifests };
+    result.contractPaths = { ...result.contractPaths };
     result.contractHashes = { ...result.contractHashes };
 
     const baseHref = path.dirname(this.document.uri.fsPath);
@@ -140,13 +140,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         if (path.isAbsolute(contractPath)) {
           const relativePath = path.relative(baseHref, contractPath);
           contractPaths.push(relativePath);
-          result.contractManifests[relativePath] =
-            result.contractManifests[contractPath];
           result.contractHashes[relativePath] =
             result.contractHashes[contractPath];
         }
       }
-      data.contractPaths[hash] = dedupeAndSort(contractPaths);
+      result.contractPaths[hash] = dedupeAndSort(contractPaths);
     }
 
     const connection = this.activeConnection.connection;
