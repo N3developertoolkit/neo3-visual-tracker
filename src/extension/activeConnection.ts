@@ -16,17 +16,24 @@ export default class ActiveConnection {
     healthy: boolean;
   } | null;
 
+  onChange: vscode.Event<BlockchainIdentifier | null>;
+
+  private readonly onChangeEmitter: vscode.EventEmitter<BlockchainIdentifier | null>;
+
   private disposed = false;
   private statusBarItem: vscode.StatusBarItem;
   private visible = false;
 
   constructor(private readonly blockchainsExplorer: BlockchainsExplorer) {
     this.connection = null;
+    this.onChangeEmitter = new vscode.EventEmitter<BlockchainIdentifier | null>();
+    this.onChange = this.onChangeEmitter.event;
     this.statusBarItem = vscode.window.createStatusBarItem();
     this.refreshLoop();
   }
 
   dispose() {
+    this.onChangeEmitter.dispose();
     this.statusBarItem.dispose();
     this.disconnect();
     this.disposed = true;
@@ -51,6 +58,7 @@ export default class ActiveConnection {
     } else {
       this.connection = null;
     }
+    await this.onChangeEmitter.fire(blockchainIdentifier || null);
     await this.updateConnectionState();
   }
 

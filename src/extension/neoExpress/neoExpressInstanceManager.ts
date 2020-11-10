@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
+import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";
@@ -11,14 +12,31 @@ export default class NeoExpressInstanceManager {
 
   private terminals: vscode.Terminal[];
 
-  constructor(private readonly activeConnection: ActiveConnection) {
+  constructor(
+    private readonly neoExpress: NeoExpress,
+    private readonly activeConnection: ActiveConnection
+  ) {
     this.running = null;
     this.terminals = [];
+    this.activeConnection.onChange(async (blockchainIdentifier) => {
+      if (
+        blockchainIdentifier &&
+        blockchainIdentifier.name !== this.running?.name
+      ) {
+        if (
+          await IoHelpers.yesNo(
+            `${blockchainIdentifier.name} is not running. Would you like to start it?`
+          )
+        ) {
+          await this.run(blockchainIdentifier);
+        }
+      }
+    });
   }
 
   dispose() {}
 
-  async run(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
+  async run(identifer: BlockchainIdentifier) {
     if (identifer.blockchainType !== "express") {
       return;
     }
@@ -36,7 +54,7 @@ export default class NeoExpressInstanceManager {
     const children = identifer.getChildren();
     if (children.length) {
       for (const child of children) {
-        const terminal = neoExpress.runInTerminal(
+        const terminal = this.neoExpress.runInTerminal(
           child.name,
           "run",
           "-i",
@@ -50,7 +68,7 @@ export default class NeoExpressInstanceManager {
         }
       }
     } else {
-      const terminal = neoExpress.runInTerminal(
+      const terminal = this.neoExpress.runInTerminal(
         identifer.name,
         "run",
         "-i",
