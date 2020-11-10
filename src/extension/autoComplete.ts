@@ -13,6 +13,8 @@ const REFRESH_INTERVAL_MS = 1000 * 5;
 const WELL_KNOWN_NAMES = {
   "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc": ["GAS"],
   "0xde5f57d430d3dece511cf975a8d37848cb9e0525": ["NEO"],
+  "0x3c05b488bf4cf699d0631bf80190896ebbf38c3b": ["Oracle"],
+  "0xce06595079cd69583126dbfd1d2e25cca74cffe9": ["Policy"],
 };
 
 export default class AutoComplete {
