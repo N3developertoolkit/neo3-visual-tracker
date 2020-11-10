@@ -23,8 +23,11 @@ export default function OperatonTile({ operation, onMouseDown }: Props) {
         }
       }}
     >
-      <div style={{ fontWeight: "bold" }}>{operation.name}:</div>
-      <div style={{ marginLeft: 10 }}>{JSON.stringify(operation)}</div>
+      <div>
+        <strong>{operation.name}</strong>: (
+        {operation.parameters.map((_) => `${_.type} ${_.name}`).join(", ")}) →{" "}
+        {operation.returntype}
+      </div>
     </div>
   );
 }
