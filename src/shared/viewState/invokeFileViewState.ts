@@ -1,6 +1,5 @@
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
-
 import AutoCompleteData from "../autoCompleteData";
+import RecentTransaction from "../recentTransaction";
 
 type InvokeFileViewState = {
   view: "invokeFile";
@@ -14,12 +13,7 @@ type InvokeFileViewState = {
   errorText: string;
   connectedTo: string;
   connectionState: "ok" | "connecting" | "none";
-  recentTransactions: {
-    blockchain: string;
-    txid: string;
-    state: "pending" | "error" | "ok";
-    tx?: TransactionJson;
-  }[];
+  recentTransactions: RecentTransaction[];
 };
 
 export default InvokeFileViewState;

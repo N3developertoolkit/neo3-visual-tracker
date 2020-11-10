@@ -10,6 +10,7 @@ import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
+import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
 const MAX_RECENT_TXS = 10;
@@ -241,12 +242,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
               txid: _.txid,
               blockchain: _.blockchain,
               tx,
-              state:
-                vmstate === "FAULT"
-                  ? "error"
-                  : vmstate
-                  ? "ok"
-                  : ("pending" as "pending" | "error" | "ok"),
+              state: (vmstate === "FAULT"
+                ? "error"
+                : vmstate
+                ? "ok"
+                : "pending") as TransactionStatus,
             };
           } catch (e) {
             return _;

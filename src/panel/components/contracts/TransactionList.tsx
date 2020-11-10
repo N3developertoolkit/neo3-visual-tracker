@@ -1,7 +1,9 @@
 import React from "react";
 
+import RecentTransaction from "../../../shared/recentTransaction";
+
 type Props = {
-  transactions: any[];
+  transactions: RecentTransaction[];
 };
 
 export default function TransactionList({ transactions }: Props) {
