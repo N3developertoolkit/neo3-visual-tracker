@@ -137,10 +137,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           this.document.uri.fsPath,
           account
         );
-        (result.isError
-          ? vscode.window.showErrorMessage
-          : vscode.window.showInformationMessage)(result.message);
-        if (!result.isError) {
+        if (result.isError) {
+          await vscode.window.showErrorMessage(result.message);
+        } else {
           const recentTransactions = [...this.viewState.recentTransactions];
           for (const txidMatch of ` ${result.message} `.matchAll(
             /\s0x[0-9a-f]+\s/gi
