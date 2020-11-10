@@ -12,6 +12,7 @@ import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
+const MAX_RECENT_TXS = 10;
 const REFRESH_INTERVAL_MS = 1000 * 5; // TODO: Use an event instead of polling
 
 export default class InvokeFilePanelController extends PanelControllerBase<
@@ -37,6 +38,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         errorText: "",
         connectedTo: "",
         connectionState: "none",
+        recentTransactions: [],
       },
       context,
       panel
@@ -138,6 +140,19 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         (result.isError
           ? vscode.window.showErrorMessage
           : vscode.window.showInformationMessage)(result.message);
+        if (!result.isError) {
+          const recentTransactions = [...this.viewState.recentTransactions];
+          for (const txidMatch of ` ${result.message} `.matchAll(
+            /\s0x[0-9a-f]+\s/gi
+          )) {
+            const txid = txidMatch[0].trim();
+            recentTransactions.unshift({ txid });
+          }
+          if (recentTransactions.length > MAX_RECENT_TXS) {
+            recentTransactions.length = MAX_RECENT_TXS;
+          }
+          this.updateViewState({ recentTransactions });
+        }
       }
     }
   }
@@ -208,12 +223,30 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       connectionState = connection.healthy ? "ok" : "connecting";
     }
 
+    const recentTransactions = await Promise.all(
+      this.viewState.recentTransactions.map(async (_) => {
+        if (_.tx) {
+          return _;
+        } else {
+          try {
+            return {
+              txid: _.txid,
+              tx: await connection?.rpcClient.getRawTransaction(_.txid, true),
+            };
+          } catch (e) {
+            return _;
+          }
+        }
+      })
+    );
+
     this.updateViewState({
       connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
       connectionState,
       autoCompleteData: await this.augmentAutoCompleteData(
         this.autoComplete.data
       ),
+      recentTransactions,
     });
   }
 

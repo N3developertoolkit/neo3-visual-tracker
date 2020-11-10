@@ -7,6 +7,7 @@ import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import NavButton from "../components/NavButton";
+import TransactionList from "../components/TransactionList";
 
 type Props = {
   viewState: InvokeFileViewState;
@@ -117,6 +118,10 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           >
             Run
           </NavButton>
+        </div>
+        <hr />
+        <div style={{ padding: 10 }}>
+          <TransactionList transactions={viewState.recentTransactions} />
         </div>
       </div>
     </div>
