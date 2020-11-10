@@ -91,6 +91,9 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         <div style={{ textAlign: "center" }}>
           <NavButton onClick={() => postMessage({ addStep: true })}>
             Add step
+          </NavButton>{" "}
+          <NavButton onClick={() => postMessage({ run: true })}>
+            Run all steps
           </NavButton>
         </div>
       </div>
@@ -109,15 +112,6 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             initiateConnection={() => postMessage({ initiateConnection: true })}
             disconnect={() => postMessage({ disconnect: true })}
           />
-        </div>
-        <hr />
-        <div style={{ padding: 10, textAlign: "center" }}>
-          <NavButton
-            disabled={viewState.connectionState !== "ok"}
-            onClick={() => postMessage({ run: true })}
-          >
-            Run
-          </NavButton>
         </div>
         <hr />
         <div style={{ padding: 10 }}>

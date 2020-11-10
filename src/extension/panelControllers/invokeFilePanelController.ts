@@ -113,7 +113,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.applyEdit(newFileContents);
     }
     if (request.run) {
-      const connection = this.activeConnection.connection;
+      let connection = this.activeConnection.connection;
+      if (!connection) {
+        await this.activeConnection.connect();
+        await this.periodicViewStateUpdate();
+        connection = this.activeConnection.connection;
+      }
       if (
         connection &&
         connection.blockchainIdentifier.blockchainType === "express"
