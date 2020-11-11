@@ -9,7 +9,20 @@ type Props = {
 export default function TransactionList({ transactions }: Props) {
   return (
     <div>
-      <pre>{JSON.stringify(transactions, undefined, 2)}</pre>
+      <div
+        style={{
+          paddingBottom: 15,
+          color: "var(--vscode-panelTitle-inactiveForeground)",
+        }}
+      >
+        TRANSACTIONS
+      </div>
+      {!!transactions.length && (
+        <pre>{JSON.stringify(transactions, undefined, 2)}</pre>
+      )}
+      {!transactions.length && (
+        <>As you run the steps in your file, results will appear here.</>
+      )}
     </div>
   );
 }

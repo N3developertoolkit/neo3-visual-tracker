@@ -31,8 +31,8 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "stretch",
-        height: "100%",
-        maxHeight: "100%",
+        height: "calc(100% - 1px)",
+        maxHeight: "calc(100% - 1px)",
         borderTop: "1px solid var(--vscode-panel-border)",
       }}
     >
@@ -99,14 +99,42 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
       </div>
       <div
         style={{
-          flex: "1 1",
-          overflow: "auto",
+          flex: "0 0",
           borderLeft: "1px solid var(--vscode-panel-border)",
-          padding: 10,
+          cursor: "pointer",
+          backgroundColor: "var(--vscode-panel-background)",
         }}
+        onClick={() => postMessage({ toggleTransactions: true })}
       >
-        <TransactionList transactions={viewState.recentTransactions} />
+        <div
+          style={{
+            width: 35,
+            textAlign: "center",
+            marginTop: 10,
+            paddingTop: 10,
+            paddingBottom: 14,
+            borderRight: viewState.collapseTransactions
+              ? undefined
+              : "1px solid var(--vscode-panelTitle-activeBorder)",
+          }}
+        >
+          {viewState.collapseTransactions ? "<" : ">"}
+        </div>
       </div>
+      {!viewState.collapseTransactions && (
+        <div
+          style={{
+            flex: "1 1",
+            overflow: "auto",
+            padding: 10,
+            paddingLeft: 15,
+            paddingTop: 15,
+            backgroundColor: "var(--vscode-panel-background)",
+          }}
+        >
+          <TransactionList transactions={viewState.recentTransactions} />
+        </div>
+      )}
     </div>
   );
 }

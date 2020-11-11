@@ -39,6 +39,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         autoCompleteData: autoComplete.data,
         errorText: "",
         recentTransactions: [],
+        collapseTransactions: true,
       },
       context,
       panel
@@ -108,6 +109,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
     if (request.runStep) {
       await this.runFragment(this.viewState.fileContents[request.runStep.i]);
+    }
+    if (request.toggleTransactions) {
+      this.updateViewState({
+        collapseTransactions: !this.viewState.collapseTransactions,
+      });
     }
   }
 
@@ -264,6 +270,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         return;
       }
       await this.document.save();
+      await this.updateViewState({ collapseTransactions: false });
       const result = this.neoExpress.runSync(
         "contract",
         "invoke",

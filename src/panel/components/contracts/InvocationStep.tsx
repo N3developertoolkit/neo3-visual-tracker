@@ -58,9 +58,10 @@ export default function InvocationStep({
         backgroundColor: "var(--vscode-editorWidget-background)",
         color: "var(--vscode-editorWidget-foreground)",
         border: "var(--vscode-editorWidget-border)",
+        borderRadius: 10,
         marginLeft: 10,
         marginRight: 10,
-        padding: 10,
+        padding: 15,
         cursor: "move",
       }}
     >

@@ -5,6 +5,7 @@ type InvokeFileViewRequest = {
   moveStep?: { from: number; to: number };
   runAll?: boolean;
   runStep?: { i: number };
+  toggleTransactions?: boolean;
   update?: {
     i: number;
     contract?: string;

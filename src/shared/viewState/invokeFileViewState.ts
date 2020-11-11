@@ -12,6 +12,7 @@ type InvokeFileViewState = {
   autoCompleteData: AutoCompleteData;
   errorText: string;
   recentTransactions: RecentTransaction[];
+  collapseTransactions: boolean;
 };
 
 export default InvokeFileViewState;
