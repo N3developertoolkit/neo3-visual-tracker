@@ -181,8 +181,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         fileText = "[]";
       }
       try {
+        let fileContents = JSON.parse(fileText) || [];
+        if (!Array.isArray(fileContents)) {
+          fileContents = [fileContents];
+        }
         this.updateViewState({
-          fileContents: JSON.parse(fileText),
+          fileContents,
           errorText: "",
         });
       } catch {
