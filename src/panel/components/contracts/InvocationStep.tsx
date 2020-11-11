@@ -84,7 +84,7 @@ export default function InvocationStep({
       <ArgumentsInput
         style={{ marginBottom: 10 }}
         parameterDefinitions={
-          operations.find((_) => _.name === operation)?.parameters || []
+          operations.find((_) => _.name === operation)?.parameters
         }
         args={args || []}
         autoSuggestListId={argumentSuggestionListId}

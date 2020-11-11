@@ -6,7 +6,7 @@ import ArgumentInput from "./ArgumentInput";
 type Props = {
   style?: React.CSSProperties;
   args: (string | number)[];
-  parameterDefinitions: ContractParameterDefinitionJson[];
+  parameterDefinitions?: ContractParameterDefinitionJson[];
   autoSuggestListId: string;
   setArguments: (newArguments: (string | number)[]) => void;
 };
@@ -21,31 +21,35 @@ export default function ArgumentsInput({
   while (args.length && !args[args.length - 1]) {
     args.length--;
   }
-  while (args.length < parameterDefinitions.length) {
+  while (args.length < (parameterDefinitions?.length || 0)) {
     args.push("");
   }
   return (
     <div style={style}>
-      <div>
-        <strong>Arguments:</strong>
-      </div>
+      {(!parameterDefinitions || !!args.length) && (
+        <div>
+          <strong>Arguments:</strong>
+        </div>
+      )}
       {args.map((_, i) => (
         <ArgumentInput
           key={`${i}_${_}`}
-          name={parameterDefinitions[i]?.name || `Argument #${i + 1}`}
-          type={parameterDefinitions[i]?.type}
+          name={(parameterDefinitions || [])[i]?.name || `Argument #${i + 1}`}
+          type={(parameterDefinitions || [])[i]?.type}
           arg={_}
           autoSuggestListId={autoSuggestListId}
           onUpdate={(arg: string | number) =>
             setArguments(
               args
                 .map((__, j) => (i === j ? arg : __))
-                .filter((__, j) => !!__ || j < parameterDefinitions.length)
+                .filter(
+                  (__, j) => !!__ || j < (parameterDefinitions?.length || 0)
+                )
             )
           }
         />
       ))}
-      {!parameterDefinitions.length && (
+      {!parameterDefinitions && (
         <ArgumentInput
           key={args.length}
           name={`Argument #${args.length + 1}`}
