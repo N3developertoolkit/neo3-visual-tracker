@@ -1,9 +1,7 @@
 type InvokeFileViewRequest = {
   addStep?: boolean;
   deleteStep?: { i: number };
-  disconnect?: boolean;
   dismissError?: boolean;
-  initiateConnection?: boolean;
   moveStep?: { from: number; to: number };
   runAll?: boolean;
   update?: {

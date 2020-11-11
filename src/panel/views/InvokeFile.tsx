@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 import Dialog from "../components/Dialog";
 import DropTarget from "../components/DropTarget";
-import InvocationConnection from "../components/contracts/InvocationConnection";
 import InvocationStep from "../components/contracts/InvocationStep";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
@@ -105,18 +104,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           padding: 10,
         }}
       >
-        <div style={{ padding: 10, textAlign: "center" }}>
-          <InvocationConnection
-            connectedTo={viewState.connectedTo}
-            connectionState={viewState.connectionState}
-            initiateConnection={() => postMessage({ initiateConnection: true })}
-            disconnect={() => postMessage({ disconnect: true })}
-          />
-        </div>
-        <hr />
-        <div style={{ padding: 10 }}>
-          <TransactionList transactions={viewState.recentTransactions} />
-        </div>
+        <TransactionList transactions={viewState.recentTransactions} />
       </div>
     </div>
   );

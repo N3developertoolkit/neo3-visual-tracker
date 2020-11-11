@@ -37,8 +37,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         fileContents: [],
         autoCompleteData: autoComplete.data,
         errorText: "",
-        connectedTo: "",
-        connectionState: "none",
         recentTransactions: [],
       },
       context,
@@ -63,14 +61,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   protected async onRequest(request: InvokeFileViewRequest) {
     if (request.dismissError) {
       await this.onFileUpdate();
-    }
-    if (request.initiateConnection) {
-      await this.activeConnection.connect();
-      await this.periodicViewStateUpdate();
-    }
-    if (request.disconnect) {
-      await this.activeConnection.disconnect();
-      await this.periodicViewStateUpdate();
     }
     if (request.update !== undefined) {
       let newFileContents = [...this.viewState.fileContents];
@@ -226,11 +216,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   private async periodicViewStateUpdate() {
-    let connectionState: "none" | "ok" | "connecting" = "none";
     const connection = this.activeConnection.connection;
-    if (connection) {
-      connectionState = connection.healthy ? "ok" : "connecting";
-    }
 
     const recentTransactions = await Promise.all(
       this.viewState.recentTransactions.map(async (_) => {
@@ -260,12 +246,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       })
     );
 
+    const autoCompleteData = await this.augmentAutoCompleteData(
+      this.autoComplete.data
+    );
+
     this.updateViewState({
-      connectedTo: this.activeConnection.connection?.blockchainIdentifier.name,
-      connectionState,
-      autoCompleteData: await this.augmentAutoCompleteData(
-        this.autoComplete.data
-      ),
+      autoCompleteData,
       recentTransactions,
     });
   }

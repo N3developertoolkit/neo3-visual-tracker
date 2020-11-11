@@ -11,8 +11,6 @@ type InvokeFileViewState = {
   }[];
   autoCompleteData: AutoCompleteData;
   errorText: string;
-  connectedTo: string;
-  connectionState: "ok" | "connecting" | "none";
   recentTransactions: RecentTransaction[];
 };
 
