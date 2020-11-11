@@ -14,7 +14,7 @@ export default class NeoExpressCommands {
     if (identifer.blockchainType !== "express") {
       return;
     }
-    if (!contractDetector.contracts.length) {
+    if (!Object.keys(contractDetector.contracts).length) {
       vscode.window.showErrorMessage(
         "No compiled contracts (*.nef files) were found in the current workspace."
       );
@@ -31,7 +31,9 @@ export default class NeoExpressCommands {
     }
     const contractFile = await IoHelpers.multipleChoiceFiles(
       `Use account "${account}" to deploy...`,
-      ...Object.keys(contractDetector.contracts)
+      ...Object.values(contractDetector.contracts).map(
+        (_) => _.absolutePathToNef
+      )
     );
     if (!contractFile) {
       return;
