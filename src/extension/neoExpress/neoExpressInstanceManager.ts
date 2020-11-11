@@ -21,6 +21,7 @@ export default class NeoExpressInstanceManager {
     this.activeConnection.onChange(async (blockchainIdentifier) => {
       if (
         blockchainIdentifier &&
+        blockchainIdentifier.blockchainType === "express" &&
         blockchainIdentifier.name !== this.running?.name
       ) {
         if (
