@@ -12,6 +12,7 @@ type InvokeFileViewRequest = {
     operation?: string;
     args?: (string | number)[];
   };
+  selectTransaction?: { txid: string | null };
 };
 
 export default InvokeFileViewRequest;

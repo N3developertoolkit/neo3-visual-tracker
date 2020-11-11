@@ -8,7 +8,7 @@ import Script from "./Script";
 
 type Props = {
   transaction: Partial<neonCore.tx.TransactionJson>;
-  selectAddress: (address: string) => void;
+  selectAddress?: (address: string) => void;
 };
 
 export default function TransactionDetails({
@@ -29,7 +29,7 @@ export default function TransactionDetails({
           <Hash hash={transaction.hash} />
         </MetadataBadge>
       )}
-      {!!transaction.sender && (
+      {!!transaction.sender && !!selectAddress && (
         <MetadataBadge title="Sender">
           <NavLink
             onClick={() =>
@@ -38,6 +38,11 @@ export default function TransactionDetails({
           >
             <Hash hash={transaction.sender} />
           </NavLink>
+        </MetadataBadge>
+      )}
+      {!!transaction.sender && !selectAddress && (
+        <MetadataBadge title="Sender">
+          <Hash hash={transaction.sender} />
         </MetadataBadge>
       )}
       {!!transaction.signers?.length &&

@@ -132,7 +132,13 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             backgroundColor: "var(--vscode-panel-background)",
           }}
         >
-          <TransactionList transactions={viewState.recentTransactions} />
+          <TransactionList
+            transactions={viewState.recentTransactions}
+            selectedTransactionId={viewState.selectedTransactionId}
+            onSelectTransaction={(txid) =>
+              postMessage({ selectTransaction: { txid } })
+            }
+          />
         </div>
       )}
     </div>

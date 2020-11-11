@@ -1,15 +1,31 @@
 import React from "react";
 
+import Dialog from "../Dialog";
 import Hash from "../Hash";
 import RecentTransaction from "../../../shared/recentTransaction";
+import TransactionDetails from "../tracker/TransactionDetails";
 
 type Props = {
   transactions: RecentTransaction[];
+  selectedTransactionId: string | null;
+  onSelectTransaction: (txid: string | null) => void;
 };
 
-export default function TransactionList({ transactions }: Props) {
+export default function TransactionList({
+  transactions,
+  selectedTransactionId,
+  onSelectTransaction,
+}: Props) {
+  const selectedEntry = transactions.find(
+    (_) => _.txid === selectedTransactionId
+  );
   return (
     <div>
+      {!!selectedEntry?.tx && (
+        <Dialog onClose={() => onSelectTransaction(null)}>
+          <TransactionDetails transaction={selectedEntry.tx} />
+        </Dialog>
+      )}
       <div
         style={{
           paddingBottom: 15,
@@ -29,7 +45,7 @@ export default function TransactionList({ transactions }: Props) {
             padding: 10,
             cursor: entry.tx ? "pointer" : undefined,
           }}
-          onClick={entry.tx ? () => {} : undefined}
+          onClick={entry.tx ? () => onSelectTransaction(entry.txid) : undefined}
         >
           <div
             style={{

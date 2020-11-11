@@ -13,6 +13,7 @@ type InvokeFileViewState = {
   errorText: string;
   recentTransactions: RecentTransaction[];
   collapseTransactions: boolean;
+  selectedTransactionId: string | null;
 };
 
 export default InvokeFileViewState;

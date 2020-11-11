@@ -40,6 +40,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         errorText: "",
         recentTransactions: [],
         collapseTransactions: true,
+        selectedTransactionId: null,
       },
       context,
       panel
@@ -113,6 +114,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     if (request.toggleTransactions) {
       this.updateViewState({
         collapseTransactions: !this.viewState.collapseTransactions,
+      });
+    }
+    if (request.selectTransaction) {
+      this.updateViewState({
+        selectedTransactionId: request.selectTransaction.txid,
       });
     }
   }
