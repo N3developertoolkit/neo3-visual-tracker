@@ -4,6 +4,7 @@ type InvokeFileViewRequest = {
   dismissError?: boolean;
   moveStep?: { from: number; to: number };
   runAll?: boolean;
+  runStep?: { i: number };
   update?: {
     i: number;
     contract?: string;

@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -103,56 +104,10 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.applyEdit(newFileContents);
     }
     if (request.runAll) {
-      let connection = this.activeConnection.connection;
-      if (!connection) {
-        await this.activeConnection.connect();
-        await this.periodicViewStateUpdate();
-        connection = this.activeConnection.connection;
-      }
-      if (
-        connection &&
-        connection.blockchainIdentifier.blockchainType === "express"
-      ) {
-        const walletNames = Object.keys(
-          connection.blockchainIdentifier.getWalletAddresses()
-        );
-        const account = await IoHelpers.multipleChoice(
-          "Select an account...",
-          "genesis",
-          ...walletNames
-        );
-        if (!account) {
-          return;
-        }
-        await this.document.save();
-        const result = this.neoExpress.runSync(
-          "contract",
-          "invoke",
-          "-i",
-          connection.blockchainIdentifier.configPath,
-          this.document.uri.fsPath,
-          account
-        );
-        if (result.isError) {
-          await vscode.window.showErrorMessage(result.message);
-        } else {
-          const recentTransactions = [...this.viewState.recentTransactions];
-          for (const txidMatch of ` ${result.message} `.matchAll(
-            /\s0x[0-9a-f]+\s/gi
-          )) {
-            const txid = txidMatch[0].trim();
-            recentTransactions.unshift({
-              txid,
-              blockchain: connection.blockchainIdentifier.name,
-              state: "pending",
-            });
-          }
-          if (recentTransactions.length > MAX_RECENT_TXS) {
-            recentTransactions.length = MAX_RECENT_TXS;
-          }
-          this.updateViewState({ recentTransactions });
-        }
-      }
+      await this.runFile(this.document.uri.fsPath);
+    }
+    if (request.runStep) {
+      await this.runFragment(this.viewState.fileContents[request.runStep.i]);
     }
   }
 
@@ -204,14 +159,33 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     return result;
   }
 
-  private async refreshLoop() {
+  private async onFileUpdate() {
     if (this.isClosed) {
       return;
     }
     try {
-      await this.periodicViewStateUpdate();
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+      let fileText = this.document.getText();
+      if (fileText?.trim().length === 0) {
+        fileText = "[]";
+      }
+      try {
+        this.updateViewState({
+          fileContents: JSON.parse(fileText),
+          errorText: "",
+        });
+      } catch {
+        this.updateViewState({
+          errorText: `There was a problem parsing "${path.basename(
+            this.document.uri.fsPath
+          )}", try opening the file using the built-in editor and confirm that it contains valid JSON.`,
+        });
+        return;
+      }
+    } catch {
+      this.updateViewState({
+        errorText: `There was an error reading ${this.document.uri.fsPath}`,
+      });
+      return;
     }
   }
 
@@ -256,33 +230,98 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     });
   }
 
-  private async onFileUpdate() {
+  private async refreshLoop() {
     if (this.isClosed) {
       return;
     }
     try {
-      let fileText = this.document.getText();
-      if (fileText?.trim().length === 0) {
-        fileText = "[]";
-      }
-      try {
-        this.updateViewState({
-          fileContents: JSON.parse(fileText),
-          errorText: "",
-        });
-      } catch {
-        this.updateViewState({
-          errorText: `There was a problem parsing "${path.basename(
-            this.document.uri.fsPath
-          )}", try opening the file using the built-in editor and confirm that it contains valid JSON.`,
-        });
+      await this.periodicViewStateUpdate();
+    } finally {
+      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+    }
+  }
+
+  private async runFile(path: string) {
+    let connection = this.activeConnection.connection;
+    if (!connection) {
+      await this.activeConnection.connect();
+      await this.periodicViewStateUpdate();
+      connection = this.activeConnection.connection;
+    }
+    if (
+      connection &&
+      connection.blockchainIdentifier.blockchainType === "express"
+    ) {
+      const walletNames = Object.keys(
+        connection.blockchainIdentifier.getWalletAddresses()
+      );
+      const account = await IoHelpers.multipleChoice(
+        "Select an account...",
+        "genesis",
+        ...walletNames
+      );
+      if (!account) {
         return;
       }
-    } catch {
-      this.updateViewState({
-        errorText: `There was an error reading ${this.document.uri.fsPath}`,
-      });
-      return;
+      await this.document.save();
+      const result = this.neoExpress.runSync(
+        "contract",
+        "invoke",
+        "-i",
+        connection.blockchainIdentifier.configPath,
+        path,
+        account
+      );
+      if (result.isError) {
+        await vscode.window.showErrorMessage(result.message);
+      } else {
+        const recentTransactions = [...this.viewState.recentTransactions];
+        for (const txidMatch of ` ${result.message} `.matchAll(
+          /\s0x[0-9a-f]+\s/gi
+        )) {
+          const txid = txidMatch[0].trim();
+          recentTransactions.unshift({
+            txid,
+            blockchain: connection.blockchainIdentifier.name,
+            state: "pending",
+          });
+        }
+        if (recentTransactions.length > MAX_RECENT_TXS) {
+          recentTransactions.length = MAX_RECENT_TXS;
+        }
+        this.updateViewState({ recentTransactions });
+      }
+    }
+  }
+
+  private async runFragment(fragment: any) {
+    const invokeFilePath = this.document.uri.fsPath;
+    const tempFile = path.join(
+      path.dirname(invokeFilePath),
+      `.temp.${path.basename(invokeFilePath)}`
+    );
+    try {
+      fs.writeFileSync(tempFile, JSON.stringify([fragment]));
+      await this.runFile(tempFile);
+    } catch (e) {
+      console.warn(
+        LOG_PREFIX,
+        "Error running fragment",
+        tempFile,
+        fragment,
+        e.message
+      );
+    } finally {
+      try {
+        fs.unlinkSync(tempFile);
+      } catch (e) {
+        console.warn(
+          LOG_PREFIX,
+          "Could not delete temporary file",
+          tempFile,
+          e.message
+        );
+      }
     }
   }
 }

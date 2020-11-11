@@ -15,6 +15,7 @@ type Props = {
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
   onDelete: () => void;
+  onRun: () => void;
   onDragStart: () => void;
   onDragEnd: () => void;
   onUpdate: (
@@ -32,6 +33,7 @@ export default function InvocationStep({
   autoCompleteData,
   argumentSuggestionListId,
   onDelete,
+  onRun,
   onDragStart,
   onDragEnd,
   onUpdate,
@@ -90,7 +92,8 @@ export default function InvocationStep({
         }
       />
       <div style={{ textAlign: "right" }}>
-        <NavButton onClick={onDelete}>Delete this step</NavButton>
+        <NavButton onClick={onDelete}>Delete this step</NavButton>{" "}
+        <NavButton onClick={onRun}>Run this step</NavButton>
       </div>
     </div>
   );

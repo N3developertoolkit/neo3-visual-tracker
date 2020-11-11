@@ -74,6 +74,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
               onDragStart={() => setDragActive(true)}
               onDragEnd={() => setDragActive(false)}
               onDelete={() => postMessage({ deleteStep: { i } })}
+              onRun={() => postMessage({ runStep: { i } })}
               onUpdate={(contract, operation, args) =>
                 postMessage({
                   update: { i, contract, operation, args },
