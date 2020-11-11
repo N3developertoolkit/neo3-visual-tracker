@@ -29,7 +29,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     private readonly document: vscode.TextDocument,
     private readonly activeConnection: ActiveConnection,
     private readonly autoComplete: AutoComplete,
-    panel: vscode.WebviewPanel
+    private readonly panel: vscode.WebviewPanel
   ) {
     super(
       {
@@ -62,8 +62,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: InvokeFileViewRequest) {
-    if (request.dismissError) {
-      await this.onFileUpdate();
+    if (request.close) {
+      this.panel.dispose();
     }
     if (request.update !== undefined) {
       let newFileContents = [...this.viewState.fileContents];
@@ -193,7 +193,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         this.updateViewState({
           errorText: `There was a problem parsing "${path.basename(
             this.document.uri.fsPath
-          )}", try opening the file using the built-in editor and confirm that it contains valid JSON.`,
+          )}". Try opening the file using the built-in editor and confirm that it contains valid JSON.`,
         });
         return;
       }

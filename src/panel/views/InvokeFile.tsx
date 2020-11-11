@@ -17,7 +17,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
   const [dragActive, setDragActive] = useState(false);
   if (!!viewState.errorText) {
     return (
-      <Dialog onClose={() => postMessage({ dismissError: true })}>
+      <Dialog onClose={() => postMessage({ close: true })}>
         {viewState.errorText}
       </Dialog>
     );
