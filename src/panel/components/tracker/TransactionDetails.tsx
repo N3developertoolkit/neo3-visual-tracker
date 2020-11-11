@@ -46,8 +46,8 @@ export default function TransactionDetails({
         </MetadataBadge>
       )}
       {!!transaction.signers?.length &&
-        transaction.signers.map((signer) => (
-          <MetadataBadge title="Signer">
+        transaction.signers.map((signer, i) => (
+          <MetadataBadge title="Signer" key={i}>
             <Hash hash={signer.account} /> &mdash; {signer.scopes}
           </MetadataBadge>
         ))}
@@ -79,8 +79,8 @@ export default function TransactionDetails({
         </div>
       )}
       {!!transaction.witnesses?.length &&
-        transaction.witnesses.map((witness) => (
-          <div style={{ width: "100%" }}>
+        transaction.witnesses.map((witness, i) => (
+          <div style={{ width: "100%" }} key={i}>
             <MetadataBadge title="Witness">
               <div>
                 <strong>
