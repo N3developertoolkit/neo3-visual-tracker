@@ -94,6 +94,16 @@
         "category": "Neo Express 3"
       },
       {
+        "command": "neo3-visual-devtracker.neo.contractDeploy",
+        "title": "Deploy contract",
+        "category": "Neo 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.neo.walletCreate",
+        "title": "Create wallet",
+        "category": "Neo 3"
+      },
+      {
         "command": "neo3-visual-devtracker.tracker.openTracker",
         "title": "Open Neo Visual DevTracker",
         "category": "Neo 3 Visual DevTracker",
@@ -105,27 +115,17 @@
       {
         "command": "neo3-visual-devtracker.connect",
         "title": "Connect to a Neo blockchain",
-        "category": "Neo 3 Visual DevTracker"
-      },
-      {
-        "command": "neo3-visual-devtracker.contractDeploy",
-        "title": "Deploy contract",
-        "category": "Neo 3 Visual DevTracker"
+        "category": "Neo 3 Extension"
       },
       {
         "command": "neo3-visual-devtracker.customizeServerList",
         "title": "Customize blockchain list",
-        "category": "Neo 3 Visual DevTracker"
+        "category": "Neo 3 Extension"
       },
       {
         "command": "neo3-visual-devtracker.disconnect",
         "title": "Disconnect from current Neo blockchain",
-        "category": "Neo 3 Visual DevTracker"
-      },
-      {
-        "command": "neo3-visual-devtracker.walletCreate",
-        "title": "Create wallet",
-        "category": "Neo 3 Visual DevTracker"
+        "category": "Neo 3 Extension"
       }
     ],
     "menus": {
@@ -160,6 +160,10 @@
           "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem == express"
         },
         {
+          "command": "neo3-visual-devtracker.neo.contractDeploy",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem != express"
+        },
+        {
           "command": "neo3-visual-devtracker.tracker.openTracker",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer",
           "group": "inline"
@@ -167,10 +171,6 @@
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
-        },
-        {
-          "command": "neo3-visual-devtracker.contractDeploy",
-          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem != express"
         }
       ],
       "view/title": [
@@ -179,7 +179,7 @@
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         },
         {
-          "command": "neo3-visual-devtracker.walletCreate",
+          "command": "neo3-visual-devtracker.neo.walletCreate",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         },
         {

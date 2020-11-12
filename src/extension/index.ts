@@ -6,6 +6,7 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import BlockchainsExplorer from "./views/blockchainsExplorer";
 import ContractDetector from "./detectors/contractDetector";
+import NeoCommands from "./neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
@@ -96,6 +97,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "neo3-visual-devtracker.neo.walletCreate",
+      () => NeoCommands.createWallet()
+    )
+  );
+
+  context.subscriptions.push(
     vscode.commands.registerCommand("neo3-visual-devtracker.connect", () =>
       activeConnection.connect()
     )
@@ -111,12 +119,6 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand("neo3-visual-devtracker.disconnect", () =>
       activeConnection.disconnect()
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("neo3-visual-devtracker.walletCreate", () =>
-      TrackerCommands.createWallet()
     )
   );
 
@@ -177,21 +179,17 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     undefined,
     blockchainsExplorer,
-    "neo3-visual-devtracker.tracker.openTracker",
-    (identifier) => TrackerCommands.openTracker(context, identifier)
+    "neo3-visual-devtracker.neo.contractDeploy",
+    (identifier) =>
+      NeoCommands.contractDeploy(identifier, contractDetector, walletDetector)
   );
 
   registerBlockchainInstanceCommand(
     context,
     undefined,
     blockchainsExplorer,
-    "neo3-visual-devtracker.contractDeploy",
-    (identifier) =>
-      TrackerCommands.contractDeploy(
-        identifier,
-        contractDetector,
-        walletDetector
-      )
+    "neo3-visual-devtracker.tracker.openTracker",
+    (identifier) => TrackerCommands.openTracker(context, identifier)
   );
 }
 

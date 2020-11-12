@@ -3,6 +3,7 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import BlockchainType from "./blockchainType";
+import IoHelpers from "./ioHelpers";
 
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
@@ -141,6 +142,25 @@ export default class BlockchainIdentifier {
       treeItem.contextValue = this.blockchainType;
       treeItem.iconPath = vscode.ThemeIcon.File;
       return treeItem;
+    }
+  }
+
+  async selectRpcUrl(): Promise<string | undefined> {
+    const children = this.getChildren();
+    if (children.length === 1) {
+      return await children[0].selectRpcUrl();
+    } else if (children.length > 1) {
+      const selection = await IoHelpers.multipleChoice(
+        "Select an RPC server",
+        ...children.map((_, i) => `${i} - ${_.name}`)
+      );
+      if (!selection) {
+        return;
+      }
+      const selectedIndex = parseInt(selection);
+      return await children[selectedIndex].selectRpcUrl();
+    } else {
+      return this.rpcUrls[0];
     }
   }
 }
