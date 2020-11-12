@@ -178,6 +178,18 @@ export async function activate(context: vscode.ExtensionContext) {
     "neo3-visual-devtracker.express.walletCreate",
     (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
   );
+
+  registerBlockchainInstanceCommand(
+    context,
+    undefined,
+    blockchainsExplorer,
+    "neo3-visual-devtracker.contractDeploy",
+    async () => {
+      await vscode.window.showInformationMessage(
+        "Coming soon: TestNet deployment/invocation"
+      );
+    }
+  );
 }
 
 export function deactivate() {}

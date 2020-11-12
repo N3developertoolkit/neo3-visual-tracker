@@ -103,13 +103,18 @@
         }
       },
       {
-        "command": "neo3-visual-devtracker.customizeServerList",
-        "title": "Customize blockchain list",
+        "command": "neo3-visual-devtracker.connect",
+        "title": "Connect to a Neo blockchain",
         "category": "Neo 3 Visual DevTracker"
       },
       {
-        "command": "neo3-visual-devtracker.connect",
-        "title": "Connect to a Neo blockchain",
+        "command": "neo3-visual-devtracker.contractDeploy",
+        "title": "Deploy contract",
+        "category": "Neo 3 Visual DevTracker"
+      },
+      {
+        "command": "neo3-visual-devtracker.customizeServerList",
+        "title": "Customize blockchain list",
         "category": "Neo 3 Visual DevTracker"
       },
       {
@@ -157,6 +162,10 @@
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
+        },
+        {
+          "command": "neo3-visual-devtracker.contractDeploy",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer && viewItem != express"
         }
       ],
       "view/title": [
