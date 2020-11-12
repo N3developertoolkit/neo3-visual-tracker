@@ -121,6 +121,11 @@
         "command": "neo3-visual-devtracker.disconnect",
         "title": "Disconnect from current Neo blockchain",
         "category": "Neo 3 Visual DevTracker"
+      },
+      {
+        "command": "neo3-visual-devtracker.walletCreate",
+        "title": "Create wallet",
+        "category": "Neo 3 Visual DevTracker"
       }
     ],
     "menus": {
@@ -170,11 +175,15 @@
       ],
       "view/title": [
         {
-          "command": "neo3-visual-devtracker.customizeServerList",
+          "command": "neo3-visual-devtracker.express.create",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         },
         {
-          "command": "neo3-visual-devtracker.express.create",
+          "command": "neo3-visual-devtracker.walletCreate",
+          "when": "view == neo3-visual-devtracker.blockchainsExplorer"
+        },
+        {
+          "command": "neo3-visual-devtracker.customizeServerList",
           "when": "view == neo3-visual-devtracker.blockchainsExplorer"
         }
       ]

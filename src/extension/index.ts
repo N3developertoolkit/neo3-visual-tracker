@@ -81,48 +81,42 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  registerBlockchainInstanceCommand(
-    context,
-    undefined,
-    blockchainsExplorer,
-    "neo3-visual-devtracker.tracker.openTracker",
-    (identifier) => TrackerCommands.openTracker(context, identifier)
-  );
-
   context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.customizeServerList",
-      async () => await serverListDetector.customize()
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.connect",
-      async () => await activeConnection.connect()
-    )
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.disconnect",
-      async () => await activeConnection.disconnect()
+    vscode.window.registerCustomEditorProvider(
+      "neo3-visual-devtracker.express.neo-invoke-json",
+      neoInvokeFileEditor
     )
   );
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "neo3-visual-devtracker.express.create",
-      async () => {
-        await NeoExpressCommands.create(context, neoExpress);
-      }
+      () => NeoExpressCommands.create(context, neoExpress)
     )
   );
 
   context.subscriptions.push(
-    vscode.window.registerCustomEditorProvider(
-      "neo3-visual-devtracker.express.neo-invoke-json",
-      neoInvokeFileEditor
+    vscode.commands.registerCommand("neo3-visual-devtracker.connect", () =>
+      activeConnection.connect()
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "neo3-visual-devtracker.customizeServerList",
+      () => serverListDetector.customize()
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("neo3-visual-devtracker.disconnect", () =>
+      activeConnection.disconnect()
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand("neo3-visual-devtracker.walletCreate", () =>
+      vscode.window.showInformationMessage("Create wallet support coming soon")
     )
   );
 
@@ -177,6 +171,14 @@ export async function activate(context: vscode.ExtensionContext) {
     blockchainsExplorer,
     "neo3-visual-devtracker.express.walletCreate",
     (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
+  );
+
+  registerBlockchainInstanceCommand(
+    context,
+    undefined,
+    blockchainsExplorer,
+    "neo3-visual-devtracker.tracker.openTracker",
+    (identifier) => TrackerCommands.openTracker(context, identifier)
   );
 
   registerBlockchainInstanceCommand(
