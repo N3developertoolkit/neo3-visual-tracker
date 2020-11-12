@@ -184,11 +184,12 @@ export async function activate(context: vscode.ExtensionContext) {
     undefined,
     blockchainsExplorer,
     "neo3-visual-devtracker.contractDeploy",
-    async () => {
-      await vscode.window.showInformationMessage(
-        "Coming soon: TestNet deployment/invocation"
-      );
-    }
+    (identifier) =>
+      TrackerCommands.contractDeploy(
+        identifier,
+        contractDetector,
+        walletDetector
+      )
   );
 }
 
