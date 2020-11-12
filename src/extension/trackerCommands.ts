@@ -1,3 +1,5 @@
+import * as fs from "fs";
+import * as neonJs from "@cityofzion/neon-js";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -52,19 +54,33 @@ export default class TrackerCommands {
     if (!walletAddress) {
       return;
     }
+    const contracts = contractDetector.contracts;
     const contractFile = await IoHelpers.multipleChoiceFiles(
       `Deploy contract using ${walletAddress} (from ${path.basename(
         walletPath
       )})`,
-      ...Object.values(contractDetector.contracts).map(
-        (_) => _.absolutePathToNef
-      )
+      ...Object.values(contracts).map((_) => _.absolutePathToNef)
     );
-    if (!contractFile) {
+    const contract = Object.values(contracts).find(
+      (_) => _.absolutePathToNef === contractFile
+    );
+    if (!contract) {
       return;
     }
+    let script = "";
+    try {
+      script = fs.readFileSync(contract.absolutePathToNef).toString("hex");
+    } catch (e) {
+      await vscode.window.showErrorMessage(
+        `Could not read contract: ${contract.absolutePathToNef}`
+      );
+    }
+    const deployScript = neonJs.sc.generateDeployScript({
+      manifest: JSON.stringify(contract.manifest),
+      script,
+    }).str;
     await vscode.window.showInformationMessage(
-      `Coming soon: TestNet deployment/invocation\n${walletPath} - ${walletAddress} - ${contractFile}`
+      `Coming soon: TestNet deployment/invocation\n${deployScript}`
     );
   }
 
