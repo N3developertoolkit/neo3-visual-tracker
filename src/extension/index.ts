@@ -116,7 +116,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand("neo3-visual-devtracker.walletCreate", () =>
-      vscode.window.showInformationMessage("Create wallet support coming soon")
+      TrackerCommands.createWallet()
     )
   );
 

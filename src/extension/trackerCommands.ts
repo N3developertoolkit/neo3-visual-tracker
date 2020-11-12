@@ -84,6 +84,41 @@ export default class TrackerCommands {
     );
   }
 
+  static async createWallet() {
+    const account = new neonJs.wallet.Account(
+      neonJs.wallet.generatePrivateKey()
+    );
+    account.label = "Default account";
+    const walletName = await IoHelpers.enterString(
+      "Enter a name for the wallet"
+    );
+    if (!walletName) {
+      return;
+    }
+    const wallet = new neonJs.wallet.Wallet({ name: walletName });
+    wallet.addAccount(account);
+    wallet.setDefault(0);
+    const password = await IoHelpers.choosePassword(
+      "Choose a password for the wallet (press Enter for none)",
+      true
+    );
+    if (!password && password !== "") {
+      return;
+    }
+    if (!(await wallet.encryptAll(password))) {
+      await vscode.window.showErrorMessage(
+        "Could not encrypt the wallet using the supplied password"
+      );
+    }
+    const walletJson = JSON.stringify(wallet.export(), undefined, 2);
+    // TODO: Auto-save in current workspace
+    const textDocument = await vscode.workspace.openTextDocument({
+      language: "json",
+      content: walletJson,
+    });
+    await vscode.window.showTextDocument(textDocument);
+  }
+
   static async openTracker(
     context: vscode.ExtensionContext,
     identifer: BlockchainIdentifier
