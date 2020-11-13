@@ -21,14 +21,18 @@ export default function QuickStart({ viewState, postMessage }: Props) {
       } else {
         actions.push(
           <StartNeoExpress
-            onStart={() => postMessage({ startNeoExpress: true })}
+            onStart={() =>
+              postMessage({ command: "neo3-visual-devtracker.express.run" })
+            }
           />
         );
       }
     } else {
       actions.push(
         <CreateNeoExpressInstance
-          onCreate={() => postMessage({ createNeoExpressInstance: true })}
+          onCreate={() =>
+            postMessage({ command: "neo3-visual-devtracker.express.create" })
+          }
         />
       );
     }
@@ -36,12 +40,16 @@ export default function QuickStart({ viewState, postMessage }: Props) {
   } else {
     actions.push(
       <CreateOrOpenWorkspace
-        onOpen={() => postMessage({ openWorkspace: true })}
+        onOpen={() => postMessage({ command: "vscode.openFolder" })}
       />
     );
   }
   actions.push(
-    <OpenBlockchainExplorer onOpen={() => postMessage({ openTracker: true })} />
+    <OpenBlockchainExplorer
+      onOpen={() =>
+        postMessage({ command: "neo3-visual-devtracker.tracker.openTracker" })
+      }
+    />
   );
   return (
     <div

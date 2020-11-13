@@ -1,8 +1,5 @@
 type QuickStartViewRequest = {
-  createNeoExpressInstance?: boolean;
-  openTracker?: boolean;
-  openWorkspace?: boolean;
-  startNeoExpress?: boolean;
+  command?: string;
 };
 
 export default QuickStartViewRequest;

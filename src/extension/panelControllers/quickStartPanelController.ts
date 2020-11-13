@@ -58,26 +58,8 @@ export default class QuickStartPanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: QuickStartViewRequest) {
-    if (request.createNeoExpressInstance) {
-      await vscode.commands.executeCommand(
-        "neo3-visual-devtracker.express.create"
-      );
-    }
-
-    if (request.openTracker) {
-      await vscode.commands.executeCommand(
-        "neo3-visual-devtracker.tracker.openTracker"
-      );
-    }
-
-    if (request.openWorkspace) {
-      await vscode.commands.executeCommand("vscode.openFolder");
-    }
-
-    if (request.startNeoExpress) {
-      await vscode.commands.executeCommand(
-        "neo3-visual-devtracker.express.run"
-      );
+    if (request.command) {
+      await vscode.commands.executeCommand(request.command);
     }
   }
 }
