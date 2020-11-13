@@ -67,14 +67,12 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpress,
     autoComplete
   );
-  const quickStartViewProvider = new QuickStartViewProvider();
 
   context.subscriptions.push(activeConnection);
   context.subscriptions.push(autoComplete);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(neoExpressInstanceManager);
-  context.subscriptions.push(quickStartViewProvider);
   context.subscriptions.push(serverListDetector);
   context.subscriptions.push(walletDetector);
 
@@ -95,7 +93,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "neo3-visual-devtracker.views.quickStart",
-      quickStartViewProvider
+      new QuickStartViewProvider(context)
     )
   );
 

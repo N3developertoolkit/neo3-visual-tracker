@@ -90,7 +90,7 @@ export default abstract class PanelControllerBase<
       return;
     }
     console.log(LOG_PREFIX, "Update:", this.viewState.panelTitle, updates);
-    if (updates.panelTitle !== undefined) {
+    if (updates.panelTitle) {
       this.setTitle(updates.panelTitle);
     }
     this.viewState = mergedViewState;

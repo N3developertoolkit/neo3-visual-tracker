@@ -1,17 +1,13 @@
 import * as vscode from "vscode";
 
+import QuickStartPanelController from "../panelControllers/quickStartPanelController";
+
 export default class QuickStartViewProvider
   implements vscode.WebviewViewProvider {
-  private webviewView: vscode.WebviewView | null;
-
-  constructor() {
-    this.webviewView = null;
-  }
-
-  dispose() {}
+  constructor(private readonly context: vscode.ExtensionContext) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView) {
-    this.webviewView = webviewView;
-    this.webviewView.webview.html = "Hello world!";
+    webviewView.webview.options = { enableScripts: true };
+    new QuickStartPanelController(this.context, webviewView);
   }
 }
