@@ -21,19 +21,28 @@ export default class QuickStartPanelController extends PanelControllerBase<
       {
         view: "quickStart",
         panelTitle: "",
-        workspaceIsOpen: !!vscode.workspace.workspaceFolders?.length,
+        hasNeoExpressInstance: false,
+        workspaceIsOpen: false,
       },
       context,
       panel
     );
     vscode.workspace.onDidChangeWorkspaceFolders(() => this.refresh());
+    this.blockchainsTreeDataProvider.onDidChangeTreeData(() => this.refresh());
+    this.refresh();
   }
 
   onClose() {}
 
   refresh() {
+    const hasNeoExpressInstance =
+      this.blockchainsTreeDataProvider
+        .getChildren()
+        .filter((_) => _.blockchainType === "express").length > 0;
+
     const workspaceIsOpen = !!vscode.workspace.workspaceFolders?.length;
-    this.updateViewState({ workspaceIsOpen });
+
+    this.updateViewState({ hasNeoExpressInstance, workspaceIsOpen });
   }
 
   protected async onRequest(request: QuickStartViewRequest) {
