@@ -8,14 +8,26 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": [
-        "${workspaceFolder}/sample-workspace",
+        "${workspaceFolder}/sample-workspaces/sample-workspace",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
     },
     {
-      "name": "Run Extension  (no workspace)",
+      "name": "Run Extension (empty workspace)",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "${workspaceFolder}/sample-workspaces/empty-workspace",
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "${defaultBuildTask}"
+    },
+    {
+      "name": "Run Extension (no workspace)",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
