@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
-export default class QuickStart implements vscode.WebviewViewProvider {
+export default class QuickStartViewProvider
+  implements vscode.WebviewViewProvider {
   private webviewView: vscode.WebviewView | null;
 
   constructor() {

@@ -2,7 +2,7 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
-import BlockchainsExplorer from "./views/blockchainsExplorer";
+import BlockchainsTreeDataProvider from "./viewProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./ioHelpers";
 
 const LOG_PREFIX = "[ActiveConnection]";
@@ -24,7 +24,9 @@ export default class ActiveConnection {
   private statusBarItem: vscode.StatusBarItem;
   private visible = false;
 
-  constructor(private readonly blockchainsExplorer: BlockchainsExplorer) {
+  constructor(
+    private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider
+  ) {
     this.connection = null;
     this.onChangeEmitter = new vscode.EventEmitter<BlockchainIdentifier | null>();
     this.onChange = this.onChangeEmitter.event;
@@ -41,7 +43,7 @@ export default class ActiveConnection {
 
   async connect(blockchainIdentifier?: BlockchainIdentifier) {
     blockchainIdentifier =
-      blockchainIdentifier || (await this.blockchainsExplorer.select());
+      blockchainIdentifier || (await this.blockchainsTreeDataProvider.select());
     let rpcUrl = blockchainIdentifier?.rpcUrls[0];
     if ((blockchainIdentifier?.rpcUrls.length || 0) > 1) {
       rpcUrl = await IoHelpers.multipleChoice(

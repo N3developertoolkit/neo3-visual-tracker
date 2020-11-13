@@ -6,9 +6,9 @@ import IoHelpers from "../ioHelpers";
 import NeoExpressDetector from "../detectors/neoExpressDetector";
 import ServerListDetector from "../detectors/serverListDetector";
 
-const LOG_PREFIX = "[BlockchainsExplorer]";
+const LOG_PREFIX = "[BlockchainsTreeDataProvider]";
 
-export default class BlockchainsExplorer
+export default class BlockchainsTreeDataProvider
   implements vscode.TreeDataProvider<BlockchainIdentifier> {
   onDidChangeTreeData: vscode.Event<void>;
 
@@ -20,12 +20,12 @@ export default class BlockchainsExplorer
     neoExpressDetector: NeoExpressDetector,
     serverListDetector: ServerListDetector
   ) {
-    const blockchainsExplorer = new BlockchainsExplorer(
+    const blockchainsTreeDataProvider = new BlockchainsTreeDataProvider(
       neoExpressDetector,
       serverListDetector
     );
-    await blockchainsExplorer.refresh();
-    return blockchainsExplorer;
+    await blockchainsTreeDataProvider.refresh();
+    return blockchainsTreeDataProvider;
   }
 
   private constructor(

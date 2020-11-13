@@ -33,7 +33,7 @@
     "onCommand:neo3-visual-devtracker.express.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
-    "onView:neo3-visual-devtracker.views.blockchainsExplorer",
+    "onView:neo3-visual-devtracker.views.blockchains",
     "onView:neo3-visual-devtracker.views.quickStart"
   ],
   "keywords": [
@@ -133,66 +133,66 @@
       "view/item/context": [
         {
           "command": "neo3-visual-devtracker.express.contractDeploy",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.express.customCommand",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.express.reset",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.express.run",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express",
           "group": "inline"
         },
         {
           "command": "neo3-visual-devtracker.express.run",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.express.transfer",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.express.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem == express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.neo.contractDeploy",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer && viewItem != express"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem != express"
         },
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer",
+          "when": "view == neo3-visual-devtracker.views.blockchains",
           "group": "inline"
         },
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer"
+          "when": "view == neo3-visual-devtracker.views.blockchains"
         }
       ],
       "view/title": [
         {
           "command": "neo3-visual-devtracker.express.create",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer"
+          "when": "view == neo3-visual-devtracker.views.blockchains"
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer"
+          "when": "view == neo3-visual-devtracker.views.blockchains"
         },
         {
           "command": "neo3-visual-devtracker.customizeServerList",
-          "when": "view == neo3-visual-devtracker.views.blockchainsExplorer"
+          "when": "view == neo3-visual-devtracker.views.blockchains"
         }
       ]
     },
     "views": {
       "neo3-visual-devtracker-mainView": [
         {
-          "id": "neo3-visual-devtracker.views.blockchainsExplorer",
+          "id": "neo3-visual-devtracker.views.blockchains",
           "name": "Blockchains"
         },
         {

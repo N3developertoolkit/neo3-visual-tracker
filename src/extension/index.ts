@@ -4,7 +4,7 @@ import ActiveConnection from "./activeConnection";
 import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
-import BlockchainsExplorer from "./views/blockchainsExplorer";
+import BlockchainsTreeDataProvider from "./viewProviders/blockchainsTreeDataProvider";
 import ContractDetector from "./detectors/contractDetector";
 import NeoCommands from "./neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
@@ -12,7 +12,7 @@ import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
 import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
-import QuickStart from "./views/quickStart";
+import QuickStartViewProvider from "./viewProviders/quickStartViewProvider";
 import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
 import WalletDetector from "./detectors/walletDetector";
@@ -20,7 +20,7 @@ import WalletDetector from "./detectors/walletDetector";
 function registerBlockchainInstanceCommand(
   context: vscode.ExtensionContext,
   blockchainType: BlockchainType | undefined,
-  blockchainsExplorer: BlockchainsExplorer,
+  blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
   commandId: string,
   handler: (identifier: BlockchainIdentifier) => Promise<void>
 ) {
@@ -29,7 +29,7 @@ function registerBlockchainInstanceCommand(
       commandId,
       async (identifier?: BlockchainIdentifier) => {
         if (!identifier) {
-          identifier = await blockchainsExplorer.select(blockchainType);
+          identifier = await blockchainsTreeDataProvider.select(blockchainType);
           if (!identifier) {
             return;
           }
@@ -46,11 +46,11 @@ export async function activate(context: vscode.ExtensionContext) {
   const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
-  const blockchainsExplorer = await BlockchainsExplorer.create(
+  const blockchainsTreeDataProvider = await BlockchainsTreeDataProvider.create(
     neoExpressDetector,
     serverListDetector
   );
-  const activeConnection = new ActiveConnection(blockchainsExplorer);
+  const activeConnection = new ActiveConnection(blockchainsTreeDataProvider);
   const neoExpressInstanceManager = new NeoExpressInstanceManager(
     neoExpress,
     activeConnection
@@ -67,21 +67,21 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpress,
     autoComplete
   );
-  const quickStart = new QuickStart();
+  const quickStartViewProvider = new QuickStartViewProvider();
 
   context.subscriptions.push(activeConnection);
   context.subscriptions.push(autoComplete);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(neoExpressInstanceManager);
-  context.subscriptions.push(quickStart);
+  context.subscriptions.push(quickStartViewProvider);
   context.subscriptions.push(serverListDetector);
   context.subscriptions.push(walletDetector);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
-      "neo3-visual-devtracker.views.blockchainsExplorer",
-      blockchainsExplorer
+      "neo3-visual-devtracker.views.blockchains",
+      blockchainsTreeDataProvider
     )
   );
 
@@ -95,7 +95,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "neo3-visual-devtracker.views.quickStart",
-      quickStart
+      quickStartViewProvider
     )
   );
 
@@ -135,7 +135,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.contractDeploy",
     (identifier) =>
       NeoExpressCommands.contractDeploy(
@@ -148,7 +148,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.customCommand",
     (identifier) => NeoExpressCommands.customCommand(neoExpress, identifier)
   );
@@ -156,7 +156,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.reset",
     (identifier) => NeoExpressCommands.reset(neoExpress, identifier)
   );
@@ -164,7 +164,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.run",
     (identifier) => neoExpressInstanceManager.run(identifier)
   );
@@ -172,7 +172,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.transfer",
     (identifier) => NeoExpressCommands.transfer(neoExpress, identifier)
   );
@@ -180,7 +180,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     "express",
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.walletCreate",
     (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
   );
@@ -188,7 +188,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     undefined,
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.neo.contractDeploy",
     (identifier) =>
       NeoCommands.contractDeploy(identifier, contractDetector, walletDetector)
@@ -197,7 +197,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerBlockchainInstanceCommand(
     context,
     undefined,
-    blockchainsExplorer,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.tracker.openTracker",
     (identifier) => TrackerCommands.openTracker(context, identifier)
   );
