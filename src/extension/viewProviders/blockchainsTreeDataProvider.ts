@@ -68,6 +68,9 @@ export default class BlockchainsTreeDataProvider
     if (!candidates.length) {
       return;
     }
+    if (candidates.length === 1) {
+      return candidates[0];
+    }
     const selection = await IoHelpers.multipleChoice(
       "Select a blockchain",
       ...candidates.map((_, i) => `${i} - ${_.name}`)

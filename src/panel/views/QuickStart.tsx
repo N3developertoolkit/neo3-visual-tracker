@@ -5,6 +5,7 @@ import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspac
 import ExploreTestNet from "../components/quickStart/ExploreTestNet";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
+import StartNeoExpress from "../components/quickStart/StartNeoExpress";
 
 type Props = {
   viewState: QuickStartViewState;
@@ -15,7 +16,15 @@ export default function QuickStart({ viewState, postMessage }: Props) {
   const actions: JSX.Element[] = [];
   if (viewState.workspaceIsOpen) {
     if (viewState.hasNeoExpressInstance) {
-      // TODO: Offer to run an instance if needed
+      if (viewState.neoExpressIsRunning) {
+        // TODO: Offer to connect if needed
+      } else {
+        actions.push(
+          <StartNeoExpress
+            onStart={() => postMessage({ startNeoExpress: true })}
+          />
+        );
+      }
     } else {
       actions.push(
         <CreateNeoExpressInstance

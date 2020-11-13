@@ -63,6 +63,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
         "neo3-visual-devtracker.express.create"
       );
     }
+
     if (request.exploreTestNet) {
       const rpcUrl = await this.blockchainsTreeDataProvider
         .getChildren()[0]
@@ -71,8 +72,15 @@ export default class QuickStartPanelController extends PanelControllerBase<
         new TrackerPanelController(this.context, rpcUrl);
       }
     }
+
     if (request.openWorkspace) {
       await vscode.commands.executeCommand("vscode.openFolder");
+    }
+
+    if (request.startNeoExpress) {
+      await vscode.commands.executeCommand(
+        "neo3-visual-devtracker.express.run"
+      );
     }
   }
 }
