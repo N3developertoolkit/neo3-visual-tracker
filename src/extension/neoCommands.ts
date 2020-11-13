@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import * as neonJs from "@cityofzion/neon-js";
+import * as neonCore from "@cityofzion/neon-core";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -74,18 +74,18 @@ export default class NeoCommands {
         `Could not read contract: ${contract.absolutePathToNef}`
       );
     }
-    const deployScript = neonJs.sc.generateDeployScript({
-      manifest: JSON.stringify(contract.manifest),
-      script,
-    }).str;
+    // const deployScript = neonJs.sc.generateDeployScript({
+    //   manifest: JSON.stringify(contract.manifest),
+    //   script,
+    // }).str;
     await vscode.window.showInformationMessage(
-      `Coming soon: TestNet deployment/invocation\n${deployScript}`
+      `Coming soon: TestNet deployment/invocation`
     );
   }
 
   static async createWallet() {
-    const account = new neonJs.wallet.Account(
-      neonJs.wallet.generatePrivateKey()
+    const account = new neonCore.wallet.Account(
+      neonCore.wallet.generatePrivateKey()
     );
     account.label = "Default account";
     const walletName = await IoHelpers.enterString(
@@ -94,7 +94,7 @@ export default class NeoCommands {
     if (!walletName) {
       return;
     }
-    const wallet = new neonJs.wallet.Wallet({ name: walletName });
+    const wallet = new neonCore.wallet.Wallet({ name: walletName });
     wallet.addAccount(account);
     wallet.setDefault(0);
     const password = await IoHelpers.choosePassword(

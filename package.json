@@ -231,7 +231,6 @@
   },
   "devDependencies": {
     "@cityofzion/neon-core": "^5.0.0-next.4",
-    "@cityofzion/neon-js": "^5.0.0-next.4",
     "@types/glob": "^7.1.3",
     "@types/gulp": "^4.0.7",
     "@types/node": "^13.13.30",

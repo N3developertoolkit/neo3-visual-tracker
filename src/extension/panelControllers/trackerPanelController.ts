@@ -1,5 +1,4 @@
 import * as neonCore from "@cityofzion/neon-core";
-import * as neonJs from "@cityofzion/neon-js";
 import * as vscode from "vscode";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
@@ -170,7 +169,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         [
           {
             type: "Hash160",
-            value: neonJs.wallet.getScriptHashFromAddress(address),
+            value: neonCore.wallet.getScriptHashFromAddress(address),
           },
         ],
       ],
