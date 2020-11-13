@@ -93,7 +93,11 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerWebviewViewProvider(
       "neo3-visual-devtracker.views.quickStart",
-      new QuickStartViewProvider(context, blockchainsTreeDataProvider)
+      new QuickStartViewProvider(
+        context,
+        blockchainsTreeDataProvider,
+        neoExpressInstanceManager
+      )
     )
   );
 

@@ -6,18 +6,30 @@ import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";
+const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class NeoExpressInstanceManager {
-  private running: BlockchainIdentifier | null;
+  onChange: vscode.Event<void>;
 
+  get runningInstance() {
+    return this.running;
+  }
+
+  private readonly onChangeEmitter: vscode.EventEmitter<void>;
+
+  private disposed: boolean;
+  private running: BlockchainIdentifier | null;
   private terminals: vscode.Terminal[];
 
   constructor(
     private readonly neoExpress: NeoExpress,
     private readonly activeConnection: ActiveConnection
   ) {
+    this.disposed = false;
     this.running = null;
     this.terminals = [];
+    this.onChangeEmitter = new vscode.EventEmitter<void>();
+    this.onChange = this.onChangeEmitter.event;
     this.activeConnection.onChange(async (blockchainIdentifier) => {
       if (
         blockchainIdentifier &&
@@ -33,9 +45,12 @@ export default class NeoExpressInstanceManager {
         }
       }
     });
+    this.refreshLoop();
   }
 
-  dispose() {}
+  dispose() {
+    this.disposed = true;
+  }
 
   async run(identifer: BlockchainIdentifier) {
     if (identifer.blockchainType !== "express") {
@@ -88,6 +103,8 @@ export default class NeoExpressInstanceManager {
     if (!this.activeConnection.connection?.healthy) {
       await this.activeConnection.connect(identifer);
     }
+
+    this.onChangeEmitter.fire();
   }
 
   async stop() {
@@ -107,6 +124,28 @@ export default class NeoExpressInstanceManager {
     } finally {
       this.terminals = [];
       this.running = null;
+      this.onChangeEmitter.fire();
+    }
+  }
+
+  private async checkTerminals() {
+    if (this.terminals.length > 0) {
+      this.terminals = this.terminals.filter((_) => _.exitStatus === undefined);
+      if (this.terminals.length === 0 && this.running) {
+        this.running = null;
+        this.onChangeEmitter.fire();
+      }
+    }
+  }
+
+  private async refreshLoop() {
+    if (this.disposed) {
+      return;
+    }
+    try {
+      await this.checkTerminals();
+    } finally {
+      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 }
