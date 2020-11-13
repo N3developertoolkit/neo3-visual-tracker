@@ -6,7 +6,7 @@ import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";
-const REFRESH_INTERVAL_MS = 1000 * 5;
+const REFRESH_INTERVAL_MS = 1000 * 1;
 
 export default class NeoExpressInstanceManager {
   onChange: vscode.Event<void>;
