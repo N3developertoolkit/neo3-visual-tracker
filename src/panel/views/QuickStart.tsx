@@ -1,5 +1,6 @@
 import React from "react";
 
+import CreateNeoExpressInstance from "../components/quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
 import ExploreTestNet from "../components/quickStart/ExploreTestNet";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
@@ -13,7 +14,16 @@ type Props = {
 export default function QuickStart({ viewState, postMessage }: Props) {
   const actions: JSX.Element[] = [];
   if (viewState.workspaceIsOpen) {
-    // TODO: Offer to create contracts, instances, etc.
+    if (viewState.hasNeoExpressInstance) {
+      // TODO: Offer to run an instance if needed
+    } else {
+      actions.push(
+        <CreateNeoExpressInstance
+          onCreate={() => postMessage({ createNeoExpressInstance: true })}
+        />
+      );
+    }
+    // TODO: Offer to create contracts, wallets, etc.
   } else {
     actions.push(
       <CreateOrOpenWorkspace

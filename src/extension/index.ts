@@ -100,7 +100,12 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "neo3-visual-devtracker.express.create",
-      () => NeoExpressCommands.create(context, neoExpress)
+      () =>
+        NeoExpressCommands.create(
+          context,
+          neoExpress,
+          neoExpressInstanceManager
+        )
     )
   );
 

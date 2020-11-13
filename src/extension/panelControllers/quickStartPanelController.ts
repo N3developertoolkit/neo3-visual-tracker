@@ -46,6 +46,11 @@ export default class QuickStartPanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: QuickStartViewRequest) {
+    if (request.createNeoExpressInstance) {
+      await vscode.commands.executeCommand(
+        "neo3-visual-devtracker.express.create"
+      );
+    }
     if (request.exploreTestNet) {
       const rpcUrl = await this.blockchainsTreeDataProvider
         .getChildren()[0]

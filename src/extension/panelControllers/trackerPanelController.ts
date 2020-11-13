@@ -13,11 +13,11 @@ const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "[TrackerPanelController]";
-const MAX_RETRIES = 3;
 const PAGINATION_DISTANCE = 5;
 const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
+const SLEEP_ON_ERROR_MS = 1000 * 3;
 const TRANSACTION_CACHE_SIZE = 1024;
 
 export default class TrackerPanelController extends PanelControllerBase<
@@ -130,7 +130,8 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getAddress(address: string): Promise<AddressInfo> {
-    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+    let retry = 0;
+    while (true) {
       console.log(
         LOG_PREFIX,
         "Retrieving address",
@@ -153,11 +154,9 @@ export default class TrackerPanelController extends PanelControllerBase<
           address,
           e.message
         );
+        await this.sleepBetweenRetries();
       }
     }
-    throw Error(
-      `Maximum retries exceeded while trying to retrieve address ${address}`
-    );
   }
 
   private async getBalance(address: string, assetScriptHash: string) {
@@ -192,13 +191,14 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
       return cachedBlock;
     }
-    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+    let retry = 0;
+    while (true) {
       console.log(
         LOG_PREFIX,
         "Retrieving block",
         indexOrHash,
         "- attempt",
-        retry + 1
+        retry++
       );
       try {
         const block = await this.rpcClient.getBlock(indexOrHash, true);
@@ -220,11 +220,9 @@ export default class TrackerPanelController extends PanelControllerBase<
           indexOrHash,
           e.message
         );
+        await this.sleepBetweenRetries();
       }
     }
-    throw Error(
-      `Maximum retries exceeded while trying to retrieve block ${indexOrHash}`
-    );
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
@@ -254,7 +252,8 @@ export default class TrackerPanelController extends PanelControllerBase<
       this.addToSearchHistory(hash);
       return cachedTransaction;
     }
-    for (let retry = 0; retry < MAX_RETRIES; retry++) {
+    let retry = 0;
+    while (true) {
       console.log(LOG_PREFIX, "Retrieving tx", hash, "- attempt", retry + 1);
       try {
         const transaction = await this.rpcClient.getRawTransaction(hash, true);
@@ -266,11 +265,9 @@ export default class TrackerPanelController extends PanelControllerBase<
         return transaction;
       } catch (e) {
         console.warn(LOG_PREFIX, "Error retrieving tx", hash, e.message);
+        await this.sleepBetweenRetries();
       }
     }
-    throw Error(
-      `Maximum retries exceeded while trying to retrieve btxlock ${hash}`
-    );
   }
 
   private async onNewBlockAvailable(blockHeight: number) {
@@ -331,5 +328,9 @@ export default class TrackerPanelController extends PanelControllerBase<
         } catch {}
       }
     }
+  }
+
+  private async sleepBetweenRetries() {
+    return new Promise((resolve) => setTimeout(resolve, SLEEP_ON_ERROR_MS));
   }
 }

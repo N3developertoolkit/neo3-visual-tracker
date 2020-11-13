@@ -4,6 +4,8 @@ import BlockchainIdentifier from "../blockchainIdentifier";
 import ContractDetector from "../detectors/contractDetector";
 import IoHelpers from "../ioHelpers";
 import NeoExpress from "./neoExpress";
+import NeoExpressInstanceManager from "./neoExpressInstanceManager";
+import TrackerPanelController from "../panelControllers/trackerPanelController";
 
 export default class NeoExpressCommands {
   static async contractDeploy(
@@ -51,7 +53,8 @@ export default class NeoExpressCommands {
 
   static async create(
     context: vscode.ExtensionContext,
-    neoExpress: NeoExpress
+    neoExpress: NeoExpress,
+    neoExpressInstanceManager: NeoExpressInstanceManager
   ) {
     const nodeCount = await IoHelpers.multipleChoice(
       "Number of nodes in the new instance",
@@ -66,7 +69,7 @@ export default class NeoExpressCommands {
       "Create",
       "Neo Express Configurations",
       "neo-express",
-      context.extensionUri
+      (vscode.workspace.workspaceFolders || [])[0]?.uri
     );
     if (!configSavePath) {
       return;
@@ -79,6 +82,20 @@ export default class NeoExpressCommands {
       configSavePath
     );
     NeoExpressCommands.showResult(output);
+    NeoExpressCommands.showResult(output);
+    if (!output.isError) {
+      const identifier = BlockchainIdentifier.fromNeoExpressConfig(
+        context.extensionPath,
+        configSavePath
+      );
+      if (identifier) {
+        await neoExpressInstanceManager.run(identifier);
+        const rpcUrl = await identifier.selectRpcUrl();
+        if (rpcUrl) {
+          new TrackerPanelController(context, rpcUrl);
+        }
+      }
+    }
   }
 
   static async customCommand(
