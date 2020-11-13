@@ -1,6 +1,7 @@
 import React from "react";
 
 import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
+import ExploreTestNet from "../components/quickStart/ExploreTestNet";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
 
@@ -10,10 +11,9 @@ type Props = {
 };
 
 export default function QuickStart({ viewState, postMessage }: Props) {
-  const headingText = "Welcome to the Neo 3 Visual DevTracker!";
   const actions: JSX.Element[] = [];
   if (viewState.workspaceIsOpen) {
-    actions.push(<>TODO...</>);
+    // TODO: Offer to create contracts, instances, etc.
   } else {
     actions.push(
       <CreateOrOpenWorkspace
@@ -21,6 +21,9 @@ export default function QuickStart({ viewState, postMessage }: Props) {
       />
     );
   }
+  actions.push(
+    <ExploreTestNet onOpen={() => postMessage({ exploreTestNet: true })} />
+  );
   return (
     <div
       style={{
@@ -33,7 +36,6 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         padding: 10,
       }}
     >
-      <h2 style={{ margin: 10, padding: 0 }}>{headingText}</h2>
       {actions}
     </div>
   );

@@ -1,4 +1,5 @@
 type QuickStartViewRequest = {
+  exploreTestNet?: boolean;
   openWorkspace?: boolean;
 };
 
