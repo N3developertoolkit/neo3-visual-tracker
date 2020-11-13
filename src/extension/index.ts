@@ -12,6 +12,7 @@ import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
 import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
 import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
+import QuickStart from "./views/quickStart";
 import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
 import WalletDetector from "./detectors/walletDetector";
@@ -66,18 +67,20 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpress,
     autoComplete
   );
+  const quickStart = new QuickStart();
 
   context.subscriptions.push(activeConnection);
   context.subscriptions.push(autoComplete);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(neoExpressInstanceManager);
+  context.subscriptions.push(quickStart);
   context.subscriptions.push(serverListDetector);
   context.subscriptions.push(walletDetector);
 
   context.subscriptions.push(
     vscode.window.registerTreeDataProvider(
-      "neo3-visual-devtracker.blockchainsExplorer",
+      "neo3-visual-devtracker.views.blockchainsExplorer",
       blockchainsExplorer
     )
   );
@@ -86,6 +89,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.registerCustomEditorProvider(
       "neo3-visual-devtracker.express.neo-invoke-json",
       neoInvokeFileEditor
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerWebviewViewProvider(
+      "neo3-visual-devtracker.views.quickStart",
+      quickStart
     )
   );
 
