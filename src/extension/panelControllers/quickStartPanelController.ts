@@ -64,13 +64,10 @@ export default class QuickStartPanelController extends PanelControllerBase<
       );
     }
 
-    if (request.exploreTestNet) {
-      const rpcUrl = await this.blockchainsTreeDataProvider
-        .getChildren()[0]
-        ?.selectRpcUrl();
-      if (rpcUrl) {
-        new TrackerPanelController(this.context, rpcUrl);
-      }
+    if (request.openTracker) {
+      await vscode.commands.executeCommand(
+        "neo3-visual-devtracker.tracker.openTracker"
+      );
     }
 
     if (request.openWorkspace) {

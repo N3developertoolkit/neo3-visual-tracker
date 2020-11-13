@@ -1,6 +1,6 @@
 type QuickStartViewRequest = {
   createNeoExpressInstance?: boolean;
-  exploreTestNet?: boolean;
+  openTracker?: boolean;
   openWorkspace?: boolean;
   startNeoExpress?: boolean;
 };

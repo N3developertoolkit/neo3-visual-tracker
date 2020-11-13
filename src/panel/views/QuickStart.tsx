@@ -2,7 +2,7 @@ import React from "react";
 
 import CreateNeoExpressInstance from "../components/quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
-import ExploreTestNet from "../components/quickStart/ExploreTestNet";
+import OpenBlockchainExplorer from "../components/quickStart/OpenBlockchainExplorer";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
 import StartNeoExpress from "../components/quickStart/StartNeoExpress";
@@ -41,7 +41,7 @@ export default function QuickStart({ viewState, postMessage }: Props) {
     );
   }
   actions.push(
-    <ExploreTestNet onOpen={() => postMessage({ exploreTestNet: true })} />
+    <OpenBlockchainExplorer onOpen={() => postMessage({ openTracker: true })} />
   );
   return (
     <div

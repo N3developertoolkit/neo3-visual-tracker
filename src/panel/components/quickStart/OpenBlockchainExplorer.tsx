@@ -6,14 +6,14 @@ type Props = {
   onOpen: () => void;
 };
 
-export default function ExploreTestNet({ onOpen }: Props) {
+export default function OpenBlockchainExplorer({ onOpen }: Props) {
   return (
     <>
       <div style={{ margin: 10, textAlign: "left" }}>
         You have access to a Neo blockchain explorer within Visual Studio Code.
       </div>
       <NavButton style={{ margin: 10 }} onClick={onOpen}>
-        Explore Neo 3 TestNet
+        Open a blockchain explorer
       </NavButton>
     </>
   );
