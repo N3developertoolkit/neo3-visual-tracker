@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import ControllerRequest from "../shared/messages/controllerRequest";
 import InvokeFile from "./views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
+import QuickStart from "./views/QuickStart";
+import QuickStartViewState from "../shared/viewState/quickStartViewState";
 import Tracker from "./views/Tracker";
 import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
@@ -38,13 +40,6 @@ export default function ViewRouter() {
     return <div>Loading&hellip;</div>;
   }
   switch (view) {
-    case "tracker":
-      return (
-        <Tracker
-          viewState={viewState as TrackerViewState}
-          postMessage={(typedRequest) => postMessage({ typedRequest })}
-        />
-      );
     case "invokeFile":
       return (
         <InvokeFile
@@ -52,7 +47,19 @@ export default function ViewRouter() {
           postMessage={(typedRequest) => postMessage({ typedRequest })}
         />
       );
-    default:
-      return <div>Error: Unknown view.</div>;
+    case "quickStart":
+      return (
+        <QuickStart
+          viewState={viewState as QuickStartViewState}
+          postMessage={(typedRequest) => postMessage({ typedRequest })}
+        />
+      );
+    case "tracker":
+      return (
+        <Tracker
+          viewState={viewState as TrackerViewState}
+          postMessage={(typedRequest) => postMessage({ typedRequest })}
+        />
+      );
   }
 }
