@@ -1,5 +1,6 @@
 import React from "react";
 
+import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
 
@@ -8,17 +9,32 @@ type Props = {
   postMessage: (message: QuickStartViewRequest) => void;
 };
 
-export default function QuickStart({}: Props) {
+export default function QuickStart({ viewState, postMessage }: Props) {
+  const headingText = "Welcome to the Neo 3 Visual DevTracker!";
+  const actions: JSX.Element[] = [];
+  if (viewState.workspaceIsOpen) {
+    actions.push(<>TODO...</>);
+  } else {
+    actions.push(
+      <CreateOrOpenWorkspace
+        onOpen={() => postMessage({ openWorkspace: true })}
+      />
+    );
+  }
   return (
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
+        justifyContent: "space-evenly",
         alignItems: "center",
-        height: "100%",
+        textAlign: "center",
+        minHeight: "calc(100% - 20px)",
+        padding: 10,
       }}
     >
-      <div>Hello world!</div>
+      <h2 style={{ margin: 10, padding: 0 }}>{headingText}</h2>
+      {actions}
     </div>
   );
 }

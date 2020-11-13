@@ -15,13 +15,24 @@ export default class QuickStartPanelController extends PanelControllerBase<
       {
         view: "quickStart",
         panelTitle: "",
+        workspaceIsOpen: !!vscode.workspace.workspaceFolders?.length,
       },
       context,
       panel
     );
+    vscode.workspace.onDidChangeWorkspaceFolders(() => this.refresh());
   }
 
   onClose() {}
 
-  protected async onRequest() {}
+  refresh() {
+    const workspaceIsOpen = !!vscode.workspace.workspaceFolders?.length;
+    this.updateViewState({ workspaceIsOpen });
+  }
+
+  protected async onRequest(request: QuickStartViewRequest) {
+    if (request.openWorkspace) {
+      await vscode.commands.executeCommand("vscode.openFolder");
+    }
+  }
 }
