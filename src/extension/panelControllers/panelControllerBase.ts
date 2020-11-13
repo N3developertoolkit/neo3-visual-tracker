@@ -27,7 +27,7 @@ export default abstract class PanelControllerBase<
   constructor(
     initialViewState: TViewState,
     context: vscode.ExtensionContext,
-    panel?: vscode.WebviewPanel
+    panel?: vscode.WebviewPanel | vscode.WebviewView
   ) {
     this.closed = false;
     this.viewState = { ...initialViewState };
@@ -48,7 +48,7 @@ export default abstract class PanelControllerBase<
       null,
       context.subscriptions
     );
-    panel.iconPath = vscode.Uri.file(
+    (panel as any).iconPath = vscode.Uri.file(
       path.join(context.extensionPath, "resources", "neo-logo.png")
     );
     panel.webview.onDidReceiveMessage(
