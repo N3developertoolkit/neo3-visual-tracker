@@ -22,6 +22,7 @@ export default function QuickStart({ viewState, postMessage }: Props) {
       } else {
         actions.push(
           <StartNeoExpress
+            key="startNeoExpress"
             onStart={() =>
               postMessage({ command: "neo3-visual-devtracker.express.run" })
             }
@@ -31,6 +32,7 @@ export default function QuickStart({ viewState, postMessage }: Props) {
     } else {
       actions.push(
         <CreateNeoExpressInstance
+          key="createNeoExpressInstance"
           onCreate={() =>
             postMessage({ command: "neo3-visual-devtracker.express.create" })
           }
@@ -40,6 +42,7 @@ export default function QuickStart({ viewState, postMessage }: Props) {
     if (!viewState.hasContracts) {
       actions.push(
         <CreateContract
+          key="createContract"
           onCreate={() =>
             postMessage({ command: "neo3-visual-devtracker.neo.newContract" })
           }
@@ -53,12 +56,14 @@ export default function QuickStart({ viewState, postMessage }: Props) {
   } else {
     actions.push(
       <CreateOrOpenWorkspace
+        key="createOrOpenWorkspace"
         onOpen={() => postMessage({ command: "vscode.openFolder" })}
       />
     );
   }
   actions.push(
     <OpenBlockchainExplorer
+      key="openBlockchainExplorer"
       onOpen={() =>
         postMessage({ command: "neo3-visual-devtracker.tracker.openTracker" })
       }
