@@ -165,7 +165,12 @@ export async function activate(context: vscode.ExtensionContext) {
     "express",
     blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.reset",
-    (identifier) => NeoExpressCommands.reset(neoExpress, identifier)
+    (identifier) =>
+      NeoExpressCommands.reset(
+        neoExpress,
+        identifier,
+        neoExpressInstanceManager
+      )
   );
 
   registerBlockchainInstanceCommand(

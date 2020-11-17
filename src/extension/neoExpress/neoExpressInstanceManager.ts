@@ -34,7 +34,7 @@ export default class NeoExpressInstanceManager {
       if (
         blockchainIdentifier &&
         blockchainIdentifier.blockchainType === "express" &&
-        blockchainIdentifier.name !== this.running?.name
+        blockchainIdentifier.configPath !== this.running?.configPath
       ) {
         if (
           await IoHelpers.yesNo(
@@ -60,9 +60,10 @@ export default class NeoExpressInstanceManager {
     const runningPreviously = this.running;
     await this.stop();
 
+    const connectedTo = this.activeConnection.connection?.blockchainIdentifier;
     if (
-      this.activeConnection.connection?.blockchainIdentifier.name ===
-      runningPreviously?.name
+      connectedTo?.blockchainType === "express" &&
+      connectedTo?.configPath === runningPreviously?.configPath
     ) {
       await this.activeConnection.disconnect(true);
     }
@@ -112,6 +113,10 @@ export default class NeoExpressInstanceManager {
       for (const terminal of this.terminals) {
         if (!terminal.exitStatus) {
           terminal.dispose();
+          while (!terminal.exitStatus) {
+            console.log("Waiting for terminal to close...");
+            await new Promise((resolve) => setTimeout(resolve, 100));
+          }
         }
       }
     } catch (e) {

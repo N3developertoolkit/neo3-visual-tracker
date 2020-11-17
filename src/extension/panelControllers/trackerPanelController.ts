@@ -13,7 +13,7 @@ const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "[TrackerPanelController]";
 const PAGINATION_DISTANCE = 5;
-const REFRESH_INTERVAL_MS = 1000 * 3; // check for new blocks every 3 seconds
+const REFRESH_INTERVAL_MS = 1000 * 2; // check for new blocks every 2 seconds
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
 const SLEEP_ON_ERROR_MS = 1000 * 3;
@@ -201,8 +201,8 @@ export default class TrackerPanelController extends PanelControllerBase<
       );
       try {
         const block = await this.rpcClient.getBlock(indexOrHash, true);
+        // never cache head block
         if (block.index < this.viewState.blockHeight - 1) {
-          // never cache head block
           if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
             this.cachedBlocks.shift();
           }
@@ -290,7 +290,12 @@ export default class TrackerPanelController extends PanelControllerBase<
     }
     try {
       const blockHeight = await this.rpcClient.getBlockCount();
-      if (blockHeight > this.viewState.blockHeight) {
+      if (Math.abs(blockHeight - this.viewState.blockHeight) > 1) {
+        console.log(LOG_PREFIX, "Potential reset detected", blockHeight);
+        this.cachedBlocks.length = 0;
+        this.cachedTransactions.length = 0;
+        await this.onNewBlockAvailable(blockHeight);
+      } else if (blockHeight > this.viewState.blockHeight) {
         console.log(LOG_PREFIX, "New block available", blockHeight);
         await this.onNewBlockAvailable(blockHeight);
       }

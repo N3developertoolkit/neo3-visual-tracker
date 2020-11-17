@@ -117,7 +117,11 @@ export default class NeoExpressCommands {
     NeoExpressCommands.showResult(output);
   }
 
-  static async reset(neoExpress: NeoExpress, identifer: BlockchainIdentifier) {
+  static async reset(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier,
+    neoExpressInstanceManager: NeoExpressInstanceManager
+  ) {
     if (identifer.blockchainType !== "express") {
       return;
     }
@@ -127,13 +131,25 @@ export default class NeoExpressCommands {
     if (!confirmed) {
       return;
     }
-    const output = neoExpress.runSync(
-      "reset",
-      "-f",
-      "-i",
-      identifer.configPath
-    );
-    NeoExpressCommands.showResult(output);
+    const wasRunning =
+      neoExpressInstanceManager.runningInstance?.configPath ===
+      identifer.configPath;
+    if (wasRunning) {
+      await neoExpressInstanceManager.stop();
+    }
+    try {
+      const output = neoExpress.runSync(
+        "reset",
+        "-f",
+        "-i",
+        identifer.configPath
+      );
+      NeoExpressCommands.showResult(output);
+    } finally {
+      if (wasRunning) {
+        await neoExpressInstanceManager.run(identifer);
+      }
+    }
   }
 
   static async transfer(
