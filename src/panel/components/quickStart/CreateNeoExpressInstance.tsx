@@ -14,7 +14,7 @@ export default function CreateNeoExpressInstance({ onCreate }: Props) {
         to test and debug your smart contracts locally.
       </div>
       <NavButton style={{ margin: 10 }} onClick={onCreate}>
-        Create Neo Express Instance
+        Create a new Neo Express Instance
       </NavButton>
     </>
   );
