@@ -104,7 +104,7 @@
       },
       {
         "command": "neo3-visual-devtracker.neo.newContract",
-        "title": "Create new contract",
+        "title": "Create contract",
         "category": "Neo 3"
       },
       {

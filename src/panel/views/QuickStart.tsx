@@ -1,5 +1,6 @@
 import React from "react";
 
+import CreateContract from "../components/quickStart/CreateContract";
 import CreateNeoExpressInstance from "../components/quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
 import OpenBlockchainExplorer from "../components/quickStart/OpenBlockchainExplorer";
@@ -36,7 +37,14 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         />
       );
     }
-    // TODO: Offer to create contracts, wallets, etc.
+    actions.push(
+      <CreateContract
+        onCreate={() =>
+          postMessage({ command: "neo3-visual-devtracker.neo.newContract" })
+        }
+      />
+    );
+    // TODO: Offer to create Wallets, etc.
   } else {
     actions.push(
       <CreateOrOpenWorkspace

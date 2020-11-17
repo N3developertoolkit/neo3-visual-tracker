@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import BlockchainsTreeDataProvider from "./blockchainsTreeDataProvider";
+import ContractDetector from "../detectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import QuickStartPanelController from "../panelControllers/quickStartPanelController";
 
@@ -9,7 +10,8 @@ export default class QuickStartViewProvider
   constructor(
     private readonly context: vscode.ExtensionContext,
     private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
-    private readonly neoExpressInstanceManager: NeoExpressInstanceManager
+    private readonly neoExpressInstanceManager: NeoExpressInstanceManager,
+    private readonly contractDetector: ContractDetector
   ) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -18,7 +20,8 @@ export default class QuickStartViewProvider
       this.context,
       webviewView,
       this.blockchainsTreeDataProvider,
-      this.neoExpressInstanceManager
+      this.neoExpressInstanceManager,
+      this.contractDetector
     );
   }
 }

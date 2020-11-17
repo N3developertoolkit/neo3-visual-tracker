@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 
 import BlockchainsTreeDataProvider from "../viewProviders/blockchainsTreeDataProvider";
+import ContractDetector from "../detectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import PanelControllerBase from "./panelControllerBase";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
-import TrackerPanelController from "./trackerPanelController";
 
 const LOG_PREFIX = "[QuickStartPanelController]";
 
@@ -14,15 +14,17 @@ export default class QuickStartPanelController extends PanelControllerBase<
   QuickStartViewRequest
 > {
   constructor(
-    private readonly context: vscode.ExtensionContext,
+    context: vscode.ExtensionContext,
     panel: vscode.WebviewView,
     private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
-    private readonly neoExpressInstanceManager: NeoExpressInstanceManager
+    private readonly neoExpressInstanceManager: NeoExpressInstanceManager,
+    private readonly contractDetector: ContractDetector
   ) {
     super(
       {
         view: "quickStart",
         panelTitle: "",
+        hasContracts: false,
         hasNeoExpressInstance: false,
         neoExpressIsRunning: false,
         workspaceIsOpen: false,
@@ -39,6 +41,9 @@ export default class QuickStartPanelController extends PanelControllerBase<
   onClose() {}
 
   refresh() {
+    const hasContracts =
+      Object.keys(this.contractDetector.contracts).length > 0;
+
     const hasNeoExpressInstance =
       this.blockchainsTreeDataProvider
         .getChildren()
@@ -51,6 +56,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
     const workspaceIsOpen = !!vscode.workspace.workspaceFolders?.length;
 
     this.updateViewState({
+      hasContracts,
       hasNeoExpressInstance,
       neoExpressIsRunning,
       workspaceIsOpen,

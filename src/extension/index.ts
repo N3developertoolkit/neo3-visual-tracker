@@ -96,7 +96,8 @@ export async function activate(context: vscode.ExtensionContext) {
       new QuickStartViewProvider(
         context,
         blockchainsTreeDataProvider,
-        neoExpressInstanceManager
+        neoExpressInstanceManager,
+        contractDetector
       )
     )
   );
