@@ -11,12 +11,16 @@ namespace $_NAMESPACENAME_$
     [ManifestExtra("Author", "Your name")]
     [ManifestExtra("Email", "your@address.invalid")]
     [ManifestExtra("Description", "Describe your contract...")]
-    [Features(ContractFeatures.HasStorage | ContractFeatures.Payable)]
+    [Features(ContractFeatures.HasStorage)]
     public class $_CLASSNAME_$ : SmartContract
     {
         const string MAP_NAME = "$_CLASSNAME_$";
 
-        static readonly byte[] Owner = "N.....insert.your.address.here.......".ToScriptHash();
+        //
+        // Before deploying change this to an address that you control the
+        // private key for:
+        //
+        static readonly byte[] Owner = "Ni7FXvNy7WW2UfmctFevHYhvy7x7VvDDwa".ToScriptHash();
 
         [DisplayName("NumberChanged")]
         public static event Action<byte[], BigInteger> OnNumberChanged;

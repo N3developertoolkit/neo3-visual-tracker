@@ -143,6 +143,11 @@ export default class NeoCommands {
       );
       return;
     }
+    const dotVsCodeFolderPath = path.join(
+      workspaceFolders[0].uri.fsPath,
+      ".vscode"
+    );
+    const tasksJsonPath = path.join(dotVsCodeFolderPath, "tasks.json");
     const contractPath = path.join(
       workspaceFolders[0].uri.fsPath,
       contractName
@@ -157,6 +162,9 @@ export default class NeoCommands {
         `A contract called ${contractName} already exists in this vscode.workspace.`
       );
       return;
+    }
+    if (!fs.existsSync(dotVsCodeFolderPath)) {
+      fs.mkdirSync(dotVsCodeFolderPath);
     }
     const doSubstitutions = (text: string) =>
       text
@@ -188,6 +196,61 @@ export default class NeoCommands {
       )
     );
 
-    // TODO: Create VS Code build task
+    let tasksJsonTxt = "";
+    let tasksJson: { version: string; tasks: any } = {
+      version: "2.0.0",
+      tasks: [],
+    };
+    try {
+      tasksJsonTxt = fs.readFileSync(tasksJsonPath).toString();
+      tasksJson = JSON.parse(tasksJsonTxt);
+      if (tasksJson.tasks) {
+        if (!Array.isArray(tasksJson.tasks)) {
+          return;
+        }
+      } else {
+        tasksJson.tasks = [];
+      }
+    } catch {}
+    const newTask = (
+      label: string,
+      args: string[],
+      problemMatcher: string | any[],
+      dependsOn?: string
+    ) => ({
+      options: { cwd: "${workspaceFolder}/" + contractName },
+      label: `${contractName}: ${label}`,
+      command: "dotnet",
+      type: "shell",
+      args,
+      group: "build",
+      presentation: { reveal: "silent" },
+      problemMatcher,
+      dependsOn: dependsOn ? `${contractName}: ${dependsOn}` : undefined,
+    });
+    (tasksJson.tasks as any[]).push(newTask("restore", ["restore"], []));
+    (tasksJson.tasks as any[]).push(
+      newTask("toolrestore", ["tool", "restore"], [], "restore")
+    );
+    (tasksJson.tasks as any[]).push(
+      newTask(
+        "build",
+        [
+          "build",
+          "/property:GenerateFullPaths=true",
+          "/consoleloggerparameters:NoSummary",
+        ],
+        "$msCompile",
+        "toolrestore"
+      )
+    );
+    const buildTaskLabel = tasksJson.tasks[tasksJson.tasks.length - 1].label;
+    fs.writeFileSync(tasksJsonPath, JSON.stringify(tasksJson, undefined, 2));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const tasks = await vscode.tasks.fetchTasks();
+    const buildTask = tasks.filter((_) => _.name === buildTaskLabel)[0];
+    if (buildTask) {
+      vscode.tasks.executeTask(buildTask);
+    }
   }
 }

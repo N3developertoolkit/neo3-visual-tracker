@@ -37,13 +37,15 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         />
       );
     }
-    actions.push(
-      <CreateContract
-        onCreate={() =>
-          postMessage({ command: "neo3-visual-devtracker.neo.newContract" })
-        }
-      />
-    );
+    if (!viewState.hasContracts) {
+      actions.push(
+        <CreateContract
+          onCreate={() =>
+            postMessage({ command: "neo3-visual-devtracker.neo.newContract" })
+          }
+        />
+      );
+    }
     // TODO: Offer to create Wallets, etc.
   } else {
     actions.push(
