@@ -117,4 +117,77 @@ export default class NeoCommands {
     });
     await vscode.window.showTextDocument(textDocument);
   }
+
+  static async newContract(context: vscode.ExtensionContext) {
+    let contractName = await IoHelpers.enterString(
+      "Enter name for your contract (e.g. TokenEscrow)"
+    );
+    if (contractName?.toLocaleLowerCase().endsWith("contract")) {
+      contractName = contractName.replace(/contract$/i, "");
+    }
+    if (!contractName) {
+      return;
+    }
+    if (!contractName[0].match(/[a-z]/i)) {
+      contractName = "_" + contractName;
+    }
+    contractName = contractName.replace(/[^a-z0-9]+/gi, "_");
+    if (!contractName) {
+      return;
+    }
+
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || !workspaceFolders.length) {
+      vscode.window.showErrorMessage(
+        "Please open a folder in your Visual Studio Code workspace before creating a contract"
+      );
+      return;
+    }
+    const contractPath = path.join(
+      workspaceFolders[0].uri.fsPath,
+      contractName
+    );
+    const templatePath = path.join(
+      context.extensionPath,
+      "resources",
+      "new-contract"
+    );
+    if (fs.existsSync(contractPath)) {
+      vscode.window.showErrorMessage(
+        `A contract called ${contractName} already exists in this vscode.workspace.`
+      );
+      return;
+    }
+    const doSubstitutions = (text: string) =>
+      text
+        .replace(/\$_CLASSNAME_\$/g, `${contractName}Contract`)
+        .replace(/\$_NAMESPACENAME_\$/g, `${contractName}`);
+    const doCopy = (srcFile: string) => {
+      const dstFile = doSubstitutions(srcFile);
+      const dstFileAbsolute = path.join(contractPath, dstFile);
+      const srcFileAbsolute = path.join(
+        templatePath,
+        `${srcFile}.template.txt`
+      );
+      fs.copyFileSync(srcFileAbsolute, dstFileAbsolute);
+      fs.writeFileSync(
+        dstFileAbsolute,
+        doSubstitutions(fs.readFileSync(dstFileAbsolute).toString())
+      );
+    };
+    fs.mkdirSync(contractPath);
+    fs.mkdirSync(path.join(contractPath, ".config"));
+    doCopy("$_CLASSNAME_$.cs");
+    doCopy("$_CLASSNAME_$.csproj");
+    doCopy("Directory.Build.targets");
+    doCopy("nuget.config");
+    doCopy(path.join(".config", "dotnet-tools.json"));
+    await vscode.window.showTextDocument(
+      await vscode.workspace.openTextDocument(
+        path.join(contractPath, `${contractName}Contract.cs`)
+      )
+    );
+
+    // TODO: Create VS Code build task
+  }
 }

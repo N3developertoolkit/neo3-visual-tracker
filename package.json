@@ -31,6 +31,9 @@
     "onCommand:neo3-visual-devtracker.express.run",
     "onCommand:neo3-visual-devtracker.express.transfer",
     "onCommand:neo3-visual-devtracker.express.walletCreate",
+    "onCommand:neo3-visual-devtracker.neo.contractDeploy",
+    "onCommand:neo3-visual-devtracker.neo.newContract",
+    "onCommand:neo3-visual-devtracker.neo.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
     "onView:neo3-visual-devtracker.views.blockchains",
@@ -97,6 +100,11 @@
       {
         "command": "neo3-visual-devtracker.neo.contractDeploy",
         "title": "Deploy contract",
+        "category": "Neo 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.neo.newContract",
+        "title": "Create new contract",
         "category": "Neo 3"
       },
       {
@@ -177,6 +185,10 @@
       "view/title": [
         {
           "command": "neo3-visual-devtracker.express.create",
+          "when": "view == neo3-visual-devtracker.views.blockchains"
+        },
+        {
+          "command": "neo3-visual-devtracker.neo.newContract",
           "when": "view == neo3-visual-devtracker.views.blockchains"
         },
         {

@@ -115,6 +115,13 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
+      "neo3-visual-devtracker.neo.newContract",
+      () => NeoCommands.newContract(context)
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
       "neo3-visual-devtracker.neo.walletCreate",
       () => NeoCommands.createWallet()
     )

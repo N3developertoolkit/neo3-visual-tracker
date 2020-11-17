@@ -1,0 +1,11 @@
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <Target 
+      Name="NeonBuild"
+      AfterTargets="Build"
+      Inputs="$(TargetPath)" 
+      Outputs="$(TargetDir)$(TargetName).nef;$(TargetDir)$(TargetName).nefdbgnfo;$(TargetDir)$(TargetName).manifest.json;$(TargetDir)$(TargetName).abi.json;">
+    <Exec WorkingDirectory="$(TargetDir)" Command="dotnet neon -f $(TargetFileName)"/>
+  </Target>
+
+</Project>
