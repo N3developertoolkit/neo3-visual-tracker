@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 import ControllerRequest from "../shared/messages/controllerRequest";
-import InvokeFile from "./views/InvokeFile";
+import InvokeFile from "./components/views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
-import QuickStart from "./views/QuickStart";
+import QuickStart from "./components/views/QuickStart";
 import QuickStartViewState from "../shared/viewState/quickStartViewState";
-import Tracker from "./views/Tracker";
+import Tracker from "./components/views/Tracker";
 import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
 import ViewRequest from "../shared/messages/viewRequest";

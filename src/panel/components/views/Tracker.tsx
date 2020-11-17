@@ -1,15 +1,15 @@
 import React from "react";
 
-import AddressDetails from "../components/tracker/AddressDetails";
-import BlockDetails from "../components/tracker/BlockDetails";
-import BlockList from "../components/tracker/BlockList";
-import BlockNavigation from "../components/tracker/BlockNavigation";
-import Dialog from "../components/Dialog";
-import NavButton from "../components/NavButton";
-import Search from "../components/tracker/Search";
-import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
-import TrackerViewState from "../../shared/viewState/trackerViewState";
-import TransactionDetails from "../components/tracker/TransactionDetails";
+import AddressDetails from "../tracker/AddressDetails";
+import BlockDetails from "../tracker/BlockDetails";
+import BlockList from "../tracker/BlockList";
+import BlockNavigation from "../tracker/BlockNavigation";
+import Dialog from "../Dialog";
+import NavButton from "../NavButton";
+import Search from "../tracker/Search";
+import TrackerViewRequest from "../../../shared/messages/trackerViewRequest";
+import TrackerViewState from "../../../shared/viewState/trackerViewState";
+import TransactionDetails from "../tracker/TransactionDetails";
 
 type Props = {
   viewState: TrackerViewState;

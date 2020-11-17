@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
-import Dialog from "../components/Dialog";
-import DropTarget from "../components/DropTarget";
-import InvocationStep from "../components/contracts/InvocationStep";
-import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
-import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
-import NavButton from "../components/NavButton";
-import TransactionList from "../components/contracts/TransactionList";
+import Dialog from "../Dialog";
+import DropTarget from "../DropTarget";
+import InvocationStep from "../contracts/InvocationStep";
+import InvokeFileViewRequest from "../../../shared/messages/invokeFileViewRequest";
+import InvokeFileViewState from "../../../shared/viewState/invokeFileViewState";
+import NavButton from "../NavButton";
+import TransactionList from "../contracts/TransactionList";
 
 type Props = {
   viewState: InvokeFileViewState;

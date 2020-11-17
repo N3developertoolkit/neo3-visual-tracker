@@ -1,12 +1,12 @@
 import React from "react";
 
-import CreateContract from "../components/quickStart/CreateContract";
-import CreateNeoExpressInstance from "../components/quickStart/CreateNeoExpressInstance";
-import CreateOrOpenWorkspace from "../components/quickStart/CreateOrOpenWorkspace";
-import OpenBlockchainExplorer from "../components/quickStart/OpenBlockchainExplorer";
-import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
-import QuickStartViewState from "../../shared/viewState/quickStartViewState";
-import StartNeoExpress from "../components/quickStart/StartNeoExpress";
+import CreateContract from "../quickStart/CreateContract";
+import CreateNeoExpressInstance from "../quickStart/CreateNeoExpressInstance";
+import CreateOrOpenWorkspace from "../quickStart/CreateOrOpenWorkspace";
+import OpenBlockchainExplorer from "../quickStart/OpenBlockchainExplorer";
+import QuickStartViewRequest from "../../../shared/messages/quickStartFileViewRequest";
+import QuickStartViewState from "../../../shared/viewState/quickStartViewState";
+import StartNeoExpress from "../quickStart/StartNeoExpress";
 
 type Props = {
   viewState: QuickStartViewState;
