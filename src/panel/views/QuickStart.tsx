@@ -46,7 +46,10 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         />
       );
     }
-    // TODO: Offer to create Wallets, etc.
+    // TODO: Offer to deploy if there is a non-deployed contract in the workspace
+    // TODO: Offer to create wallets if there is not one in the workspace
+    // TODO: Offer to create a checkpoint if neo-express is running and sufficiently "interesting"
+    // TODO: Offer to restore a checkpoint if any are present in the workspace
   } else {
     actions.push(
       <CreateOrOpenWorkspace
