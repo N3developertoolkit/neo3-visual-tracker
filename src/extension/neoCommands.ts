@@ -128,7 +128,29 @@ export default class NeoCommands {
     ) {
       await activeConnection.connect(identifer);
     }
-    await vscode.window.showInformationMessage("Coming soon");
+    const workspaceFolder = NeoCommands.workspaceFolder();
+    if (!workspaceFolder) {
+      vscode.window.showErrorMessage(
+        "Please open a folder in your Visual Studio Code workspace before invoking a contract"
+      );
+      return;
+    }
+    const invokeFilesFolder = path.join(workspaceFolder, "invoke-files");
+    if (!fs.existsSync(invokeFilesFolder)) {
+      fs.mkdirSync(invokeFilesFolder);
+    }
+    let filename = "Untitled.neo-invoke.json";
+    let i = 0;
+    while (fs.existsSync(path.join(invokeFilesFolder, filename))) {
+      i++;
+      filename = `Untitled (${i}).neo-invoke.json`;
+    }
+    fs.writeFileSync(path.join(invokeFilesFolder, filename), "{}");
+    const textDocument = await vscode.workspace.openTextDocument(
+      path.join(invokeFilesFolder, filename)
+    );
+    // TODO: Make this show in the custom editor
+    await vscode.window.showTextDocument(textDocument);
   }
 
   static async newContract(context: vscode.ExtensionContext) {
@@ -149,22 +171,16 @@ export default class NeoCommands {
       return;
     }
 
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders || !workspaceFolders.length) {
+    const workspaceFolder = NeoCommands.workspaceFolder();
+    if (!workspaceFolder) {
       vscode.window.showErrorMessage(
         "Please open a folder in your Visual Studio Code workspace before creating a contract"
       );
       return;
     }
-    const dotVsCodeFolderPath = path.join(
-      workspaceFolders[0].uri.fsPath,
-      ".vscode"
-    );
+    const dotVsCodeFolderPath = path.join(workspaceFolder, ".vscode");
     const tasksJsonPath = path.join(dotVsCodeFolderPath, "tasks.json");
-    const contractPath = path.join(
-      workspaceFolders[0].uri.fsPath,
-      contractName
-    );
+    const contractPath = path.join(workspaceFolder, contractName);
     const templatePath = path.join(
       context.extensionPath,
       "resources",
@@ -265,5 +281,13 @@ export default class NeoCommands {
     if (buildTask) {
       vscode.tasks.executeTask(buildTask);
     }
+  }
+
+  private static workspaceFolder() {
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    if (!workspaceFolders || !workspaceFolders.length) {
+      return null;
+    }
+    return workspaceFolders[0].uri.fsPath;
   }
 }
