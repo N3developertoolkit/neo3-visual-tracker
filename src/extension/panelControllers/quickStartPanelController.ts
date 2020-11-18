@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "../activeConnection";
 import BlockchainsTreeDataProvider from "../viewProviders/blockchainsTreeDataProvider";
 import ContractDetector from "../detectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
@@ -18,14 +19,18 @@ export default class QuickStartPanelController extends PanelControllerBase<
     panel: vscode.WebviewView,
     private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
     private readonly neoExpressInstanceManager: NeoExpressInstanceManager,
-    private readonly contractDetector: ContractDetector
+    private readonly contractDetector: ContractDetector,
+    private readonly activeConnection: ActiveConnection
   ) {
     super(
       {
         view: "quickStart",
         panelTitle: "",
+        connectionName: null,
         hasContracts: false,
         hasNeoExpressInstance: false,
+        neoDeploymentRequired: false,
+        neoExpressDeploymentRequired: false,
         neoExpressIsRunning: false,
         workspaceIsOpen: false,
       },
@@ -42,6 +47,27 @@ export default class QuickStartPanelController extends PanelControllerBase<
   onClose() {}
 
   refresh() {
+    const connectionName =
+      this.activeConnection.connection?.blockchainIdentifier.friendlyName ||
+      null;
+
+    let neoDeploymentRequired = false;
+    let neoExpressDeploymentRequired = false;
+    const deploymentRequired =
+      Object.values(this.contractDetector.contracts).filter(
+        (_) => _.deploymentRequired
+      ).length > 0;
+    if (deploymentRequired) {
+      if (
+        this.activeConnection.connection?.blockchainIdentifier
+          .blockchainType === "express"
+      ) {
+        neoExpressDeploymentRequired = true;
+      } else {
+        neoDeploymentRequired = true;
+      }
+    }
+
     const hasContracts =
       Object.keys(this.contractDetector.contracts).length > 0;
 
@@ -57,8 +83,11 @@ export default class QuickStartPanelController extends PanelControllerBase<
     const workspaceIsOpen = !!vscode.workspace.workspaceFolders?.length;
 
     this.updateViewState({
+      connectionName,
       hasContracts,
       hasNeoExpressInstance,
+      neoDeploymentRequired,
+      neoExpressDeploymentRequired,
       neoExpressIsRunning,
       workspaceIsOpen,
     });

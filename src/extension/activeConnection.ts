@@ -69,7 +69,7 @@ export default class ActiveConnection {
       if (
         force ||
         (await IoHelpers.yesNo(
-          `Disconnect from ${this.connection.blockchainIdentifier.name}?`
+          `Disconnect from ${this.connection.blockchainIdentifier.friendlyName}?`
         ))
       ) {
         this.connection = null;
@@ -78,19 +78,31 @@ export default class ActiveConnection {
     }
   }
 
-  async updateConnectionState() {
-    if (this.connection) {
+  private async refreshLoop() {
+    if (this.disposed) {
+      return;
+    }
+    try {
+      await this.updateConnectionState();
+    } finally {
+      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+    }
+  }
+
+  private async updateConnectionState() {
+    const connection = this.connection;
+    if (connection) {
       try {
-        await this.connection.rpcClient.getBlockCount();
-        this.connection.healthy = true;
-        this.statusBarItem.text = `${PREFIX} Connected to ${this.connection.blockchainIdentifier.name}`;
+        await connection.rpcClient.getBlockCount();
+        connection.healthy = true;
+        this.statusBarItem.text = `${PREFIX} Connected to ${connection.blockchainIdentifier.friendlyName}`;
         this.statusBarItem.tooltip = "Click to disconnect";
         this.statusBarItem.color = new vscode.ThemeColor(
           "statusBarItem.prominentForeground"
         );
       } catch {
-        this.connection.healthy = false;
-        this.statusBarItem.text = `${PREFIX} Connecting to ${this.connection.blockchainIdentifier.name}...`;
+        connection.healthy = false;
+        this.statusBarItem.text = `${PREFIX} Connecting to ${connection.blockchainIdentifier.friendlyName}...`;
         this.statusBarItem.tooltip =
           "A connection cannot currently be established to the Neo blockchain RPC server";
         this.statusBarItem.color = new vscode.ThemeColor(
@@ -107,17 +119,6 @@ export default class ActiveConnection {
     if (!this.visible) {
       this.statusBarItem.show();
       this.visible = true;
-    }
-  }
-
-  private async refreshLoop() {
-    if (this.disposed) {
-      return;
-    }
-    try {
-      await this.updateConnectionState();
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 }

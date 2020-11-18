@@ -3,6 +3,7 @@ import React from "react";
 import CreateContract from "../quickStart/CreateContract";
 import CreateNeoExpressInstance from "../quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../quickStart/CreateOrOpenWorkspace";
+import DeployContract from "../quickStart/DeployContract";
 import OpenBlockchainExplorer from "../quickStart/OpenBlockchainExplorer";
 import QuickStartViewRequest from "../../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../../shared/viewState/quickStartViewState";
@@ -49,8 +50,36 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         />
       );
     }
-    // TODO: Offer to deploy if there is a non-deployed contract in the workspace
-    // TODO: Offer to create wallets if there is not one in the workspace
+    if (viewState.connectionName) {
+      if (viewState.neoExpressDeploymentRequired) {
+        actions.push(
+          <DeployContract
+            key="deployContractNeo"
+            connectionName={viewState.connectionName}
+            onDeploy={() =>
+              postMessage({
+                command: "neo3-visual-devtracker.express.contractDeploy",
+              })
+            }
+          />
+        );
+      } else if (viewState.neoDeploymentRequired) {
+        actions.push(
+          <DeployContract
+            key="deployContractNeoExpress"
+            connectionName={viewState.connectionName}
+            onDeploy={() =>
+              postMessage({
+                command: "neo3-visual-devtracker.neo.contractDeploy",
+              })
+            }
+          />
+        );
+      }
+    }
+    // TODO: Offer to create NEP-6 wallets if there is not one in the workspace
+    // TODO: Offer to create Neo Express wallets if only genesis exists
+    // TODO: Offter to transfer assets between Neo Express wallets if only genesis has funds but other wallets exist
     // TODO: Offer to create a checkpoint if neo-express is running and sufficiently "interesting"
     // TODO: Offer to restore a checkpoint if any are present in the workspace
   } else {

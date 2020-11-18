@@ -38,7 +38,7 @@ export default class NeoExpressInstanceManager {
       ) {
         if (
           await IoHelpers.yesNo(
-            `${blockchainIdentifier.name} is not running. Would you like to start it?`
+            `${blockchainIdentifier.friendlyName} is not running. Would you like to start it?`
           )
         ) {
           await this.run(blockchainIdentifier);

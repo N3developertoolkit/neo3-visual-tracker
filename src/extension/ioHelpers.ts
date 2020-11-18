@@ -111,7 +111,7 @@ export default class IoHelpers {
   }
 
   static async yesNo(question: string): Promise<boolean> {
-    const choice = await vscode.window.showErrorMessage(
+    const choice = await vscode.window.showWarningMessage(
       question,
       { modal: true },
       { title: "Yes" },

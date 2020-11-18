@@ -60,6 +60,10 @@ export default class BlockchainIdentifier {
     }
   }
 
+  get friendlyName() {
+    return this.name.split(":")[0];
+  }
+
   private constructor(
     private readonly extensionPath: string,
     public readonly blockchainType: BlockchainType,

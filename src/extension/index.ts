@@ -41,7 +41,6 @@ function registerBlockchainInstanceCommand(
 }
 
 export async function activate(context: vscode.ExtensionContext) {
-  const contractDetector = new ContractDetector();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
@@ -51,6 +50,7 @@ export async function activate(context: vscode.ExtensionContext) {
     serverListDetector
   );
   const activeConnection = new ActiveConnection(blockchainsTreeDataProvider);
+  const contractDetector = new ContractDetector(activeConnection);
   const neoExpressInstanceManager = new NeoExpressInstanceManager(
     neoExpress,
     activeConnection
@@ -97,7 +97,8 @@ export async function activate(context: vscode.ExtensionContext) {
         context,
         blockchainsTreeDataProvider,
         neoExpressInstanceManager,
-        contractDetector
+        contractDetector,
+        activeConnection
       )
     )
   );

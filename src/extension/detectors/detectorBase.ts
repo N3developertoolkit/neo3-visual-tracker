@@ -4,12 +4,18 @@ const LOG_PREFIX = "[DetectorBase]";
 
 export default abstract class DetectorBase {
   private readonly fileSystemWatcher: vscode.FileSystemWatcher;
-  
-  private readonly onChangeEmitter: vscode.EventEmitter<void>;
-  
+
+  protected readonly onChangeEmitter: vscode.EventEmitter<void>;
+
   onChange: vscode.Event<void>;
 
+  private disposed = false;
+
   private allFiles: string[] = [];
+
+  get isDisposed() {
+    return this.disposed;
+  }
 
   protected get files() {
     return [...this.allFiles];
@@ -28,11 +34,12 @@ export default abstract class DetectorBase {
   }
 
   dispose() {
+    this.disposed = true;
     this.fileSystemWatcher.dispose();
     this.onChangeEmitter.dispose();
   }
 
-  protected async processFiles(): Promise<void> {}
+  protected async processFiles(): Promise<boolean | void> {}
 
   async refresh() {
     console.log(LOG_PREFIX, "Refreshing file list...", this.searchPattern);
