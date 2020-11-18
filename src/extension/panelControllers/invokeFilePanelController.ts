@@ -309,8 +309,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         this.updateViewState({ recentTransactions });
       }
     } else {
-      await vscode.window.showErrorMessage(
-        "You must be connected to a Neo Express blockchain to invoke contracts."
+      await vscode.window.showWarningMessage(
+        "Currently, you must be connected to a Neo Express blockchain to invoke contracts. Support for TestNet and MainNet contract invocation is coming soon."
       );
     }
   }
