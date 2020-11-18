@@ -219,6 +219,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     undefined,
     blockchainsTreeDataProvider,
+    "neo3-visual-devtracker.neo.invokeContract",
+    (identifier) => NeoCommands.invokeContract(identifier, activeConnection)
+  );
+
+  registerBlockchainInstanceCommand(
+    context,
+    undefined,
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.tracker.openTracker",
     (identifier) => TrackerCommands.openTracker(context, identifier)
   );

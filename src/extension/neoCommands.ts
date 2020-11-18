@@ -7,6 +7,7 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./detectors/contractDetector";
 import IoHelpers from "./ioHelpers";
 import WalletDetector from "./detectors/walletDetector";
+import ActiveConnection from "./activeConnection";
 
 export default class NeoCommands {
   static async contractDeploy(
@@ -116,6 +117,18 @@ export default class NeoCommands {
       content: walletJson,
     });
     await vscode.window.showTextDocument(textDocument);
+  }
+
+  static async invokeContract(
+    identifer: BlockchainIdentifier,
+    activeConnection: ActiveConnection
+  ) {
+    if (
+      activeConnection.connection?.blockchainIdentifier.name !== identifer.name
+    ) {
+      await activeConnection.connect(identifer);
+    }
+    await vscode.window.showInformationMessage("Coming soon");
   }
 
   static async newContract(context: vscode.ExtensionContext) {
