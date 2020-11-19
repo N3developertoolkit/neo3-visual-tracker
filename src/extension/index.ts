@@ -11,7 +11,7 @@ import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
 import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
-import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
+import NeoInvokeFileEditor from "./viewProviders/neoInvokeFileEditor";
 import QuickStartViewProvider from "./viewProviders/quickStartViewProvider";
 import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
