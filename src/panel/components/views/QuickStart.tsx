@@ -3,6 +3,7 @@ import React from "react";
 import CreateContract from "../quickStart/CreateContract";
 import CreateNeoExpressInstance from "../quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../quickStart/CreateOrOpenWorkspace";
+import CreateWallet from "../quickStart/CreateWallet";
 import DeployContract from "../quickStart/DeployContract";
 import OpenBlockchainExplorer from "../quickStart/OpenBlockchainExplorer";
 import QuickStartViewRequest from "../../../shared/messages/quickStartFileViewRequest";
@@ -88,6 +89,18 @@ export default function QuickStart({ viewState, postMessage }: Props) {
           />
         );
       }
+    }
+    if (!viewState.hasWallets) {
+      actions.push(
+        <CreateWallet
+          key="createWallet"
+          onCreate={() =>
+            postMessage({
+              command: "neo3-visual-devtracker.neo.walletCreate",
+            })
+          }
+        />
+      );
     }
     // TODO: Offer to create NEP-6 wallets if there is not one in the workspace
     // TODO: Offer to create Neo Express wallets if only genesis exists
