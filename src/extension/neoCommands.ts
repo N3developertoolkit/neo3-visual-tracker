@@ -145,12 +145,19 @@ export default class NeoCommands {
       i++;
       filename = `Untitled (${i}).neo-invoke.json`;
     }
-    fs.writeFileSync(path.join(invokeFilesFolder, filename), "{}");
-    const textDocument = await vscode.workspace.openTextDocument(
+    fs.writeFileSync(path.join(invokeFilesFolder, filename), "");
+    const document = await vscode.workspace.openTextDocument(
       path.join(invokeFilesFolder, filename)
     );
-    // TODO: Make this show in the custom editor
-    await vscode.window.showTextDocument(textDocument);
+    // Note: Applying an edit to the document causes VS Code to open it
+    // using the default editor:
+    const edit = new vscode.WorkspaceEdit();
+    edit.replace(
+      document.uri,
+      new vscode.Range(0, 0, document.lineCount, 0),
+      "{}"
+    );
+    await vscode.workspace.applyEdit(edit);
   }
 
   static async newContract(context: vscode.ExtensionContext) {
