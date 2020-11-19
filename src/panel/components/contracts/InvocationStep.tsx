@@ -14,6 +14,7 @@ type Props = {
   args?: (string | number)[];
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
+  forceFocus?: boolean;
   onDelete: () => void;
   onRun: () => void;
   onDragStart: () => void;
@@ -32,6 +33,7 @@ export default function InvocationStep({
   args,
   autoCompleteData,
   argumentSuggestionListId,
+  forceFocus,
   onDelete,
   onRun,
   onDragStart,
@@ -69,6 +71,7 @@ export default function InvocationStep({
         style={{ marginBottom: 10 }}
         contract={contract}
         autoCompleteData={autoCompleteData}
+        forceFocus={forceFocus}
         setContract={(newContract: string) =>
           onUpdate(newContract, operation, args)
         }

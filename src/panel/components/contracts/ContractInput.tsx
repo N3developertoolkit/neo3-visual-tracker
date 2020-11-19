@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
@@ -7,6 +7,7 @@ type Props = {
   style?: React.CSSProperties;
   contract?: string;
   autoCompleteData: AutoCompleteData;
+  forceFocus?: boolean;
   setContract: (newValue: string) => void;
 };
 
@@ -14,8 +15,15 @@ export default function ContractInput({
   style,
   contract,
   autoCompleteData,
+  forceFocus,
   setContract,
 }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (forceFocus) {
+      inputRef.current?.focus();
+    }
+  }, []);
   const [hasFocus, setHasFocus] = useState(false);
   const inputStyle: React.CSSProperties = {
     color: "var(--vscode-input-foreground)",
@@ -66,6 +74,7 @@ export default function ContractInput({
   return (
     <div style={{ ...style, position: "relative" }}>
       <input
+        ref={inputRef}
         style={inputStyle}
         type="text"
         value={contract}

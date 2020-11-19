@@ -65,6 +65,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             <DropTarget i={i} onDrop={moveStep} dragActive={dragActive} />
             <InvocationStep
               i={i}
+              forceFocus={i === 0 && !_.contract && !_.operation && !_.args}
               key={JSON.stringify(_)}
               contract={_.contract}
               operation={_.operation}
