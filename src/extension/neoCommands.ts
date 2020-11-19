@@ -85,6 +85,17 @@ export default class NeoCommands {
   }
 
   static async createWallet() {
+    const workspaceFolder = NeoCommands.workspaceFolder();
+    if (!workspaceFolder) {
+      vscode.window.showErrorMessage(
+        "Please open a folder in your Visual Studio Code workspace before creating a wallet"
+      );
+      return;
+    }
+    const walletFilesFolder = path.join(workspaceFolder, "wallets");
+    if (!fs.existsSync(walletFilesFolder)) {
+      fs.mkdirSync(walletFilesFolder);
+    }
     const account = new neonCore.wallet.Account(
       neonCore.wallet.generatePrivateKey()
     );
@@ -111,12 +122,18 @@ export default class NeoCommands {
       );
     }
     const walletJson = JSON.stringify(wallet.export(), undefined, 2);
-    // TODO: Auto-save in current workspace
-    const textDocument = await vscode.workspace.openTextDocument({
-      language: "json",
-      content: walletJson,
-    });
-    await vscode.window.showTextDocument(textDocument);
+    const safeWalletName = walletName.replace(/[^-_.a-z0-9]/gi, "-");
+    let filename = `${safeWalletName}.neo-wallet.json`;
+    let i = 0;
+    while (fs.existsSync(path.join(walletFilesFolder, filename))) {
+      i++;
+      filename = `${safeWalletName} (${i}).neo-wallet.json`;
+    }
+    fs.writeFileSync(path.join(walletFilesFolder, filename), walletJson);
+    vscode.commands.executeCommand(
+      "vscode.open",
+      vscode.Uri.file(path.join(walletFilesFolder, filename))
+    );
   }
 
   static async invokeContract(
