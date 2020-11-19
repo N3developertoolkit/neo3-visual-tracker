@@ -38,7 +38,11 @@
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
     "onView:neo3-visual-devtracker.views.blockchains",
-    "onView:neo3-visual-devtracker.views.quickStart"
+    "onView:neo3-visual-devtracker.views.quickStart",
+    "workspaceContains:**/*.nef",
+    "workspaceContains:**/*.avm",
+    "workspaceContains:**/*.neo-invoke.json",
+    "workspaceContains:**/*.neo-wallet.json"
   ],
   "keywords": [
     "Neo",
