@@ -11,11 +11,11 @@ import WalletDetector from "./detectors/walletDetector";
 const LOG_PREFIX = "[AutoComplete]";
 const REFRESH_INTERVAL_MS = 1000 * 5;
 const WELL_KNOWN_NAMES = {
-  "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc": ["GAS"],
-  "0xde5f57d430d3dece511cf975a8d37848cb9e0525": ["NEO"],
-  "0x763afecf3ebba0a67568a2c8be06e8f068c62666": ["Designation"],
-  "0x3c05b488bf4cf699d0631bf80190896ebbf38c3b": ["Oracle"],
-  "0xce06595079cd69583126dbfd1d2e25cca74cffe9": ["Policy"],
+  "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc": ["GAS", "#GAS"],
+  "0xde5f57d430d3dece511cf975a8d37848cb9e0525": ["NEO", "#NEO"],
+  "0x763afecf3ebba0a67568a2c8be06e8f068c62666": ["Designation", "#Designation"],
+  "0x3c05b488bf4cf699d0631bf80190896ebbf38c3b": ["Oracle", "#Oracle"],
+  "0xce06595079cd69583126dbfd1d2e25cca74cffe9": ["Policy", "#Policy"],
 };
 
 export default class AutoComplete {
@@ -35,7 +35,8 @@ export default class AutoComplete {
     this.latestData = {
       contractManifests: {},
       contractHashes: {},
-      contractNames: { ...WELL_KNOWN_NAMES },
+      contractNames: {},
+      contractWellKnownNames: {},
       contractPaths: {},
       wellKnownAddresses: {},
       addressNames: {},
@@ -53,7 +54,6 @@ export default class AutoComplete {
     }
     try {
       await this.periodicUpdate();
-      // console.debug(LOG_PREFIX, this.latestData);
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
@@ -67,9 +67,17 @@ export default class AutoComplete {
       contractHashes: {},
       contractPaths: {},
       contractNames: { ...WELL_KNOWN_NAMES },
+      contractWellKnownNames: { ...WELL_KNOWN_NAMES },
       wellKnownAddresses: {},
       addressNames: {},
     };
+
+    for (const hash of Object.keys(WELL_KNOWN_NAMES)) {
+      const names = (WELL_KNOWN_NAMES as any)[hash] as string[];
+      for (const name of names) {
+        newData.contractHashes[name] = hash;
+      }
+    }
 
     const wallets = [...this.walletDetector.wallets];
     for (const wallet of wallets) {

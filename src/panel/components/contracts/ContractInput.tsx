@@ -65,12 +65,15 @@ export default function ContractInput({
     overflow: "auto",
   };
   const allHashes = Object.keys(autoCompleteData.contractManifests);
-  const contractHash =
+  const hash =
     autoCompleteData.contractHashes[contract || ""] || contract || "";
-  const names = autoCompleteData.contractNames[contractHash] || [];
-  const paths = autoCompleteData.contractPaths[contractHash] || [];
+  const names = autoCompleteData.contractNames[hash] || [];
+  const paths = autoCompleteData.contractPaths[hash] || [];
+  const wellKnownNames = autoCompleteData.contractWellKnownNames[hash] || [];
   const title = names[0] ? names[0] : paths[0] ? paths[0] : "Unknown contract";
-  const aka = [contractHash, ...paths].filter((_) => !!_ && _ !== contract);
+  const aka = [hash, ...paths, ...wellKnownNames].filter(
+    (_) => !!_ && _ !== contract
+  );
   return (
     <div style={{ ...style, position: "relative" }}>
       <input
