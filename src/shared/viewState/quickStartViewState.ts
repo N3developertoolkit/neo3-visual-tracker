@@ -3,6 +3,7 @@ type QuickStartViewState = {
   panelTitle: "";
   connectionName: string | null;
   hasContracts: boolean;
+  hasDeployedContract: boolean;
   hasNeoExpressInstance: boolean;
   neoDeploymentRequired: boolean;
   neoExpressDeploymentRequired: boolean;

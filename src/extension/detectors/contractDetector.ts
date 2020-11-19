@@ -13,6 +13,7 @@ type ContractMap = {
     manifest: Partial<ContractManifestJson>;
     absolutePathToNef: string;
     deploymentRequired: boolean;
+    deployed: boolean;
   };
 };
 
@@ -32,10 +33,12 @@ export default class ContractDetector extends DetectorBase {
       if (manifest?.abi?.hash) {
         const contractHash = manifest.abi.hash;
         let deploymentRequired = false;
+        let deployed = false;
         try {
           await this.activeConnection.connection?.rpcClient.getContractState(
             contractHash
           );
+          deployed = true;
         } catch (e) {
           if (`${e.message}`.toLowerCase().indexOf("unknown contract") !== -1) {
             deploymentRequired = true;
@@ -51,7 +54,9 @@ export default class ContractDetector extends DetectorBase {
         }
         if (
           this.contracts[contractHash] &&
-          this.contracts[contractHash].deploymentRequired !== deploymentRequired
+          (this.contracts[contractHash].deploymentRequired !==
+            deploymentRequired ||
+            this.contracts[contractHash].deployed !== deployed)
         ) {
           deploymentStatusChanged = true;
         }
@@ -59,6 +64,7 @@ export default class ContractDetector extends DetectorBase {
           manifest,
           absolutePathToNef,
           deploymentRequired,
+          deployed,
         };
       }
     }

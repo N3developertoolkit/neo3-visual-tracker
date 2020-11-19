@@ -28,6 +28,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
         panelTitle: "",
         connectionName: null,
         hasContracts: false,
+        hasDeployedContract: false,
         hasNeoExpressInstance: false,
         neoDeploymentRequired: false,
         neoExpressDeploymentRequired: false,
@@ -71,6 +72,10 @@ export default class QuickStartPanelController extends PanelControllerBase<
     const hasContracts =
       Object.keys(this.contractDetector.contracts).length > 0;
 
+    const hasDeployedContract =
+      Object.values(this.contractDetector.contracts).filter((_) => _.deployed)
+        .length > 0;
+
     const hasNeoExpressInstance =
       this.blockchainsTreeDataProvider
         .getChildren()
@@ -85,6 +90,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
     this.updateViewState({
       connectionName,
       hasContracts,
+      hasDeployedContract,
       hasNeoExpressInstance,
       neoDeploymentRequired,
       neoExpressDeploymentRequired,
