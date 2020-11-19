@@ -3,11 +3,12 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as path from "path";
 import * as vscode from "vscode";
 
+import ActiveConnection from "./activeConnection";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./detectors/contractDetector";
 import IoHelpers from "./ioHelpers";
+import NeoInvokeFileEditor from "./editors/neoInvokeFileEditor";
 import WalletDetector from "./detectors/walletDetector";
-import ActiveConnection from "./activeConnection";
 
 export default class NeoCommands {
   static async contractDeploy(
@@ -145,19 +146,11 @@ export default class NeoCommands {
       i++;
       filename = `Untitled (${i}).neo-invoke.json`;
     }
-    fs.writeFileSync(path.join(invokeFilesFolder, filename), "");
-    const document = await vscode.workspace.openTextDocument(
-      path.join(invokeFilesFolder, filename)
+    fs.writeFileSync(path.join(invokeFilesFolder, filename), "[{}]");
+    vscode.commands.executeCommand(
+      "vscode.open",
+      vscode.Uri.file(path.join(invokeFilesFolder, filename))
     );
-    // Note: Applying an edit to the document causes VS Code to open it
-    // using the default editor:
-    const edit = new vscode.WorkspaceEdit();
-    edit.replace(
-      document.uri,
-      new vscode.Range(0, 0, document.lineCount, 0),
-      "{}"
-    );
-    await vscode.workspace.applyEdit(edit);
   }
 
   static async newContract(context: vscode.ExtensionContext) {

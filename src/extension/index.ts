@@ -85,7 +85,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(
-      "neo3-visual-devtracker.express.neo-invoke-json",
+      "neo3-visual-devtracker.neo.neo-invoke-json",
       neoInvokeFileEditor
     )
   );

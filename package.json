@@ -48,7 +48,7 @@
   "contributes": {
     "customEditors": [
       {
-        "viewType": "neo3-visual-devtracker.express.neo-invoke-json",
+        "viewType": "neo3-visual-devtracker.neo.neo-invoke-json",
         "displayName": "Neo Express Contract Invoke File Editor",
         "selector": [
           {
