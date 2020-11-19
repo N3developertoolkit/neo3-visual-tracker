@@ -98,7 +98,8 @@ export async function activate(context: vscode.ExtensionContext) {
         blockchainsTreeDataProvider,
         neoExpressInstanceManager,
         contractDetector,
-        activeConnection
+        activeConnection,
+        walletDetector
       )
     )
   );

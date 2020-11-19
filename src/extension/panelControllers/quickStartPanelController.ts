@@ -7,6 +7,7 @@ import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import PanelControllerBase from "./panelControllerBase";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
+import WalletDetector from "../detectors/walletDetector";
 
 const LOG_PREFIX = "[QuickStartPanelController]";
 
@@ -20,7 +21,8 @@ export default class QuickStartPanelController extends PanelControllerBase<
     private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
     private readonly neoExpressInstanceManager: NeoExpressInstanceManager,
     private readonly contractDetector: ContractDetector,
-    private readonly activeConnection: ActiveConnection
+    private readonly activeConnection: ActiveConnection,
+    private readonly walletDetector: WalletDetector
   ) {
     super(
       {
@@ -30,6 +32,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
         hasContracts: false,
         hasDeployedContract: false,
         hasNeoExpressInstance: false,
+        hasWallets: false,
         neoDeploymentRequired: false,
         neoExpressDeploymentRequired: false,
         neoExpressIsRunning: false,
@@ -42,6 +45,8 @@ export default class QuickStartPanelController extends PanelControllerBase<
     this.blockchainsTreeDataProvider.onDidChangeTreeData(() => this.refresh());
     this.neoExpressInstanceManager.onChange(() => this.refresh());
     this.contractDetector.onChange(() => this.refresh());
+    this.activeConnection.onChange(() => this.refresh());
+    this.walletDetector.onChange(() => this.refresh());
     this.refresh();
   }
 
@@ -81,6 +86,8 @@ export default class QuickStartPanelController extends PanelControllerBase<
         .getChildren()
         .filter((_) => _.blockchainType === "express").length > 0;
 
+    const hasWallets = this.walletDetector.wallets.length > 0;
+
     const neoExpressIsRunning =
       this.neoExpressInstanceManager.runningInstance?.blockchainType ===
       "express";
@@ -92,6 +99,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
       hasContracts,
       hasDeployedContract,
       hasNeoExpressInstance,
+      hasWallets,
       neoDeploymentRequired,
       neoExpressDeploymentRequired,
       neoExpressIsRunning,

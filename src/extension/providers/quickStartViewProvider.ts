@@ -5,6 +5,7 @@ import BlockchainsTreeDataProvider from "./blockchainsTreeDataProvider";
 import ContractDetector from "../detectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import QuickStartPanelController from "../panelControllers/quickStartPanelController";
+import WalletDetector from "../detectors/walletDetector";
 
 export default class QuickStartViewProvider
   implements vscode.WebviewViewProvider {
@@ -13,7 +14,8 @@ export default class QuickStartViewProvider
     private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
     private readonly neoExpressInstanceManager: NeoExpressInstanceManager,
     private readonly contractDetector: ContractDetector,
-    private readonly activeConnection: ActiveConnection
+    private readonly activeConnection: ActiveConnection,
+    private readonly walletDetector: WalletDetector
   ) {}
 
   resolveWebviewView(webviewView: vscode.WebviewView) {
@@ -24,7 +26,8 @@ export default class QuickStartViewProvider
       this.blockchainsTreeDataProvider,
       this.neoExpressInstanceManager,
       this.contractDetector,
-      this.activeConnection
+      this.activeConnection,
+      this.walletDetector
     );
   }
 }
