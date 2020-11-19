@@ -8,6 +8,7 @@ import OpenBlockchainExplorer from "../quickStart/OpenBlockchainExplorer";
 import QuickStartViewRequest from "../../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../../shared/viewState/quickStartViewState";
 import StartNeoExpress from "../quickStart/StartNeoExpress";
+import InvokeContract from "../quickStart/InvokeContract";
 
 type Props = {
   viewState: QuickStartViewState;
@@ -71,6 +72,17 @@ export default function QuickStart({ viewState, postMessage }: Props) {
             onDeploy={() =>
               postMessage({
                 command: "neo3-visual-devtracker.neo.contractDeploy",
+              })
+            }
+          />
+        );
+      } else if (viewState.hasDeployedContract) {
+        actions.push(
+          <InvokeContract
+            key="invokeContract"
+            onInvoke={() =>
+              postMessage({
+                command: "neo3-visual-devtracker.neo.invokeContract",
               })
             }
           />
