@@ -7,6 +7,7 @@ import ActiveConnection from "./activeConnection";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./detectors/contractDetector";
 import IoHelpers from "./ioHelpers";
+import JSONC from "./JSONC";
 import WalletDetector from "./detectors/walletDetector";
 
 export default class NeoCommands {
@@ -248,7 +249,7 @@ export default class NeoCommands {
     };
     try {
       tasksJsonTxt = fs.readFileSync(tasksJsonPath).toString();
-      tasksJson = JSON.parse(tasksJsonTxt);
+      tasksJson = JSONC.parse(tasksJsonTxt);
       if (tasksJson.tasks) {
         if (!Array.isArray(tasksJson.tasks)) {
           return;

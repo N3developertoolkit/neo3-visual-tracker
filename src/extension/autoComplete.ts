@@ -6,6 +6,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
 import ContractDetector from "./detectors/contractDetector";
+import JSONC from "./JSONC";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
 import dedupeAndSort from "./dedupeAndSort";
@@ -92,7 +93,7 @@ export default class AutoComplete {
             );
           } else {
             try {
-              this.wellKnownManifests[hash] = JSON.parse(
+              this.wellKnownManifests[hash] = JSONC.parse(
                 contractQuery.message
               ) as Partial<ContractManifestJson>;
             } catch (e) {

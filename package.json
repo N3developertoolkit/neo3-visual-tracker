@@ -269,6 +269,7 @@
     "file-loader": "^6.2.0",
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
+    "jsonc-parser": "^3.0.0",
     "mkdirp": "^1.0.4",
     "move-file-cli": "^2.0.0",
     "nerdbank-gitversioning": "^3.3.37",

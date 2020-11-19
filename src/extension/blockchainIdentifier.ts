@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 
 import BlockchainType from "./blockchainType";
 import IoHelpers from "./ioHelpers";
+import JSONC from "./JSONC";
 
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
@@ -30,7 +31,7 @@ export default class BlockchainIdentifier {
     configPath: string
   ): BlockchainIdentifier | undefined {
     try {
-      const neoExpressConfig = JSON.parse(
+      const neoExpressConfig = JSONC.parse(
         fs.readFileSync(configPath).toString()
       );
       const nodePorts = neoExpressConfig["consensus-nodes"]
@@ -99,7 +100,7 @@ export default class BlockchainIdentifier {
     }
     let result: { [walletName: string]: string } = {};
     try {
-      const neoExpressConfig = JSON.parse(
+      const neoExpressConfig = JSONC.parse(
         fs.readFileSync(this.configPath).toString()
       );
       for (const wallet of neoExpressConfig["wallets"]) {

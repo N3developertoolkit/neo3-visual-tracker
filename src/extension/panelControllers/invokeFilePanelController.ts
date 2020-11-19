@@ -9,6 +9,7 @@ import dedupeAndSort from "../dedupeAndSort";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../ioHelpers";
+import JSONC from "../JSONC";
 import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
 import TransactionStatus from "../../shared/transactionStatus";
@@ -181,7 +182,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         fileText = "[]";
       }
       try {
-        let fileContents = JSON.parse(fileText) || [];
+        let fileContents = JSONC.parse(fileText) || [];
         if (!Array.isArray(fileContents)) {
           fileContents = [fileContents];
         }

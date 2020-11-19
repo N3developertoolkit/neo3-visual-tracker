@@ -1,6 +1,7 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
+import JSONC from "../JSONC";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressIo]";
@@ -25,7 +26,7 @@ export default class NeoExpressIo {
       return null;
     }
     try {
-      return JSON.parse(output.message) as ContractManifestJson;
+      return JSONC.parse(output.message) as ContractManifestJson;
     } catch (e) {
       throw Error(`Get contract error: ${e.message}`);
     }
@@ -55,7 +56,7 @@ export default class NeoExpressIo {
       return `}\n${output.message.trim()}\n{`
         .split("}\n{")
         .filter((_) => !!_?.trim())
-        .map((_) => JSON.parse("{" + _ + "}") as ContractManifestJson);
+        .map((_) => JSONC.parse("{" + _ + "}") as ContractManifestJson);
     } catch (e) {
       throw Error(`List contract parse error: ${e.message}`);
     }

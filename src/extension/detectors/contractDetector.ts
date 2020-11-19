@@ -2,6 +2,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import fs from "fs";
 
 import ActiveConnection from "../activeConnection";
+import JSONC from "../JSONC";
 import DetectorBase from "./detectorBase";
 
 const LOG_PREFIX = "[ContractDetector]";
@@ -78,7 +79,7 @@ export default class ContractDetector extends DetectorBase {
         /\.nef$/,
         ".manifest.json"
       );
-      return JSON.parse(
+      return JSONC.parse(
         fs.readFileSync(fullPathToManifest).toString()
       ) as Partial<ContractManifestJson>;
     } catch (e) {

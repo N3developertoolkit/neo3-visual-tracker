@@ -6,6 +6,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../ioHelpers";
+import JSONC from "../JSONC";
 
 const LOG_PREFIX = "[ServerListDetector]";
 
@@ -95,7 +96,7 @@ export default class ServerListDetector extends DetectorBase {
     const rpcUrls: { [url: string]: boolean } = { ...SEED_URLS };
     for (const file of this.files) {
       try {
-        const contents = JSON.parse(fs.readFileSync(file).toString());
+        const contents = JSONC.parse(fs.readFileSync(file).toString());
         const blockchainNamesThisFile = contents["neo-blockchain-names"];
         if (blockchainNamesThisFile) {
           for (let gensisBlockHash of Object.getOwnPropertyNames(

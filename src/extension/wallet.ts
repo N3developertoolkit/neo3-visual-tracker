@@ -1,12 +1,14 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
 
+import JSONC from "./JSONC";
+
 const LOG_PREFIX = "[Wallet]";
 
 export default class Wallet {
   static async fromJsonFile(path: string): Promise<Wallet | undefined> {
     try {
-      const json = JSON.parse(fs.readFileSync(path).toString());
+      const json = JSONC.parse(fs.readFileSync(path).toString());
       if (
         json.name === undefined ||
         json.version === undefined ||
