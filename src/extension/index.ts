@@ -11,7 +11,7 @@ import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./neoExpress/neoExpressCommands";
 import NeoExpressDetector from "./detectors/neoExpressDetector";
 import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
-import NeoInvokeFileEditor from "./viewProviders/neoInvokeFileEditor";
+import NeoInvokeFileEditorProvider from "./viewProviders/neoInvokeFileEditor";
 import QuickStartViewProvider from "./viewProviders/quickStartViewProvider";
 import ServerListDetector from "./detectors/serverListDetector";
 import TrackerCommands from "./trackerCommands";
@@ -61,7 +61,7 @@ export async function activate(context: vscode.ExtensionContext) {
     contractDetector,
     walletDetector
   );
-  const neoInvokeFileEditor = new NeoInvokeFileEditor(
+  const neoInvokeFileEditorProvider = new NeoInvokeFileEditorProvider(
     context,
     activeConnection,
     neoExpress,
@@ -86,7 +86,7 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(
       "neo3-visual-devtracker.neo.neo-invoke-json",
-      neoInvokeFileEditor
+      neoInvokeFileEditorProvider
     )
   );
 

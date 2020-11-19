@@ -5,7 +5,7 @@ import AutoComplete from "../autoComplete";
 import InvokeFilePanelController from "../panelControllers/invokeFilePanelController";
 import NeoExpress from "../neoExpress/neoExpress";
 
-export default class NeoInvokeFileEditor
+export default class NeoInvokeFileEditorProvider
   implements vscode.CustomTextEditorProvider {
   constructor(
     private readonly context: vscode.ExtensionContext,
