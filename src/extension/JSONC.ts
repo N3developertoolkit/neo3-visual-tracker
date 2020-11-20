@@ -8,6 +8,22 @@ const PARSE_OPTIONS = {
 };
 
 export default class JSONC {
+  static editJsonString(
+    jsonString: string,
+    jsonPath: jsoncParser.JSONPath,
+    value: any
+  ) {
+    return jsoncParser.applyEdits(
+      jsonString,
+      jsoncParser.modify(jsonString, jsonPath, value, {
+        formattingOptions: {
+          insertSpaces: true,
+          tabSize: 2,
+        },
+      })
+    );
+  }
+
   static parse(input: string): any {
     const errors: jsoncParser.ParseError[] = [];
     const result = jsoncParser.parse(input, errors, PARSE_OPTIONS);
@@ -31,21 +47,5 @@ export default class JSONC {
   static stringify(input: any) {
     // Stringify with whitespace (2 spaces per indentation):
     return JSON.stringify(input, undefined, 2);
-  }
-
-  static editJsonString(
-    jsonString: string,
-    jsonPath: jsoncParser.JSONPath,
-    value: any
-  ) {
-    return jsoncParser.applyEdits(
-      jsonString,
-      jsoncParser.modify(jsonString, jsonPath, value, {
-        formattingOptions: {
-          insertSpaces: true,
-          tabSize: 2,
-        },
-      })
-    );
   }
 }
