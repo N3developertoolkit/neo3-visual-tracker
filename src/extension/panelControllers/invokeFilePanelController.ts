@@ -37,6 +37,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         view: "invokeFile",
         panelTitle: "Invoke File Editor",
         fileContents: [],
+        fileContentsJson: "[]",
         autoCompleteData: autoComplete.data,
         errorText: "",
         recentTransactions: [],
@@ -67,44 +68,74 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       this.panel.dispose();
     }
     if (request.update !== undefined) {
-      let newFileContents = [...this.viewState.fileContents];
-      newFileContents = newFileContents.map((invocation, i) => {
-        if (i === request.update?.i) {
-          return {
-            contract: request.update.contract,
-            operation: request.update.operation,
-            args: request.update.args,
-          };
-        } else {
-          return invocation;
+      let updatedJson = JSONC.editJsonString(
+        JSONC.editJsonString(
+          this.viewState.fileContentsJson,
+          [request.update.i, "contract"],
+          request.update.contract
+        ),
+        [request.update.i, "operation"],
+        request.update.operation
+      );
+      if (!this.viewState.fileContents[request.update.i].args) {
+        updatedJson = JSONC.editJsonString(
+          updatedJson,
+          [request.update.i, "args"],
+          request.update.args
+        );
+      } else if (request.update.args) {
+        for (let i = 0; i < request.update.args.length; i++) {
+          updatedJson = JSONC.editJsonString(
+            updatedJson,
+            [request.update.i, "args", i],
+            request.update.args[i]
+          );
         }
-      });
-      await this.applyEdit(newFileContents);
+        const oldArgs = this.viewState.fileContents[request.update.i].args;
+        if (oldArgs?.length) {
+          for (let i = request.update.args.length; i < oldArgs.length; i++) {
+            updatedJson = JSONC.editJsonString(
+              updatedJson,
+              [request.update.i, "args", i],
+              undefined
+            );
+          }
+        }
+      }
+      await this.applyEdit(updatedJson);
     }
     if (request.addStep) {
-      let newFileContents = [...this.viewState.fileContents];
-      newFileContents.push({});
-      await this.applyEdit(newFileContents);
+      await this.applyEdit(
+        JSONC.editJsonString(
+          this.viewState.fileContentsJson,
+          [this.viewState.fileContents.length],
+          {
+            contract: "",
+            operation: "",
+          }
+        )
+      );
     }
     if (request.deleteStep) {
-      let newFileContents = this.viewState.fileContents.filter(
-        (_, i) => i !== request.deleteStep?.i
+      await this.applyEdit(
+        JSONC.editJsonString(
+          this.viewState.fileContentsJson,
+          [request.deleteStep.i],
+          undefined
+        )
       );
-      await this.applyEdit(newFileContents);
     }
     if (request.moveStep) {
       let { from, to } = request.moveStep;
-      let oldFileContents = [...this.viewState.fileContents];
-      let newFileContents = oldFileContents.filter((_, i) => i !== from);
-      if (to > from) {
-        to--;
-      }
-      newFileContents = [
-        ...newFileContents.filter((_, i) => i < to),
-        oldFileContents[from],
-        ...newFileContents.filter((_, i) => i >= to),
-      ];
-      await this.applyEdit(newFileContents);
+      const fromStep = this.viewState.fileContents[from];
+      const toStep = this.viewState.fileContents[to];
+      await this.applyEdit(
+        JSONC.editJsonString(
+          JSONC.editJsonString(this.viewState.fileContentsJson, [to], fromStep),
+          [from],
+          toStep
+        )
+      );
     }
     if (request.runAll) {
       await this.runFile(this.document.uri.fsPath);
@@ -124,12 +155,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
   }
 
-  private async applyEdit(newFileContents: any) {
+  private async applyEdit(newFileContentsJson: string) {
     const edit = new vscode.WorkspaceEdit();
     edit.replace(
       this.document.uri,
       new vscode.Range(0, 0, this.document.lineCount, 0),
-      JSONC.stringify(newFileContents)
+      newFileContentsJson
     );
     await vscode.workspace.applyEdit(edit);
   }
@@ -177,17 +208,18 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       return;
     }
     try {
-      let fileText = this.document.getText();
-      if (fileText?.trim().length === 0) {
-        fileText = "[]";
+      let fileContentsJson = this.document.getText();
+      if (fileContentsJson?.trim().length === 0) {
+        fileContentsJson = "[]";
       }
       try {
-        let fileContents = JSONC.parse(fileText) || [];
+        let fileContents = JSONC.parse(fileContentsJson) || [];
         if (!Array.isArray(fileContents)) {
           fileContents = [fileContents];
         }
         this.updateViewState({
           fileContents,
+          fileContentsJson,
           errorText: "",
         });
       } catch {

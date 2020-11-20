@@ -9,6 +9,7 @@ type InvokeFileViewState = {
     operation?: string;
     args?: (string | number)[];
   }[];
+  fileContentsJson: string;
   autoCompleteData: AutoCompleteData;
   errorText: string;
   recentTransactions: RecentTransaction[];
