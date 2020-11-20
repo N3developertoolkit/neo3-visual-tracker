@@ -88,6 +88,18 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           onDrop={moveStep}
           dragActive={dragActive}
         />
+        {!!viewState.comments.length && (
+          <div style={{ textAlign: "center", margin: 10 }}>
+            <h4 style={{ margin: 0, marginBottom: 5 }}>Comments:</h4>
+            {viewState.comments.map((_) => (
+              <li key={_} style={{ marginBottom: 5 }}>
+                {_.replace(/\/\//g, "")
+                  .replace(/\/\*/g, "")
+                  .replace(/\*\//g, "")}
+              </li>
+            ))}
+          </div>
+        )}
         <div style={{ textAlign: "center" }}>
           <NavButton onClick={() => postMessage({ addStep: true })}>
             Add step
