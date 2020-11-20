@@ -81,10 +81,7 @@ export default class ServerListDetector extends DetectorBase {
         }
         const fileToEdit = path.join(workspaceFolder, "neo-servers.json");
         if (!fs.existsSync(fileToEdit)) {
-          fs.writeFileSync(
-            fileToEdit,
-            JSON.stringify(DEFAULT_FILE, undefined, 2)
-          );
+          fs.writeFileSync(fileToEdit, JSONC.stringify(DEFAULT_FILE));
         }
         await vscode.window.showTextDocument(vscode.Uri.file(fileToEdit));
       }

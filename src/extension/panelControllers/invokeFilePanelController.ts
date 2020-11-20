@@ -129,7 +129,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     edit.replace(
       this.document.uri,
       new vscode.Range(0, 0, this.document.lineCount, 0),
-      JSON.stringify(newFileContents, undefined, 2)
+      JSONC.stringify(newFileContents)
     );
     await vscode.workspace.applyEdit(edit);
   }
@@ -323,7 +323,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       `.temp.${path.basename(invokeFilePath)}`
     );
     try {
-      fs.writeFileSync(tempFile, JSON.stringify([fragment]));
+      fs.writeFileSync(tempFile, JSONC.stringify([fragment]));
       await this.runFile(tempFile);
     } catch (e) {
       console.warn(

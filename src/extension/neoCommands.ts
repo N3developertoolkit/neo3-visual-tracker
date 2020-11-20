@@ -122,7 +122,7 @@ export default class NeoCommands {
         "Could not encrypt the wallet using the supplied password"
       );
     }
-    const walletJson = JSON.stringify(wallet.export(), undefined, 2);
+    const walletJson = JSONC.stringify(wallet.export());
     const safeWalletName = walletName.replace(/[^-_.a-z0-9]/gi, "-");
     let filename = `${safeWalletName}.neo-wallet.json`;
     let i = 0;
@@ -291,7 +291,7 @@ export default class NeoCommands {
       )
     );
     const buildTaskLabel = tasksJson.tasks[tasksJson.tasks.length - 1].label;
-    fs.writeFileSync(tasksJsonPath, JSON.stringify(tasksJson, undefined, 2));
+    fs.writeFileSync(tasksJsonPath, JSONC.stringify(tasksJson));
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const tasks = await vscode.tasks.fetchTasks();
     const buildTask = tasks.filter((_) => _.name === buildTaskLabel)[0];
