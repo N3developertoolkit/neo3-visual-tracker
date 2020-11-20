@@ -1,7 +1,8 @@
 import * as childProcess from "child_process";
-import * as path from "path";
 import * as vscode from "vscode";
 import * as which from "which";
+
+import posixPath from "../posixPath";
 
 type Command =
   | "checkpoint"
@@ -20,7 +21,7 @@ export default class NeoExpress {
   private readonly dotnetPath: string;
 
   constructor(private readonly context: vscode.ExtensionContext) {
-    this.binaryPath = path.join(
+    this.binaryPath = posixPath(
       this.context.extensionPath,
       "deps",
       "nxp",

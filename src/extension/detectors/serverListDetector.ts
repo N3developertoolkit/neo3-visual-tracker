@@ -1,12 +1,12 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
-import * as path from "path";
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../ioHelpers";
 import JSONC from "../JSONC";
+import posixPath from "../posixPath";
 
 const LOG_PREFIX = "[ServerListDetector]";
 
@@ -64,8 +64,8 @@ export default class ServerListDetector extends DetectorBase {
       );
       await vscode.window.showTextDocument(vscode.Uri.file(fileToEdit));
     } else {
-      const workspaceFolders = vscode.workspace.workspaceFolders?.map(
-        (_) => _.uri.fsPath
+      const workspaceFolders = vscode.workspace.workspaceFolders?.map((_) =>
+        posixPath(_.uri.fsPath)
       );
       if (!workspaceFolders?.length) {
         vscode.window.showErrorMessage(
@@ -79,7 +79,7 @@ export default class ServerListDetector extends DetectorBase {
             ...workspaceFolders
           );
         }
-        const fileToEdit = path.join(workspaceFolder, "neo-servers.json");
+        const fileToEdit = posixPath(workspaceFolder, "neo-servers.json");
         if (!fs.existsSync(fileToEdit)) {
           fs.writeFileSync(fileToEdit, JSONC.stringify(DEFAULT_FILE));
         }

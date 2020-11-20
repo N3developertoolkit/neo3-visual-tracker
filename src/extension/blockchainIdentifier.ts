@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import BlockchainType from "./blockchainType";
 import IoHelpers from "./ioHelpers";
 import JSONC from "./JSONC";
+import posixPath from "./posixPath";
 
 const LOG_PREFIX = "[BlockchainIdentifier]";
 
@@ -132,7 +133,7 @@ export default class BlockchainIdentifier {
       );
       treeItem.contextValue = this.blockchainType;
       treeItem.iconPath = vscode.Uri.file(
-        path.join(
+        posixPath(
           this.extensionPath,
           "resources",
           `blockchain-${this.blockchainType}.svg`

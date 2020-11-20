@@ -1,6 +1,8 @@
 import * as path from "path";
 import * as vscode from "vscode";
 
+import posixPath from "./posixPath";
+
 export default class IoHelpers {
   static async choosePassword(
     prompt: string,
@@ -87,7 +89,7 @@ export default class IoHelpers {
       canSelectFiles: false,
     });
     if (selections && selections.length) {
-      return selections[0].fsPath;
+      return posixPath(selections[0].fsPath);
     } else {
       return undefined;
     }
@@ -101,13 +103,14 @@ export default class IoHelpers {
   ): Promise<string | undefined> {
     const filters: any = {};
     filters[fileTypeDescription] = [fileTypeExtension];
-    return (
+    const result = (
       await vscode.window.showSaveDialog({
         defaultUri,
         filters,
         saveLabel: verb,
       })
     )?.fsPath;
+    return result ? posixPath(result) : result;
   }
 
   static async yesNo(question: string): Promise<boolean> {

@@ -1,8 +1,8 @@
 import * as fs from "fs";
-import * as path from "path";
 import * as vscode from "vscode";
 
 import ControllerRequest from "../../shared/messages/controllerRequest";
+import posixPath from "../posixPath";
 import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
 
@@ -49,7 +49,7 @@ export default abstract class PanelControllerBase<
       context.subscriptions
     );
     (panel as any).iconPath = vscode.Uri.file(
-      path.join(context.extensionPath, "resources", "neo-logo.png")
+      posixPath(context.extensionPath, "resources", "neo-logo.png")
     );
     panel.webview.onDidReceiveMessage(
       this.recieveRequest,
@@ -64,14 +64,14 @@ export default abstract class PanelControllerBase<
     };
     panel.webview.html = fs
       .readFileSync(
-        path.join(context.extensionPath, "dist", "panel", "index.html")
+        posixPath(context.extensionPath, "dist", "panel", "index.html")
       )
       .toString()
       .replace(
         "[BASE_HREF]",
         panel.webview
           .asWebviewUri(
-            vscode.Uri.file(path.join(context.extensionPath, "dist", "panel"))
+            vscode.Uri.file(posixPath(context.extensionPath, "dist", "panel"))
           )
           .toString() + "/"
       );

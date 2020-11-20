@@ -12,6 +12,7 @@ import IoHelpers from "../ioHelpers";
 import JSONC from "../JSONC";
 import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
+import posixPath from "../posixPath";
 import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
@@ -173,7 +174,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     result.contractPaths = { ...result.contractPaths };
     result.contractHashes = { ...result.contractHashes };
 
-    const baseHref = path.dirname(this.document.uri.fsPath);
+    const baseHref = posixPath(path.dirname(this.document.uri.fsPath));
     for (const hash of Object.keys(data.contractPaths)) {
       const contractPaths = [...data.contractPaths[hash]];
       for (const contractPath of contractPaths) {
@@ -234,7 +235,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
     } catch {
       this.updateViewState({
-        errorText: `There was an error reading ${this.document.uri.fsPath}`,
+        errorText: `There was an error reading ${posixPath(
+          this.document.uri.fsPath
+        )}`,
       });
       return;
     }
@@ -352,7 +355,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
 
   private async runFragment(fragment: any) {
     const invokeFilePath = this.document.uri.fsPath;
-    const tempFile = path.join(
+    const tempFile = posixPath(
       path.dirname(invokeFilePath),
       `.temp.${path.basename(invokeFilePath)}`
     );

@@ -8,6 +8,7 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./detectors/contractDetector";
 import IoHelpers from "./ioHelpers";
 import JSONC from "./JSONC";
+import posixPath from "./posixPath";
 import WalletDetector from "./detectors/walletDetector";
 
 export default class NeoCommands {
@@ -93,7 +94,7 @@ export default class NeoCommands {
       );
       return;
     }
-    const walletFilesFolder = path.join(workspaceFolder, "wallets");
+    const walletFilesFolder = posixPath(workspaceFolder, "wallets");
     if (!fs.existsSync(walletFilesFolder)) {
       fs.mkdirSync(walletFilesFolder);
     }
@@ -124,17 +125,20 @@ export default class NeoCommands {
     }
     const walletJson = JSONC.stringify(wallet.export());
     const safeWalletName = walletName.replace(/[^-_.a-z0-9]/gi, "-");
-    let filename = `${safeWalletName}.neo-wallet.json`;
-    let i = 0;
-    while (fs.existsSync(path.join(walletFilesFolder, filename))) {
-      i++;
-      filename = `${safeWalletName} (${i}).neo-wallet.json`;
-    }
-    fs.writeFileSync(path.join(walletFilesFolder, filename), walletJson);
-    vscode.commands.executeCommand(
-      "vscode.open",
-      vscode.Uri.file(path.join(walletFilesFolder, filename))
+    let filename = posixPath(
+      walletFilesFolder,
+      `${safeWalletName}.neo-wallet.json`
     );
+    let i = 0;
+    while (fs.existsSync(filename)) {
+      i++;
+      filename = posixPath(
+        walletFilesFolder,
+        `${safeWalletName} (${i}).neo-wallet.json`
+      );
+    }
+    fs.writeFileSync(filename, walletJson);
+    vscode.commands.executeCommand("vscode.open", vscode.Uri.file(filename));
   }
 
   static async invokeContract(
@@ -153,21 +157,21 @@ export default class NeoCommands {
       );
       return;
     }
-    const invokeFilesFolder = path.join(workspaceFolder, "invoke-files");
+    const invokeFilesFolder = posixPath(workspaceFolder, "invoke-files");
     if (!fs.existsSync(invokeFilesFolder)) {
       fs.mkdirSync(invokeFilesFolder);
     }
-    let filename = "Untitled.neo-invoke.json";
+    let filename = posixPath(invokeFilesFolder, "Untitled.neo-invoke.json");
     let i = 0;
-    while (fs.existsSync(path.join(invokeFilesFolder, filename))) {
+    while (fs.existsSync(filename)) {
       i++;
-      filename = `Untitled (${i}).neo-invoke.json`;
+      filename = posixPath(
+        invokeFilesFolder,
+        `Untitled (${i}).neo-invoke.json`
+      );
     }
-    fs.writeFileSync(path.join(invokeFilesFolder, filename), "[{}]");
-    vscode.commands.executeCommand(
-      "vscode.open",
-      vscode.Uri.file(path.join(invokeFilesFolder, filename))
-    );
+    fs.writeFileSync(filename, "[{}]");
+    vscode.commands.executeCommand("vscode.open", vscode.Uri.file(filename));
   }
 
   static async newContract(context: vscode.ExtensionContext) {
@@ -195,10 +199,10 @@ export default class NeoCommands {
       );
       return;
     }
-    const dotVsCodeFolderPath = path.join(workspaceFolder, ".vscode");
-    const tasksJsonPath = path.join(dotVsCodeFolderPath, "tasks.json");
-    const contractPath = path.join(workspaceFolder, contractName);
-    const templatePath = path.join(
+    const dotVsCodeFolderPath = posixPath(workspaceFolder, ".vscode");
+    const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
+    const contractPath = posixPath(workspaceFolder, contractName);
+    const templatePath = posixPath(
       context.extensionPath,
       "resources",
       "new-contract"
@@ -218,8 +222,8 @@ export default class NeoCommands {
         .replace(/\$_NAMESPACENAME_\$/g, `${contractName}`);
     const doCopy = (srcFile: string) => {
       const dstFile = doSubstitutions(srcFile);
-      const dstFileAbsolute = path.join(contractPath, dstFile);
-      const srcFileAbsolute = path.join(
+      const dstFileAbsolute = posixPath(contractPath, dstFile);
+      const srcFileAbsolute = posixPath(
         templatePath,
         `${srcFile}.template.txt`
       );
@@ -230,15 +234,15 @@ export default class NeoCommands {
       );
     };
     fs.mkdirSync(contractPath);
-    fs.mkdirSync(path.join(contractPath, ".config"));
+    fs.mkdirSync(posixPath(contractPath, ".config"));
     doCopy("$_CLASSNAME_$.cs");
     doCopy("$_CLASSNAME_$.csproj");
     doCopy("Directory.Build.targets");
     doCopy("nuget.config");
-    doCopy(path.join(".config", "dotnet-tools.json"));
+    doCopy(posixPath(".config", "dotnet-tools.json"));
     await vscode.window.showTextDocument(
       await vscode.workspace.openTextDocument(
-        path.join(contractPath, `${contractName}Contract.cs`)
+        posixPath(contractPath, `${contractName}Contract.cs`)
       )
     );
 
@@ -305,6 +309,6 @@ export default class NeoCommands {
     if (!workspaceFolders || !workspaceFolders.length) {
       return null;
     }
-    return workspaceFolders[0].uri.fsPath;
+    return posixPath(workspaceFolders[0].uri.fsPath);
   }
 }
