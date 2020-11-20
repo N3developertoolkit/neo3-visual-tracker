@@ -24,6 +24,19 @@ export default class JSONC {
     );
   }
 
+  static extractComments(json: string) {
+    const comments: string[] = [];
+    jsoncParser.visit(
+      json,
+      {
+        onComment: (offset, length) =>
+          comments.push(json.substr(offset, length)),
+      },
+      PARSE_OPTIONS
+    );
+    return comments;
+  }
+
   static parse(input: string): any {
     const errors: jsoncParser.ParseError[] = [];
     const result = jsoncParser.parse(input, errors, PARSE_OPTIONS);

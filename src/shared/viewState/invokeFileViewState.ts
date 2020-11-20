@@ -4,16 +4,17 @@ import RecentTransaction from "../recentTransaction";
 type InvokeFileViewState = {
   view: "invokeFile";
   panelTitle: string;
+  autoCompleteData: AutoCompleteData;
+  collapseTransactions: boolean;
+  comments: string[];
   fileContents: {
     contract?: string;
     operation?: string;
     args?: (string | number)[];
   }[];
-  fileContentsJson: string;
-  autoCompleteData: AutoCompleteData;
   errorText: string;
+  fileContentsJson: string;
   recentTransactions: RecentTransaction[];
-  collapseTransactions: boolean;
   selectedTransactionId: string | null;
 };
 

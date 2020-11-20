@@ -36,12 +36,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       {
         view: "invokeFile",
         panelTitle: "Invoke File Editor",
+        autoCompleteData: autoComplete.data,
+        collapseTransactions: true,
+        comments: [],
+        errorText: "",
         fileContents: [],
         fileContentsJson: "[]",
-        autoCompleteData: autoComplete.data,
-        errorText: "",
         recentTransactions: [],
-        collapseTransactions: true,
         selectedTransactionId: null,
       },
       context,
@@ -220,6 +221,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         this.updateViewState({
           fileContents,
           fileContentsJson,
+          comments: JSONC.extractComments(fileContentsJson),
           errorText: "",
         });
       } catch {
