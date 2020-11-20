@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 
 import Dialog from "../Dialog";
 import DropTarget from "../DropTarget";
@@ -61,7 +61,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         }}
       >
         {viewState.fileContents.map((_, i) => (
-          <>
+          <Fragment key={JSON.stringify(_)}>
             <DropTarget i={i} onDrop={moveStep} dragActive={dragActive} />
             <InvocationStep
               i={i}
@@ -82,7 +82,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
                 })
               }
             />
-          </>
+          </Fragment>
         ))}
         <DropTarget
           i={viewState.fileContents.length}

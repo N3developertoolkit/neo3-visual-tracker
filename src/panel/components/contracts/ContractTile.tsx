@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { ContractAbiJson } from "@cityofzion/neon-core/lib/sc";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
@@ -79,11 +79,11 @@ export default function ContractTile({
           }}
         >
           {methods.map((_) => (
-            <>
+            <Fragment key={_}>
               <span key={_} style={methodStyle}>
                 {_}
               </span>{" "}
-            </>
+            </Fragment>
           ))}
         </div>
       )}
