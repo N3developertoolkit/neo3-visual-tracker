@@ -64,6 +64,8 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           <Fragment key={i}>
             <DropTarget i={i} onDrop={moveStep} dragActive={dragActive} />
             <InvocationStep
+              isPartOfDiffView={viewState.isPartOfDiffView}
+              isReadOnly={viewState.isReadOnly}
               i={i}
               forceFocus={i === 0 && !_.contract && !_.operation && !_.args}
               contract={_.contract}
@@ -100,58 +102,74 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
             ))}
           </div>
         )}
-        <div style={{ textAlign: "center" }}>
-          <NavButton onClick={() => postMessage({ addStep: true })}>
-            Add step
-          </NavButton>{" "}
-          <NavButton onClick={() => postMessage({ runAll: true })}>
-            Run all steps
-          </NavButton>
-        </div>
+        {!viewState.isReadOnly && (
+          <div style={{ textAlign: "center" }}>
+            <NavButton onClick={() => postMessage({ addStep: true })}>
+              Add step
+            </NavButton>{" "}
+            {!viewState.isPartOfDiffView && (
+              <NavButton onClick={() => postMessage({ runAll: true })}>
+                Run all steps
+              </NavButton>
+            )}
+          </div>
+        )}
       </div>
-      <div
-        style={{
-          flex: "0 0",
-          borderLeft: "1px solid var(--vscode-panel-border)",
-          cursor: "pointer",
-          backgroundColor: "var(--vscode-panel-background)",
-        }}
-        onClick={() => postMessage({ toggleTransactions: true })}
-      >
+      {viewState.isPartOfDiffView && (
         <div
           style={{
-            width: 35,
-            textAlign: "center",
-            marginTop: 10,
-            paddingTop: 10,
-            paddingBottom: 14,
-            borderRight: viewState.collapseTransactions
-              ? undefined
-              : "1px solid var(--vscode-panelTitle-activeBorder)",
+            flex: "0 0",
+            borderLeft: "1px solid var(--vscode-panel-border)",
           }}
-        >
-          {viewState.collapseTransactions ? "<" : ">"}
-        </div>
-      </div>
-      {!viewState.collapseTransactions && (
-        <div
-          style={{
-            flex: "1 1",
-            overflow: "auto",
-            padding: 10,
-            paddingLeft: 15,
-            paddingTop: 15,
-            backgroundColor: "var(--vscode-panel-background)",
-          }}
-        >
-          <TransactionList
-            transactions={viewState.recentTransactions}
-            selectedTransactionId={viewState.selectedTransactionId}
-            onSelectTransaction={(txid) =>
-              postMessage({ selectTransaction: { txid } })
-            }
-          />
-        </div>
+        ></div>
+      )}
+      {!viewState.isPartOfDiffView && (
+        <>
+          <div
+            style={{
+              flex: "0 0",
+              borderLeft: "1px solid var(--vscode-panel-border)",
+              cursor: "pointer",
+              backgroundColor: "var(--vscode-panel-background)",
+            }}
+            onClick={() => postMessage({ toggleTransactions: true })}
+          >
+            <div
+              style={{
+                width: 35,
+                textAlign: "center",
+                marginTop: 10,
+                paddingTop: 10,
+                paddingBottom: 14,
+                borderRight: viewState.collapseTransactions
+                  ? undefined
+                  : "1px solid var(--vscode-panelTitle-activeBorder)",
+              }}
+            >
+              {viewState.collapseTransactions ? "<" : ">"}
+            </div>
+          </div>
+          {!viewState.collapseTransactions && (
+            <div
+              style={{
+                flex: "1 1",
+                overflow: "auto",
+                padding: 10,
+                paddingLeft: 15,
+                paddingTop: 15,
+                backgroundColor: "var(--vscode-panel-background)",
+              }}
+            >
+              <TransactionList
+                transactions={viewState.recentTransactions}
+                selectedTransactionId={viewState.selectedTransactionId}
+                onSelectTransaction={(txid) =>
+                  postMessage({ selectTransaction: { txid } })
+                }
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

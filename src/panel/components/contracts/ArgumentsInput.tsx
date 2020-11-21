@@ -4,18 +4,20 @@ import { ContractParameterDefinitionJson } from "@cityofzion/neon-core/lib/sc";
 import ArgumentInput from "./ArgumentInput";
 
 type Props = {
-  style?: React.CSSProperties;
   args: (string | number)[];
-  parameterDefinitions?: ContractParameterDefinitionJson[];
   autoSuggestListId: string;
+  isReadOnly: boolean;
+  parameterDefinitions?: ContractParameterDefinitionJson[];
+  style?: React.CSSProperties;
   setArguments: (newArguments: (string | number)[]) => void;
 };
 
 export default function ArgumentsInput({
-  style,
   args,
-  parameterDefinitions,
   autoSuggestListId,
+  isReadOnly,
+  parameterDefinitions,
+  style,
   setArguments,
 }: Props) {
   while (args.length && !args[args.length - 1]) {
@@ -33,11 +35,12 @@ export default function ArgumentsInput({
       )}
       {args.map((_, i) => (
         <ArgumentInput
+          arg={_}
+          autoSuggestListId={autoSuggestListId}
+          isReadOnly={isReadOnly}
           key={`${i}_${_}`}
           name={(parameterDefinitions || [])[i]?.name || `Argument #${i + 1}`}
           type={(parameterDefinitions || [])[i]?.type}
-          arg={_}
-          autoSuggestListId={autoSuggestListId}
           onUpdate={(arg: string | number) =>
             setArguments(
               args
@@ -51,9 +54,10 @@ export default function ArgumentsInput({
       ))}
       {!parameterDefinitions && (
         <ArgumentInput
+          autoSuggestListId={autoSuggestListId}
+          isReadOnly={isReadOnly}
           key={args.length}
           name={`Argument #${args.length + 1}`}
-          autoSuggestListId={autoSuggestListId}
           onUpdate={(arg: string | number) =>
             setArguments(arg ? [...args, arg] : [...args])
           }

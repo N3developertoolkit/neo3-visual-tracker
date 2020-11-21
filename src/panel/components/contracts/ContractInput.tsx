@@ -4,18 +4,22 @@ import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
 
 type Props = {
-  style?: React.CSSProperties;
-  contract?: string;
   autoCompleteData: AutoCompleteData;
+  contract?: string;
   forceFocus?: boolean;
+  isPartOfDiffView: boolean;
+  isReadOnly: boolean;
+  style?: React.CSSProperties;
   setContract: (newValue: string) => void;
 };
 
 export default function ContractInput({
-  style,
-  contract,
   autoCompleteData,
+  contract,
   forceFocus,
+  isPartOfDiffView,
+  isReadOnly,
+  style,
   setContract,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -81,6 +85,7 @@ export default function ContractInput({
         style={inputStyle}
         type="text"
         value={contract}
+        disabled={isReadOnly}
         onChange={(e) => setContract(e.target.value)}
         onFocus={() => setHasFocus(true)}
         onBlur={() => setHasFocus(false)}
@@ -104,7 +109,7 @@ export default function ContractInput({
         </div>
       )}
       <div style={descriptionStyle}>{title}</div>
-      {!!aka.length && (
+      {!isPartOfDiffView && !!aka.length && (
         <div style={akaStyle}>
           <div>This contract can also be referred to as:</div>
           <ul style={{ marginTop: 0 }}>

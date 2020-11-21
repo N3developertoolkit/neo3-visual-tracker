@@ -3,18 +3,20 @@ import React, { useState } from "react";
 import NeoType from "./NeoType";
 
 type Props = {
-  name: string;
-  type?: string | number;
   arg?: string | number;
   autoSuggestListId: string;
+  isReadOnly: boolean;
+  name: string;
+  type?: string | number;
   onUpdate: (newArgument: string | number) => void;
 };
 
 export default function ArgumentInput({
-  name,
-  type,
   arg,
   autoSuggestListId,
+  isReadOnly,
+  name,
+  type,
   onUpdate,
 }: Props) {
   const [value, setValue] = useState(`${arg || ""}`);
@@ -49,18 +51,19 @@ export default function ArgumentInput({
         </small>
       </div>
       <input
+        disabled={isReadOnly}
+        list={autoSuggestListId}
         style={inputStyle}
         type="text"
         value={value}
-        list={autoSuggestListId}
+        onBlur={(e) => onUpdate(coerceType(e.target.value))}
+        onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
           if (e.metaKey) {
             // User may be about to save
             onUpdate(coerceType(value));
           }
         }}
-        onChange={(e) => setValue(e.target.value)}
-        onBlur={(e) => onUpdate(coerceType(e.target.value))}
       />
     </div>
   );

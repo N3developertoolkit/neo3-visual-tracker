@@ -4,16 +4,18 @@ import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
 import OperationTile from "./OperationTile";
 
 type Props = {
-  style?: React.CSSProperties;
+  isReadOnly: boolean;
   operation?: string;
   operations: ContractMethodDefinitionJson[];
+  style?: React.CSSProperties;
   setOperation: (newValue: string) => void;
 };
 
 export default function OperationInput({
-  style,
+  isReadOnly,
   operation,
   operations,
+  style,
   setOperation,
 }: Props) {
   const [hasFocus, setHasFocus] = useState(false);
@@ -47,6 +49,7 @@ export default function OperationInput({
         <strong>Operation:</strong>
       </div>
       <input
+        disabled={isReadOnly}
         style={inputStyle}
         type="text"
         value={operation}

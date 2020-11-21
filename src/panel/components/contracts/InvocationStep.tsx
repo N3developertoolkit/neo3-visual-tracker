@@ -15,6 +15,8 @@ type Props = {
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
   forceFocus?: boolean;
+  isPartOfDiffView: boolean;
+  isReadOnly: boolean;
   onDelete: () => void;
   onRun: () => void;
   onDragStart: () => void;
@@ -34,6 +36,8 @@ export default function InvocationStep({
   autoCompleteData,
   argumentSuggestionListId,
   forceFocus,
+  isPartOfDiffView,
+  isReadOnly,
   onDelete,
   onRun,
   onDragStart,
@@ -50,12 +54,16 @@ export default function InvocationStep({
   }
   return (
     <div
-      draggable
-      onDragStart={(e) => {
-        e.dataTransfer.setData("InvocationStep", `${i}`);
-        onDragStart();
-      }}
-      onDragEnd={onDragEnd}
+      draggable={!isReadOnly}
+      onDragStart={
+        isReadOnly
+          ? undefined
+          : (e) => {
+              e.dataTransfer.setData("InvocationStep", `${i}`);
+              onDragStart();
+            }
+      }
+      onDragEnd={isReadOnly ? undefined : onDragEnd}
       style={{
         backgroundColor: "var(--vscode-editorWidget-background)",
         color: "var(--vscode-editorWidget-foreground)",
@@ -64,41 +72,59 @@ export default function InvocationStep({
         marginLeft: 10,
         marginRight: 10,
         padding: 15,
-        cursor: "move",
+        cursor: isReadOnly ? undefined : "move",
       }}
     >
       <ContractInput
-        style={{ marginBottom: 10 }}
-        contract={contract}
         autoCompleteData={autoCompleteData}
+        contract={contract}
         forceFocus={forceFocus}
+        isPartOfDiffView={isPartOfDiffView}
+        isReadOnly={isReadOnly}
+        style={{ marginBottom: 10 }}
         setContract={(newContract: string) =>
           onUpdate(newContract, operation, args)
         }
       />
       <OperationInput
-        style={{ marginBottom: 10 }}
+        isReadOnly={isReadOnly}
         operations={operations}
         operation={operation}
+        style={{ marginBottom: 10 }}
         setOperation={(newOperation: string) =>
           onUpdate(contract, newOperation, args)
         }
       />
       <ArgumentsInput
-        style={{ marginBottom: 10 }}
+        args={args || []}
+        autoSuggestListId={argumentSuggestionListId}
+        isReadOnly={isReadOnly}
         parameterDefinitions={
           operations.find((_) => _.name === operation)?.parameters
         }
-        args={args || []}
-        autoSuggestListId={argumentSuggestionListId}
+        style={{ marginBottom: 10 }}
         setArguments={(newArguments: (string | number)[]) =>
           onUpdate(contract, operation, newArguments)
         }
       />
-      <div style={{ textAlign: "right" }}>
-        <NavButton onClick={onDelete}>Delete this step</NavButton>{" "}
-        <NavButton onClick={onRun}>Run this step</NavButton>
-      </div>
+      {(!isReadOnly || isPartOfDiffView) && (
+        <div style={{ textAlign: "right" }}>
+          <NavButton
+            onClick={onDelete}
+            disabled={isReadOnly}
+            style={{
+              visibility: isPartOfDiffView && isReadOnly ? "hidden" : undefined,
+            }}
+          >
+            Delete this step
+          </NavButton>{" "}
+          {!isPartOfDiffView && (
+            <NavButton onClick={onRun} disabled={isReadOnly}>
+              Run this step
+            </NavButton>
+          )}
+        </div>
+      )}
     </div>
   );
 }
