@@ -27,6 +27,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
 
   constructor(
     context: vscode.ExtensionContext,
+    public isPartOfDiffView: boolean,
+    isReadOnly: boolean,
     private readonly neoExpress: NeoExpress,
     private readonly document: vscode.TextDocument,
     private readonly activeConnection: ActiveConnection,
@@ -43,6 +45,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         errorText: "",
         fileContents: [],
         fileContentsJson: "[]",
+        isPartOfDiffView,
+        isReadOnly,
         recentTransactions: [],
         selectedTransactionId: null,
       },
@@ -281,6 +285,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     this.updateViewState({
       autoCompleteData,
       recentTransactions,
+      isPartOfDiffView: this.isPartOfDiffView,
     });
   }
 

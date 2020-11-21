@@ -7,13 +7,15 @@ type InvokeFileViewState = {
   autoCompleteData: AutoCompleteData;
   collapseTransactions: boolean;
   comments: string[];
+  errorText: string;
   fileContents: {
     contract?: string;
     operation?: string;
     args?: (string | number)[];
   }[];
-  errorText: string;
   fileContentsJson: string;
+  isPartOfDiffView: boolean;
+  isReadOnly: boolean;
   recentTransactions: RecentTransaction[];
   selectedTransactionId: string | null;
 };
