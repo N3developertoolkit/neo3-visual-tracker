@@ -2,7 +2,7 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
-import BlockchainsTreeDataProvider from "./providers/blockchainsTreeDataProvider";
+import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./util/ioHelpers";
 
 const LOG_PREFIX = "[ActiveConnection]";

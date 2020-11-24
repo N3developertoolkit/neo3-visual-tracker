@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
-import BlockchainsTreeDataProvider from "../providers/blockchainsTreeDataProvider";
+import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
 import ContractDetector from "../fileDetectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import PanelControllerBase from "./panelControllerBase";
