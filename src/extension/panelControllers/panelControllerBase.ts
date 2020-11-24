@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 
 import ControllerRequest from "../../shared/messages/controllerRequest";
-import posixPath from "../posixPath";
+import posixPath from "../util/posixPath";
 import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
 

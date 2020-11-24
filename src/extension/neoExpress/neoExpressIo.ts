@@ -1,7 +1,7 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
-import JSONC from "../JSONC";
+import JSONC from "../util/JSONC";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressIo]";

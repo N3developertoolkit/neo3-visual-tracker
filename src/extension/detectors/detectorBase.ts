@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import posixPath from "../posixPath";
+import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[DetectorBase]";
 

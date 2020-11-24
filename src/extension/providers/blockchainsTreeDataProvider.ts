@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainType from "../blockchainType";
-import IoHelpers from "../ioHelpers";
+import IoHelpers from "../util/ioHelpers";
 import NeoExpressDetector from "../detectors/neoExpressDetector";
 import ServerListDetector from "../detectors/serverListDetector";
 

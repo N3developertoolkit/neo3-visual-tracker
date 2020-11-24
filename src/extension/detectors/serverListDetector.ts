@@ -4,9 +4,9 @@ import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
-import IoHelpers from "../ioHelpers";
-import JSONC from "../JSONC";
-import posixPath from "../posixPath";
+import IoHelpers from "../util/ioHelpers";
+import JSONC from "../util/JSONC";
+import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[ServerListDetector]";
 

@@ -2,7 +2,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import fs from "fs";
 
 import ActiveConnection from "../activeConnection";
-import JSONC from "../JSONC";
+import JSONC from "../util/JSONC";
 import DetectorBase from "./detectorBase";
 
 const LOG_PREFIX = "[ContractDetector]";

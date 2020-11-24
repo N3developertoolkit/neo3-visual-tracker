@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
-import IoHelpers from "../ioHelpers";
+import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";

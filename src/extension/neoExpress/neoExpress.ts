@@ -2,7 +2,7 @@ import * as childProcess from "child_process";
 import * as vscode from "vscode";
 import * as which from "which";
 
-import posixPath from "../posixPath";
+import posixPath from "../util/posixPath";
 
 type Command =
   | "checkpoint"

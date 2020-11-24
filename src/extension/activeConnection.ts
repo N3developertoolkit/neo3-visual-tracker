@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainsTreeDataProvider from "./providers/blockchainsTreeDataProvider";
-import IoHelpers from "./ioHelpers";
+import IoHelpers from "./util/ioHelpers";
 
 const LOG_PREFIX = "[ActiveConnection]";
 const PREFIX = "NEO:";

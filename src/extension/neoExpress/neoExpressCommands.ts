@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import ContractDetector from "../detectors/contractDetector";
-import IoHelpers from "../ioHelpers";
+import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "./neoExpress";
 import NeoExpressInstanceManager from "./neoExpressInstanceManager";
 import TrackerPanelController from "../panelControllers/trackerPanelController";

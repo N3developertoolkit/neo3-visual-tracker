@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
 
-import JSONC from "./JSONC";
+import JSONC from "./util/JSONC";
 
 const LOG_PREFIX = "[Wallet]";
 

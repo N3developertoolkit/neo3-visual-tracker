@@ -3,9 +3,9 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import BlockchainType from "./blockchainType";
-import IoHelpers from "./ioHelpers";
-import JSONC from "./JSONC";
-import posixPath from "./posixPath";
+import IoHelpers from "./util/ioHelpers";
+import JSONC from "./util/JSONC";
+import posixPath from "./util/posixPath";
 
 const LOG_PREFIX = "[BlockchainIdentifier]";
 

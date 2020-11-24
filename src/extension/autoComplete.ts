@@ -6,10 +6,10 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
 import ContractDetector from "./detectors/contractDetector";
-import JSONC from "./JSONC";
+import JSONC from "./util/JSONC";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
-import dedupeAndSort from "./dedupeAndSort";
+import dedupeAndSort from "./util/dedupeAndSort";
 import WalletDetector from "./detectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";

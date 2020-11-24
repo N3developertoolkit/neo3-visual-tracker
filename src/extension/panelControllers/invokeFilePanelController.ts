@@ -5,14 +5,14 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import AutoCompleteData from "../../shared/autoCompleteData";
-import dedupeAndSort from "../dedupeAndSort";
+import dedupeAndSort from "../util/dedupeAndSort";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
-import IoHelpers from "../ioHelpers";
-import JSONC from "../JSONC";
+import IoHelpers from "../util/ioHelpers";
+import JSONC from "../util/JSONC";
 import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
-import posixPath from "../posixPath";
+import posixPath from "../util/posixPath";
 import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
