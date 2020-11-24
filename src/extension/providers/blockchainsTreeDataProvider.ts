@@ -3,8 +3,8 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainType from "../blockchainType";
 import IoHelpers from "../util/ioHelpers";
-import NeoExpressDetector from "../detectors/neoExpressDetector";
-import ServerListDetector from "../detectors/serverListDetector";
+import NeoExpressDetector from "../fileDetectors/neoExpressDetector";
+import ServerListDetector from "../fileDetectors/serverListDetector";
 
 const LOG_PREFIX = "[BlockchainsTreeDataProvider]";
 

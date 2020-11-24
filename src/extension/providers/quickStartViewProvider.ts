@@ -2,10 +2,10 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainsTreeDataProvider from "./blockchainsTreeDataProvider";
-import ContractDetector from "../detectors/contractDetector";
+import ContractDetector from "../fileDetectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import QuickStartPanelController from "../panelControllers/quickStartPanelController";
-import WalletDetector from "../detectors/walletDetector";
+import WalletDetector from "../fileDetectors/walletDetector";
 
 export default class QuickStartViewProvider
   implements vscode.WebviewViewProvider {

@@ -5,12 +5,12 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
-import ContractDetector from "./detectors/contractDetector";
+import ContractDetector from "./fileDetectors/contractDetector";
 import JSONC from "./util/JSONC";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
 import dedupeAndSort from "./util/dedupeAndSort";
-import WalletDetector from "./detectors/walletDetector";
+import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
 const REFRESH_INTERVAL_MS = 1000 * 5;

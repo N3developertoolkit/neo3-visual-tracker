@@ -5,17 +5,17 @@ import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./providers/blockchainsTreeDataProvider";
-import ContractDetector from "./detectors/contractDetector";
-import NeoCommands from "./neoCommands";
+import ContractDetector from "./fileDetectors/contractDetector";
+import NeoCommands from "./commands/neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
-import NeoExpressCommands from "./neoExpress/neoExpressCommands";
-import NeoExpressDetector from "./detectors/neoExpressDetector";
+import NeoExpressCommands from "./commands/neoExpressCommands";
+import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
 import NeoInvokeFileEditorProvider from "./providers/neoInvokeFileEditorProvider";
 import QuickStartViewProvider from "./providers/quickStartViewProvider";
-import ServerListDetector from "./detectors/serverListDetector";
-import TrackerCommands from "./trackerCommands";
-import WalletDetector from "./detectors/walletDetector";
+import ServerListDetector from "./fileDetectors/serverListDetector";
+import TrackerCommands from "./commands/trackerCommands";
+import WalletDetector from "./fileDetectors/walletDetector";
 
 function registerBlockchainInstanceCommand(
   context: vscode.ExtensionContext,

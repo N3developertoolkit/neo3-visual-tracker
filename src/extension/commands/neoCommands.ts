@@ -3,13 +3,13 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as path from "path";
 import * as vscode from "vscode";
 
-import ActiveConnection from "./activeConnection";
-import BlockchainIdentifier from "./blockchainIdentifier";
-import ContractDetector from "./detectors/contractDetector";
-import IoHelpers from "./util/ioHelpers";
-import JSONC from "./util/JSONC";
-import posixPath from "./util/posixPath";
-import WalletDetector from "./detectors/walletDetector";
+import ActiveConnection from "../activeConnection";
+import BlockchainIdentifier from "../blockchainIdentifier";
+import ContractDetector from "../fileDetectors/contractDetector";
+import IoHelpers from "../util/ioHelpers";
+import JSONC from "../util/JSONC";
+import posixPath from "../util/posixPath";
+import WalletDetector from "../fileDetectors/walletDetector";
 
 export default class NeoCommands {
   static async contractDeploy(

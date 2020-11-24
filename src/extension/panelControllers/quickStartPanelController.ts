@@ -2,12 +2,12 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainsTreeDataProvider from "../providers/blockchainsTreeDataProvider";
-import ContractDetector from "../detectors/contractDetector";
+import ContractDetector from "../fileDetectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import PanelControllerBase from "./panelControllerBase";
 import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
-import WalletDetector from "../detectors/walletDetector";
+import WalletDetector from "../fileDetectors/walletDetector";
 
 const LOG_PREFIX = "[QuickStartPanelController]";
 

@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
-import ContractDetector from "../detectors/contractDetector";
+import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
-import NeoExpress from "./neoExpress";
-import NeoExpressInstanceManager from "./neoExpressInstanceManager";
+import NeoExpress from "../neoExpress/neoExpress";
+import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
 
 export default class NeoExpressCommands {
