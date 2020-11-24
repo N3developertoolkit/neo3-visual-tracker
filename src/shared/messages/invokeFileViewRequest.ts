@@ -14,6 +14,7 @@ type InvokeFileViewRequest = {
     operation?: string;
     args?: (string | number)[];
   };
+  updateJson?: string;
 };
 
 export default InvokeFileViewRequest;

@@ -20,8 +20,30 @@ export default function InvokeFileInteractiveEditor({
   const [dragActive, setDragActive] = useState(false);
   if (!!viewState.errorText) {
     return (
-      <Dialog onClose={() => postMessage({ close: true })}>
-        {viewState.errorText}
+      <Dialog
+        onClose={() => postMessage({ toggleJsonMode: true })}
+        text="Switch to JSON editor"
+      >
+        <h2>There was a problem parsing this file.</h2>
+        <p>
+          This file could not be parsed as a{" "}
+          <span style={{ fontFamily: "monospace" }}>.neo-invoke.json</span>{" "}
+          file. To continue editing the file, you will need to switch to the
+          JSON editor.
+        </p>
+        <p>
+          Once the JSON syntax error has been resolved, you can switch back and
+          edit the file interactively.
+        </p>
+        <p
+          style={{
+            fontFamily: "monospace",
+            fontSize: "0.8rem",
+            color: "var(--vscode-errorForeground)",
+          }}
+        >
+          {viewState.errorText}
+        </p>
       </Dialog>
     );
   }

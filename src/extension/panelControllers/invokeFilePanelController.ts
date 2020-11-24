@@ -71,8 +71,62 @@ export default class InvokeFilePanelController extends PanelControllerBase<
   }
 
   protected async onRequest(request: InvokeFileViewRequest) {
+    if (request.addStep) {
+      await this.applyEdit(
+        JSONC.editJsonString(
+          this.viewState.fileContentsJson,
+          [this.viewState.fileContents.length],
+          {
+            contract: "",
+            operation: "",
+          }
+        )
+      );
+    }
     if (request.close) {
       this.panel.dispose();
+    }
+    if (request.deleteStep) {
+      await this.applyEdit(
+        JSONC.editJsonString(
+          this.viewState.fileContentsJson,
+          [request.deleteStep.i],
+          undefined
+        )
+      );
+    }
+    if (request.moveStep) {
+      let { from, to } = request.moveStep;
+      const fromStep = this.viewState.fileContents[from];
+      const toStep = this.viewState.fileContents[to];
+      await this.applyEdit(
+        JSONC.editJsonString(
+          JSONC.editJsonString(this.viewState.fileContentsJson, [to], fromStep),
+          [from],
+          toStep
+        )
+      );
+    }
+    if (request.runAll) {
+      await this.runFile(this.document.uri.fsPath);
+    }
+    if (request.runStep) {
+      await this.runFragment(this.viewState.fileContents[request.runStep.i]);
+    }
+    if (request.selectTransaction) {
+      this.updateViewState({
+        selectedTransactionId: request.selectTransaction.txid,
+      });
+    }
+    if (request.toggleTransactions) {
+      this.updateViewState({
+        collapseTransactions: !this.viewState.collapseTransactions,
+      });
+    }
+    if (request.toggleJsonMode) {
+      this.updateViewState({
+        jsonMode: !this.viewState.jsonMode,
+      });
     }
     if (request.update !== undefined) {
       let updatedJson = JSONC.editJsonString(
@@ -108,62 +162,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             );
           }
         }
+        await this.applyEdit(updatedJson);
       }
-      await this.applyEdit(updatedJson);
     }
-    if (request.addStep) {
-      await this.applyEdit(
-        JSONC.editJsonString(
-          this.viewState.fileContentsJson,
-          [this.viewState.fileContents.length],
-          {
-            contract: "",
-            operation: "",
-          }
-        )
-      );
-    }
-    if (request.deleteStep) {
-      await this.applyEdit(
-        JSONC.editJsonString(
-          this.viewState.fileContentsJson,
-          [request.deleteStep.i],
-          undefined
-        )
-      );
-    }
-    if (request.moveStep) {
-      let { from, to } = request.moveStep;
-      const fromStep = this.viewState.fileContents[from];
-      const toStep = this.viewState.fileContents[to];
-      await this.applyEdit(
-        JSONC.editJsonString(
-          JSONC.editJsonString(this.viewState.fileContentsJson, [to], fromStep),
-          [from],
-          toStep
-        )
-      );
-    }
-    if (request.runAll) {
-      await this.runFile(this.document.uri.fsPath);
-    }
-    if (request.runStep) {
-      await this.runFragment(this.viewState.fileContents[request.runStep.i]);
-    }
-    if (request.toggleTransactions) {
-      this.updateViewState({
-        collapseTransactions: !this.viewState.collapseTransactions,
-      });
-    }
-    if (request.selectTransaction) {
-      this.updateViewState({
-        selectedTransactionId: request.selectTransaction.txid,
-      });
-    }
-    if (request.toggleJsonMode) {
-      this.updateViewState({
-        jsonMode: !this.viewState.jsonMode,
-      });
+    if (request.updateJson !== undefined) {
+      await this.applyEdit(request.updateJson);
     }
   }
 
@@ -235,11 +238,10 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           comments: JSONC.extractComments(fileContentsJson),
           errorText: "",
         });
-      } catch {
+      } catch (e) {
         this.updateViewState({
-          errorText: `There was a problem parsing "${path.basename(
-            this.document.uri.fsPath
-          )}". Try opening the file using the built-in editor and confirm that it contains valid JSON.`,
+          errorText: e.message || "Unknown error",
+          fileContentsJson,
         });
         return;
       }

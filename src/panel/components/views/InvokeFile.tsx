@@ -20,13 +20,20 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
         height: "calc(100% - 1px)",
         maxHeight: "calc(100% - 1px)",
         borderTop: "1px solid var(--vscode-panel-border)",
+        backgroundColor: "var(--vscode-editor-background)",
+        color: "var(--vscode-editor-foreground)",
       }}
     >
       <div style={{ flex: "2 0", overflow: "auto" }}>
         {viewState.jsonMode && (
           <InvokeFileJsonEditor
-            postMessage={postMessage}
-            viewState={viewState}
+            fileContentsJson={viewState.fileContentsJson}
+            isReadOnly={viewState.isReadOnly}
+            onUpdate={
+              viewState.isReadOnly
+                ? undefined
+                : (updateJson) => postMessage({ updateJson })
+            }
           />
         )}
         {!viewState.jsonMode && (

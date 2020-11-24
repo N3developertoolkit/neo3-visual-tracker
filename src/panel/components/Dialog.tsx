@@ -4,10 +4,12 @@ import NavButton from "./NavButton";
 
 type Props = {
   children: any;
+  text?: string;
   onClose: () => void;
 };
 
-export default function Dialog({ children, onClose }: Props) {
+export default function Dialog({ children, text, onClose }: Props) {
+  text = text || "Close";
   return (
     <div
       style={{
@@ -48,7 +50,7 @@ export default function Dialog({ children, onClose }: Props) {
       >
         <div>{children}</div>
         <div>
-          <NavButton onClick={onClose}>Close</NavButton>
+          <NavButton onClick={onClose}>{text}</NavButton>
         </div>
       </div>
     </div>
