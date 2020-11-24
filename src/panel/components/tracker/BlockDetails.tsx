@@ -53,7 +53,10 @@ export default function BlockDetails({
       )}
       {!!block.witnesses &&
         block.witnesses.map((witness) => (
-          <MetadataBadge title="Witness">
+          <MetadataBadge
+            title="Witness"
+            key={`${witness.invocation}-${witness.verification}`}
+          >
             <div>
               <strong>
                 <small>Invocation</small>
