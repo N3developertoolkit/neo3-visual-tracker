@@ -53,7 +53,7 @@ export default function InvokeFile({ viewState, postMessage }: Props) {
           fontSize: "0.8rem",
         }}
       >
-        {viewState.jsonMode ? "JSON mode" : "Editor mode"} ({" "}
+        {viewState.jsonMode ? "JSON editor mode" : "Interactive mode"} ({" "}
         <span
           style={{ cursor: "pointer", textDecoration: "underline" }}
           onClick={() => postMessage({ toggleJsonMode: true })}
