@@ -111,7 +111,8 @@ export async function activate(context: vscode.ExtensionContext) {
         NeoExpressCommands.create(
           context,
           neoExpress,
-          neoExpressInstanceManager
+          neoExpressInstanceManager,
+          autoComplete
         )
     )
   );
@@ -229,7 +230,8 @@ export async function activate(context: vscode.ExtensionContext) {
     undefined,
     blockchainsTreeDataProvider,
     "neo3-visual-devtracker.tracker.openTracker",
-    (identifier) => TrackerCommands.openTracker(context, identifier)
+    (identifier) =>
+      TrackerCommands.openTracker(context, identifier, autoComplete)
   );
 }
 

@@ -4,6 +4,7 @@ import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../../shared/addressInfo";
+import AutoComplete from "../autoComplete";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -29,19 +30,24 @@ export default class TrackerPanelController extends PanelControllerBase<
   private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
 
-  constructor(context: vscode.ExtensionContext, rpcUrl: string) {
+  constructor(
+    context: vscode.ExtensionContext,
+    rpcUrl: string,
+    private readonly autoComplete: AutoComplete
+  ) {
     super(
       {
         view: "tracker",
         panelTitle: `Block Explorer: ${rpcUrl}`,
+        autoCompleteData: autoComplete.data,
         blockHeight: 0,
-        paginationDistance: PAGINATION_DISTANCE,
         blocks: [],
+        paginationDistance: PAGINATION_DISTANCE,
+        searchHistory: [],
         selectedAddress: null,
         selectedTransaction: null,
         selectedBlock: null,
         startAtBlock: -1,
-        searchHistory: [],
       },
       context
     );
@@ -299,6 +305,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         console.log(LOG_PREFIX, "New block available", blockHeight);
         await this.onNewBlockAvailable(blockHeight);
       }
+      await this.updateViewState({ autoCompleteData: this.autoComplete.data });
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
