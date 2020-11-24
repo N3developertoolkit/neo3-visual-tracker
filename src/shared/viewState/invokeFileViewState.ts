@@ -16,6 +16,7 @@ type InvokeFileViewState = {
   fileContentsJson: string;
   isPartOfDiffView: boolean;
   isReadOnly: boolean;
+  jsonMode: boolean;
   recentTransactions: RecentTransaction[];
   selectedTransactionId: string | null;
 };

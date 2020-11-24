@@ -1,0 +1,177 @@
+import React, { Fragment, useState } from "react";
+
+import Dialog from "../Dialog";
+import DropTarget from "../DropTarget";
+import InvocationStep from "./InvocationStep";
+import InvokeFileViewRequest from "../../../shared/messages/invokeFileViewRequest";
+import InvokeFileViewState from "../../../shared/viewState/invokeFileViewState";
+import NavButton from "../NavButton";
+import TransactionList from "./TransactionList";
+
+type Props = {
+  viewState: InvokeFileViewState;
+  postMessage: (message: InvokeFileViewRequest) => void;
+};
+
+export default function InvokeFileInteractiveEditor({
+  viewState,
+  postMessage,
+}: Props) {
+  const [dragActive, setDragActive] = useState(false);
+  if (!!viewState.errorText) {
+    return (
+      <Dialog onClose={() => postMessage({ close: true })}>
+        {viewState.errorText}
+      </Dialog>
+    );
+  }
+  const argumentSuggestionListId = `list_${Math.random()}`;
+  const moveStep = (from: number, to: number) =>
+    postMessage({ moveStep: { from, to } });
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "stretch",
+        height: "100%",
+      }}
+    >
+      <datalist id={argumentSuggestionListId}>
+        {Object.keys(viewState.autoCompleteData.wellKnownAddresses).map(
+          (addressName) => (
+            <option key={`name_${addressName}`} value={`@${addressName}`} />
+          )
+        )}
+        {Object.values(viewState.autoCompleteData.wellKnownAddresses).map(
+          (address) => (
+            <option key={`adr1_${address}`} value={`@${address}`} />
+          )
+        )}
+        {Object.keys(viewState.autoCompleteData.addressNames).map((address) => (
+          <option key={`adr2_${address}`} value={`@${address}`} />
+        ))}
+      </datalist>
+      <div
+        style={{
+          flex: "2 0",
+          overflow: "auto",
+          backgroundColor: "var(--vscode-editor-background)",
+          color: "var(--vscode-editor-foreground)",
+          padding: 10,
+        }}
+      >
+        {viewState.fileContents.map((_, i) => (
+          <Fragment key={i}>
+            <DropTarget i={i} onDrop={moveStep} dragActive={dragActive} />
+            <InvocationStep
+              isPartOfDiffView={viewState.isPartOfDiffView}
+              isReadOnly={viewState.isReadOnly}
+              i={i}
+              forceFocus={i === 0 && !_.contract && !_.operation && !_.args}
+              contract={_.contract}
+              operation={_.operation}
+              args={_.args}
+              autoCompleteData={viewState.autoCompleteData}
+              argumentSuggestionListId={argumentSuggestionListId}
+              onDragStart={() => setDragActive(true)}
+              onDragEnd={() => setDragActive(false)}
+              onDelete={() => postMessage({ deleteStep: { i } })}
+              onRun={() => postMessage({ runStep: { i } })}
+              onUpdate={(contract, operation, args) =>
+                postMessage({
+                  update: { i, contract, operation, args },
+                })
+              }
+            />
+          </Fragment>
+        ))}
+        <DropTarget
+          i={viewState.fileContents.length}
+          onDrop={moveStep}
+          dragActive={dragActive}
+        />
+        {!!viewState.comments.length && (
+          <div style={{ textAlign: "center", margin: 10 }}>
+            <h4 style={{ margin: 0, marginBottom: 5 }}>Comments:</h4>
+            {viewState.comments.map((_) => (
+              <li key={_} style={{ marginBottom: 5 }}>
+                {_.replace(/\/\//g, "")
+                  .replace(/\/\*/g, "")
+                  .replace(/\*\//g, "")}
+              </li>
+            ))}
+          </div>
+        )}
+        {!viewState.isReadOnly && (
+          <div style={{ textAlign: "center" }}>
+            <NavButton onClick={() => postMessage({ addStep: true })}>
+              Add step
+            </NavButton>{" "}
+            {!viewState.isPartOfDiffView && (
+              <NavButton onClick={() => postMessage({ runAll: true })}>
+                Run all steps
+              </NavButton>
+            )}
+          </div>
+        )}
+      </div>
+      {viewState.isPartOfDiffView && (
+        <div
+          style={{
+            flex: "0 0",
+            borderLeft: "1px solid var(--vscode-panel-border)",
+          }}
+        ></div>
+      )}
+      {!viewState.isPartOfDiffView && (
+        <>
+          <div
+            style={{
+              flex: "0 0",
+              borderLeft: "1px solid var(--vscode-panel-border)",
+              cursor: "pointer",
+              backgroundColor: "var(--vscode-panel-background)",
+            }}
+            onClick={() => postMessage({ toggleTransactions: true })}
+          >
+            <div
+              style={{
+                width: 35,
+                textAlign: "center",
+                marginTop: 10,
+                paddingTop: 10,
+                paddingBottom: 14,
+                borderRight: viewState.collapseTransactions
+                  ? undefined
+                  : "1px solid var(--vscode-panelTitle-activeBorder)",
+              }}
+            >
+              {viewState.collapseTransactions ? "<" : ">"}
+            </div>
+          </div>
+          {!viewState.collapseTransactions && (
+            <div
+              style={{
+                flex: "1 1",
+                overflow: "auto",
+                padding: 10,
+                paddingLeft: 15,
+                paddingTop: 15,
+                backgroundColor: "var(--vscode-panel-background)",
+              }}
+            >
+              <TransactionList
+                transactions={viewState.recentTransactions}
+                selectedTransactionId={viewState.selectedTransactionId}
+                onSelectTransaction={(txid) =>
+                  postMessage({ selectTransaction: { txid } })
+                }
+              />
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}

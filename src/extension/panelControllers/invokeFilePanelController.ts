@@ -47,6 +47,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         fileContentsJson: "[]",
         isPartOfDiffView,
         isReadOnly,
+        jsonMode: false,
         recentTransactions: [],
         selectedTransactionId: null,
       },
@@ -157,6 +158,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     if (request.selectTransaction) {
       this.updateViewState({
         selectedTransactionId: request.selectTransaction.txid,
+      });
+    }
+    if (request.toggleJsonMode) {
+      this.updateViewState({
+        jsonMode: !this.viewState.jsonMode,
       });
     }
   }
