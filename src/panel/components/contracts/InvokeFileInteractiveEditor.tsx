@@ -184,6 +184,7 @@ export default function InvokeFileInteractiveEditor({
               }}
             >
               <TransactionList
+                autoCompleteData={viewState.autoCompleteData}
                 transactions={viewState.recentTransactions}
                 selectedTransactionId={viewState.selectedTransactionId}
                 onSelectTransaction={(txid) =>

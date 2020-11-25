@@ -1,17 +1,20 @@
 import React from "react";
 
+import AutoCompleteData from "../../../shared/autoCompleteData";
 import Dialog from "../Dialog";
 import Hash from "../Hash";
 import RecentTransaction from "../../../shared/recentTransaction";
 import TransactionDetails from "../tracker/TransactionDetails";
 
 type Props = {
+  autoCompleteData: AutoCompleteData;
   transactions: RecentTransaction[];
   selectedTransactionId: string | null;
   onSelectTransaction: (txid: string | null) => void;
 };
 
 export default function TransactionList({
+  autoCompleteData,
   transactions,
   selectedTransactionId,
   onSelectTransaction,
@@ -23,7 +26,10 @@ export default function TransactionList({
     <div>
       {!!selectedEntry?.tx && (
         <Dialog onClose={() => onSelectTransaction(null)}>
-          <TransactionDetails transaction={selectedEntry.tx} />
+          <TransactionDetails
+            transaction={selectedEntry.tx}
+            autoCompleteData={autoCompleteData}
+          />
         </Dialog>
       )}
       <div

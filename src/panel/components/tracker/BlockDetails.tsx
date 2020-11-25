@@ -2,6 +2,8 @@ import React from "react";
 import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
+import Address from "../Address";
+import AutoCompleteData from "../../../shared/autoCompleteData";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
 import Script from "./Script";
@@ -9,12 +11,14 @@ import Table from "../Table";
 import Time from "../Time";
 
 type Props = {
+  autoCompleteData: AutoCompleteData;
   block: Partial<BlockJson>;
   selectedTransactionHash?: string;
   selectTransaction: (txid: string) => void;
 };
 
 export default function BlockDetails({
+  autoCompleteData,
   block,
   selectedTransactionHash,
   selectTransaction,
@@ -91,7 +95,10 @@ export default function BlockDetails({
                 { content: <Hash hash={tx.hash || ""} /> },
                 {
                   content: !!tx.sender ? (
-                    <Hash hash={tx.sender} />
+                    <Address
+                      address={tx.sender}
+                      addressNames={autoCompleteData.addressNames}
+                    />
                   ) : (
                     <>Unknown sender</>
                   ),

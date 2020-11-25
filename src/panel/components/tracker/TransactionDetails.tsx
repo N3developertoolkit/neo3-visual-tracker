@@ -1,17 +1,20 @@
 import React from "react";
 import * as neonCore from "@cityofzion/neon-core";
 
+import AutoCompleteData from "../../../shared/autoCompleteData";
+import Address from "../Address";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
-import NavLink from "../NavLink";
 import Script from "./Script";
 
 type Props = {
+  autoCompleteData: AutoCompleteData;
   transaction: Partial<neonCore.tx.TransactionJson>;
   selectAddress?: (address: string) => void;
 };
 
 export default function TransactionDetails({
+  autoCompleteData,
   transaction,
   selectAddress,
 }: Props) {
@@ -29,20 +32,13 @@ export default function TransactionDetails({
           <Hash hash={transaction.hash} />
         </MetadataBadge>
       )}
-      {!!transaction.sender && !!selectAddress && (
+      {!!transaction.sender && (
         <MetadataBadge title="Sender">
-          <NavLink
-            onClick={() =>
-              !!transaction.sender && selectAddress(transaction.sender)
-            }
-          >
-            <Hash hash={transaction.sender} />
-          </NavLink>
-        </MetadataBadge>
-      )}
-      {!!transaction.sender && !selectAddress && (
-        <MetadataBadge title="Sender">
-          <Hash hash={transaction.sender} />
+          <Address
+            address={transaction.sender}
+            addressNames={autoCompleteData.addressNames}
+            onClick={selectAddress}
+          />
         </MetadataBadge>
       )}
       {!!transaction.signers?.length &&

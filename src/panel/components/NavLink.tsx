@@ -3,10 +3,11 @@ import React, { useState } from "react";
 type Props = {
   children: JSX.Element | string;
   style?: React.CSSProperties;
+  title?: string;
   onClick: () => void;
 };
 
-export default function NavLink({ children, style, onClick }: Props) {
+export default function NavLink({ children, style, title, onClick }: Props) {
   const [hover, setHover] = useState(false);
   const linkStyle: React.CSSProperties = {
     color: hover
@@ -16,7 +17,7 @@ export default function NavLink({ children, style, onClick }: Props) {
     cursor: "pointer",
   };
   return (
-    <span style={style}>
+    <span style={style} title={title}>
       <span
         style={linkStyle}
         onClick={onClick}
