@@ -114,6 +114,18 @@ export default class BlockchainIdentifier {
           result[wallet.name] = wallet.accounts[0]["script-hash"];
         }
       }
+      for (const consensusNode of neoExpressConfig["consensus-nodes"]) {
+        if (consensusNode.wallet?.accounts) {
+          for (const account of consensusNode.wallet.accounts) {
+            if (
+              account.label === "MultiSigContract" &&
+              account["script-hash"]
+            ) {
+              result["genesis"] = account["script-hash"];
+            }
+          }
+        }
+      }
     } catch (e) {
       console.log(
         LOG_PREFIX,
