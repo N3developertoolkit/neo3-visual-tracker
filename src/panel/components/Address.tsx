@@ -20,7 +20,7 @@ export default function Address({ address, addressNames, onClick }: Props) {
     fontFamily: "monospace",
     wordBreak: "break-all",
   };
-  const title = names.length ? `${address}\n (${names.join(", ")})` : address;
+  const title = names?.length ? `${address}\n (${names.join(", ")})` : address;
   return !!onClick ? (
     <NavLink style={style} title={title} onClick={() => onClick(address)}>
       {primaryName}
