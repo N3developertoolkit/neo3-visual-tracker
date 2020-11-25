@@ -70,7 +70,10 @@ export default function TransactionDetails({
       {!!transaction.script && (
         <div style={{ width: "100%" }}>
           <MetadataBadge title="Script">
-            <Script script={transaction.script} />
+            <Script
+              contractNames={autoCompleteData.contractNames}
+              script={transaction.script}
+            />
           </MetadataBadge>
         </div>
       )}

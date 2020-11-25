@@ -66,14 +66,20 @@ export default function BlockDetails({
                 <small>Invocation</small>
               </strong>
               <br />
-              <Script script={witness.invocation} />
+              <Script
+                contractNames={autoCompleteData.contractNames}
+                script={witness.invocation}
+              />
             </div>
             <div style={{ marginTop: 4 }}>
               <strong>
                 <small>Verification</small>
               </strong>
               <br />
-              <Script script={witness.verification} />
+              <Script
+                contractNames={autoCompleteData.contractNames}
+                script={witness.verification}
+              />
             </div>
           </MetadataBadge>
         ))}

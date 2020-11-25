@@ -1,5 +1,6 @@
 import React from "react";
 
+import ContractNames from "../../../shared/contractNames";
 import disassembleScript from "./disassembleScript";
 
 const tryDisassemble = (script: string) => {
@@ -11,6 +12,7 @@ const tryDisassemble = (script: string) => {
 };
 
 type Props = {
+  contractNames: ContractNames;
   script: string;
 };
 
@@ -21,6 +23,7 @@ export default function Script({ script }: Props) {
   };
   script = tryDisassemble(script);
   if (script.indexOf("\n") !== -1) {
+    // TODO: Highlight known contracts referenced in script
     return (
       <span style={style}>
         {script.split("\n").map((_, i) => (
