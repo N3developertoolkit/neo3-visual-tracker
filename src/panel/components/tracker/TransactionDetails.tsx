@@ -44,7 +44,12 @@ export default function TransactionDetails({
       {!!transaction.signers?.length &&
         transaction.signers.map((signer, i) => (
           <MetadataBadge title="Signer" key={i}>
-            <Hash hash={signer.account} /> &mdash; {signer.scopes}
+            <Address
+              address={signer.account}
+              addressNames={autoCompleteData.addressNames}
+              onClick={selectAddress}
+            />{" "}
+            &mdash; {signer.scopes}
           </MetadataBadge>
         ))}
       {!!transaction.size && (
