@@ -67,5 +67,39 @@ export default function ScriptToken({
     }
   }
 
+  try {
+    const asText = Buffer.from(token, "hex")
+      .toString("ascii")
+      .replace(/\\n/g, " ")
+      .trim();
+    if (asText.length > 0) {
+      let printableAscii = true;
+      for (let i = 0; i < asText.length; i++) {
+        const c = asText.charCodeAt(i);
+        printableAscii = printableAscii && c >= 32 && c <= 126;
+      }
+      if (printableAscii) {
+        return (
+          <strong style={style} title={`Text:\n ${token}\n  ${asText}`}>
+            {token.length > 8 ? (
+              <>
+                {token.substring(0, 4)}..
+                {token.substring(token.length - 4)}
+              </>
+            ) : (
+              <>{token}</>
+            )}{" "}
+            ("
+            <i>
+              {asText.substring(0, 20)}
+              {asText.length > 20 ? "..." : ""}
+            </i>
+            ")
+          </strong>
+        );
+      }
+    }
+  } catch {}
+
   return <span style={style}>{token}</span>;
 }
