@@ -44,27 +44,30 @@ export default function ScriptToken({
     }
   }
 
-  for (const address of Object.keys(autoCompleteData.addressNames)) {
-    const scriptHash = neonCore.wallet
-      .getScriptHashFromAddress(address)
-      .match(/[a-f0-9]{2}/g)
-      ?.reverse()
-      .join("");
-    if (token === scriptHash) {
-      return (
-        <span style={style}>
-          <strong title={scriptHash}>
-            {scriptHash.substring(0, 4)}..
-            {scriptHash.substring(scriptHash.length - 4)}
-          </strong>{" "}
-          <Address
-            address={address}
-            addressNames={autoCompleteData.addressNames}
-            onClick={selectAddress}
-          />
-        </span>
+  if (token.length == 40) {
+    try {
+      const address = neonCore.wallet.getAddressFromScriptHash(
+        token
+          .match(/[a-f0-9]{2}/g)
+          ?.reverse()
+          .join("") || ""
       );
-    }
+      if (address.startsWith("N")) {
+        return (
+          <span style={style}>
+            <strong title={token}>
+              {token.substring(0, 4)}..
+              {token.substring(token.length - 4)}
+            </strong>{" "}
+            <Address
+              address={address}
+              addressNames={autoCompleteData.addressNames}
+              onClick={selectAddress}
+            />
+          </span>
+        );
+      }
+    } catch {}
   }
 
   try {
