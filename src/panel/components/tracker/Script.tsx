@@ -13,7 +13,11 @@ const tryDisassemble = (script: string) => {
 };
 
 const tokenizeScript = (script: string) => {
-  return script.split("\n").map((line) => line.trim().split(/\s+/g));
+  return script
+    .split("\n")
+    .map((_) => _.trim())
+    .filter((_) => _.length > 0)
+    .map((_) => _.split(/\s+/g));
 };
 type Props = {
   contractNames: ContractNames;

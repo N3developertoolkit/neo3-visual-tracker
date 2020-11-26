@@ -69,7 +69,7 @@ export default function TransactionDetails({
       )}
       {!!transaction.script && (
         <div style={{ width: "100%" }}>
-          <MetadataBadge title="Script">
+          <MetadataBadge grow title="Script">
             <Script
               contractNames={autoCompleteData.contractNames}
               script={transaction.script}
@@ -80,7 +80,7 @@ export default function TransactionDetails({
       {!!transaction.witnesses?.length &&
         transaction.witnesses.map((witness, i) => (
           <div style={{ width: "100%" }} key={i}>
-            <MetadataBadge title="Witness">
+            <MetadataBadge grow title="Witness">
               <div>
                 <strong>
                   <small>Invocation</small>

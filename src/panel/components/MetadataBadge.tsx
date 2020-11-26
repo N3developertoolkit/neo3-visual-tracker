@@ -1,11 +1,12 @@
 import React from "react";
 
 type Props = {
-  title: string;
   children: any;
+  grow?: boolean;
+  title: string;
 };
 
-export default function MetadataBadge({ title, children }: Props) {
+export default function MetadataBadge({ children, grow, title }: Props) {
   const style: React.CSSProperties = {
     textAlign: "right",
     margin: 5,
@@ -21,8 +22,8 @@ export default function MetadataBadge({ title, children }: Props) {
     color: "var(--vscode-badge-foreground)",
     borderRadius: "10px 0 0 10px",
     padding: 5,
-    maxHeight: "3em",
-    overflow: "auto",
+    maxHeight: grow ? undefined : "3em",
+    overflow: grow ? undefined : "auto",
   };
   return (
     <div style={style}>
