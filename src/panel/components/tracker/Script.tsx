@@ -1,6 +1,6 @@
 import React from "react";
 
-import ContractNames from "../../../shared/contractNames";
+import AutoCompleteData from "../../../shared/autoCompleteData";
 import disassembleScript from "./disassembleScript";
 import ScriptToken from "./ScriptToken";
 
@@ -19,12 +19,13 @@ const tokenizeScript = (script: string) => {
     .filter((_) => _.length > 0)
     .map((_) => _.split(/\s+/g));
 };
+
 type Props = {
-  contractNames: ContractNames;
+  autoCompleteData: AutoCompleteData;
   script: string;
 };
 
-export default function Script({ contractNames, script }: Props) {
+export default function Script({ autoCompleteData, script }: Props) {
   const style: React.CSSProperties = {
     fontFamily: "monospace",
     wordBreak: "break-all",
@@ -36,7 +37,7 @@ export default function Script({ contractNames, script }: Props) {
         <div key={`${i}.${lineTokens.join(".")}`}>
           {lineTokens.map((_, i) => (
             <ScriptToken
-              contractNames={contractNames}
+              autoCompleteData={autoCompleteData}
               key={`${i}.${_}`}
               token={_}
             />

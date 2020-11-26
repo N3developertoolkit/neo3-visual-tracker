@@ -67,7 +67,7 @@ export default function BlockDetails({
               </strong>
               <br />
               <Script
-                contractNames={autoCompleteData.contractNames}
+                autoCompleteData={autoCompleteData}
                 script={witness.invocation}
               />
             </div>
@@ -77,7 +77,7 @@ export default function BlockDetails({
               </strong>
               <br />
               <Script
-                contractNames={autoCompleteData.contractNames}
+                autoCompleteData={autoCompleteData}
                 script={witness.verification}
               />
             </div>

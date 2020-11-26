@@ -71,7 +71,7 @@ export default function TransactionDetails({
         <div style={{ width: "100%" }}>
           <MetadataBadge grow title="Script">
             <Script
-              contractNames={autoCompleteData.contractNames}
+              autoCompleteData={autoCompleteData}
               script={transaction.script}
             />
           </MetadataBadge>
