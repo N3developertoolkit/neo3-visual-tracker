@@ -30,7 +30,7 @@ export default function ScriptToken({ contractNames, token }: Props) {
         >
           {contractHashRaw.substring(0, 4)}..
           {contractHashRaw.substring(contractHashRaw.length - 4)} (
-          <i>#{firstName}</i>)
+          <i>{firstName}</i>)
         </strong>
       );
     }
