@@ -2,6 +2,7 @@ import React from "react";
 
 import ContractNames from "../../../shared/contractNames";
 import disassembleScript from "./disassembleScript";
+import ScriptToken from "./ScriptToken";
 
 const tryDisassemble = (script: string) => {
   try {
@@ -11,27 +12,33 @@ const tryDisassemble = (script: string) => {
   }
 };
 
+const tokenizeScript = (script: string) => {
+  return script.split("\n").map((line) => line.trim().split(/\s+/g));
+};
 type Props = {
   contractNames: ContractNames;
   script: string;
 };
 
-export default function Script({ script }: Props) {
+export default function Script({ contractNames, script }: Props) {
   const style: React.CSSProperties = {
     fontFamily: "monospace",
     wordBreak: "break-all",
   };
-  script = tryDisassemble(script);
-  if (script.indexOf("\n") !== -1) {
-    // TODO: Highlight known contracts referenced in script
-    return (
-      <span style={style}>
-        {script.split("\n").map((_, i) => (
-          <div key={`${i}_${_}`}>{_}</div>
-        ))}
-      </span>
-    );
-  } else {
-    return <span style={style}>{script}</span>;
-  }
+  const scriptLines = tokenizeScript(tryDisassemble(script));
+  return (
+    <div style={style}>
+      {scriptLines.map((lineTokens, i) => (
+        <div key={`${i}.${lineTokens.join(".")}`}>
+          {lineTokens.map((_, i) => (
+            <ScriptToken
+              contractNames={contractNames}
+              key={`${i}.${_}`}
+              token={_}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
 }
