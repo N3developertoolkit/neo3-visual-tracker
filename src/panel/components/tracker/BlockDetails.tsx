@@ -14,6 +14,7 @@ type Props = {
   autoCompleteData: AutoCompleteData;
   block: Partial<BlockJson>;
   selectedTransactionHash?: string;
+  selectAddress: (address: string) => void;
   selectTransaction: (txid: string) => void;
 };
 
@@ -21,6 +22,7 @@ export default function BlockDetails({
   autoCompleteData,
   block,
   selectedTransactionHash,
+  selectAddress,
   selectTransaction,
 }: Props) {
   return (
@@ -69,6 +71,7 @@ export default function BlockDetails({
               <Script
                 autoCompleteData={autoCompleteData}
                 script={witness.invocation}
+                selectAddress={selectAddress}
               />
             </div>
             <div style={{ marginTop: 4 }}>
@@ -79,6 +82,7 @@ export default function BlockDetails({
               <Script
                 autoCompleteData={autoCompleteData}
                 script={witness.verification}
+                selectAddress={selectAddress}
               />
             </div>
           </MetadataBadge>

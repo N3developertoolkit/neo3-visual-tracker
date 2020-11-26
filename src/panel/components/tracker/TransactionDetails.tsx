@@ -73,6 +73,7 @@ export default function TransactionDetails({
             <Script
               autoCompleteData={autoCompleteData}
               script={transaction.script}
+              selectAddress={selectAddress}
             />
           </MetadataBadge>
         </div>

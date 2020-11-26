@@ -92,6 +92,9 @@ export default function Tracker({ viewState, postMessage }: Props) {
                   autoCompleteData={viewState.autoCompleteData}
                   block={viewState.selectedBlock}
                   selectedTransactionHash={viewState.selectedTransaction?.hash}
+                  selectAddress={(selectAddress) =>
+                    postMessage({ selectAddress })
+                  }
                   selectTransaction={(txid) =>
                     postMessage({ selectTransaction: txid })
                   }

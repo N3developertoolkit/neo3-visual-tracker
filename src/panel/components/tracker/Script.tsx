@@ -23,9 +23,14 @@ const tokenizeScript = (script: string) => {
 type Props = {
   autoCompleteData: AutoCompleteData;
   script: string;
+  selectAddress?: (address: string) => void;
 };
 
-export default function Script({ autoCompleteData, script }: Props) {
+export default function Script({
+  autoCompleteData,
+  script,
+  selectAddress,
+}: Props) {
   const style: React.CSSProperties = {
     fontFamily: "monospace",
     wordBreak: "break-all",
@@ -40,6 +45,7 @@ export default function Script({ autoCompleteData, script }: Props) {
               autoCompleteData={autoCompleteData}
               key={`${i}.${_}`}
               token={_}
+              selectAddress={selectAddress}
             />
           ))}
         </div>

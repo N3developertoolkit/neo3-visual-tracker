@@ -1,14 +1,20 @@
 import React from "react";
 import * as neonCore from "@cityofzion/neon-core";
 
+import Address from "../Address";
 import AutoCompleteData from "../../../shared/autoCompleteData";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
   token: string;
+  selectAddress?: (address: string) => void;
 };
 
-export default function ScriptToken({ autoCompleteData, token }: Props) {
+export default function ScriptToken({
+  autoCompleteData,
+  token,
+  selectAddress,
+}: Props) {
   const style: React.CSSProperties = {
     marginRight: "1em",
   };
@@ -38,10 +44,7 @@ export default function ScriptToken({ autoCompleteData, token }: Props) {
     }
   }
 
-  const addresses = Object.keys(autoCompleteData.addressNames);
-  for (const address of addresses) {
-    const allNames = autoCompleteData.addressNames[address] || [];
-    const firstName = allNames[0] || "address";
+  for (const address of Object.keys(autoCompleteData.addressNames)) {
     const scriptHash = neonCore.wallet
       .getScriptHashFromAddress(address)
       .match(/[a-f0-9]{2}/g)
@@ -49,16 +52,18 @@ export default function ScriptToken({ autoCompleteData, token }: Props) {
       .join("");
     if (token === scriptHash) {
       return (
-        <strong
-          style={style}
-          title={`Address:\n ${address}\n  (${allNames.join(", ")})`}
-        >
-          {scriptHash.substring(0, 4)}..
-          {scriptHash.substring(scriptHash.length - 4)} (@<i>{firstName}</i>)
-        </strong>
+        <span style={style}>
+          <strong title={scriptHash}>
+            {scriptHash.substring(0, 4)}..
+            {scriptHash.substring(scriptHash.length - 4)}
+          </strong>{" "}
+          <Address
+            address={address}
+            addressNames={autoCompleteData.addressNames}
+            onClick={selectAddress}
+          />
+        </span>
       );
-    } else {
-      console.log(token, "!==", scriptHash);
     }
   }
 
