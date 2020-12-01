@@ -7,55 +7,85 @@ import Time from "../Time";
 
 type Props = {
   blocks: BlockJson[];
+  populatedBlocksFilterEnabled: boolean;
+  populatedBlocksFilterSupported: boolean;
   selectedBlock: BlockJson | null;
   selectBlock: (hash: string) => void;
+  togglePopulatedBlocksFilter: (enabled: boolean) => void;
 };
 
 export default function BlockList({
   blocks,
+  populatedBlocksFilterEnabled,
+  populatedBlocksFilterSupported,
   selectedBlock,
   selectBlock,
+  togglePopulatedBlocksFilter,
 }: Props) {
   const loadingStyle: React.CSSProperties = {
     textAlign: "center",
     padding: 30,
   };
   return (
-    <Table
-      headings={[
-        { content: <>Index</> },
-        { content: <>Time</> },
-        { content: <>Transactions</> },
-        { content: <>Hash</> },
-        { content: <>Size</> },
-      ]}
-      rows={
-        blocks.length
-          ? blocks.map((block) => ({
-              key: block.hash,
-              parity: block.index % 2 === 0,
-              onClick: () => selectBlock(block.hash),
-              cells: [
-                { content: <>{block.index}</> },
-                { content: <Time ts={block.time} /> },
-                { content: <>{block.tx.length}</> },
-                { content: <Hash hash={block.hash} /> },
-                { content: <>{block.size} bytes</> },
-              ],
-              selected: selectedBlock?.hash === block.hash,
-            }))
-          : [
-              {
-                key: "loading",
+    <>
+      {populatedBlocksFilterSupported && (
+        <div
+          style={{
+            fontSize: "1.05rem",
+            marginBottom: 5,
+            marginLeft: 10,
+            marginTop: 5,
+          }}
+        >
+          <label>
+            <input
+              type="checkbox"
+              checked={populatedBlocksFilterEnabled}
+              onChange={(e) => togglePopulatedBlocksFilter(e.target.checked)}
+              style={{ marginRight: 8 }}
+            />
+            Hide empty blocks
+          </label>
+        </div>
+      )}
+      <Table
+        headings={[
+          { content: <>Index</> },
+          { content: <>Time</> },
+          { content: <>Transactions</> },
+          { content: <>Hash</> },
+          { content: <>Size</> },
+        ]}
+        rows={
+          blocks.length
+            ? blocks.map((block, i) => ({
+                key: block.hash,
+                parity: (blocks[0].index + i) % 2 === 0,
+                onClick: () => selectBlock(block.hash),
                 cells: [
-                  {
-                    colSpan: 5,
-                    content: <span style={loadingStyle}>Loading&hellip;</span>,
-                  },
+                  { content: <>{block.index}</> },
+                  { content: <Time ts={block.time} /> },
+                  { content: <>{block.tx.length}</> },
+                  { content: <Hash hash={block.hash} /> },
+                  { content: <>{block.size} bytes</> },
                 ],
-              },
-            ]
-      }
-    />
+                selected: selectedBlock?.hash === block.hash,
+              }))
+            : [
+                {
+                  key: "loading",
+                  cells: [
+                    {
+                      colSpan: 5,
+                      content: (
+                        <span style={loadingStyle}>Loading&hellip;</span>
+                      ),
+                    },
+                  ],
+                },
+              ]
+        }
+      />
+    </>
   );
 }

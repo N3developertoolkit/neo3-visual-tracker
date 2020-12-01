@@ -126,8 +126,17 @@ export default function Tracker({ viewState, postMessage }: Props) {
           <div style={{ minHeight: "100vh" }}>
             <BlockList
               blocks={viewState.blocks}
+              populatedBlocksFilterEnabled={
+                viewState.populatedBlocksFilterEnabled
+              }
+              populatedBlocksFilterSupported={
+                viewState.populatedBlocksFilterSupported
+              }
               selectedBlock={viewState.selectedBlock}
               selectBlock={(hash) => postMessage({ selectBlock: hash })}
+              togglePopulatedBlocksFilter={(enabled) =>
+                postMessage({ togglePopulatedBlockFilter: { enabled } })
+              }
             />
           </div>
         </div>
