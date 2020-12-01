@@ -5,7 +5,7 @@ import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../../shared/addressInfo";
 import AutoComplete from "../autoComplete";
-import BlockchainMonitor from "../emptyBlockTracker";
+import BlockchainMonitor from "../blockchainMonitor";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
