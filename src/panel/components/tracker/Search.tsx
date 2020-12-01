@@ -45,10 +45,10 @@ export default function Search({ searchHistory, onSearch }: Props) {
       </datalist>
       <div
         style={{
+          paddingBottom: 3,
           paddingTop: 10,
           whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
+          overflow: "auto",
         }}
       >
         {searchHistory.map((_) => (
