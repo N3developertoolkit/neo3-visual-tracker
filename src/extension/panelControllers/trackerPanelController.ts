@@ -5,6 +5,7 @@ import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../../shared/addressInfo";
 import AutoComplete from "../autoComplete";
+import EmptyBlockTracker from "../emptyBlockTracker";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -27,6 +28,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private readonly blockchainId: Promise<string>;
   private readonly cachedBlocks: BlockJson[];
   private readonly cachedTransactions: TransactionJson[];
+  private readonly emptyBlockTracker: EmptyBlockTracker;
   private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
 
@@ -54,12 +56,15 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.cachedBlocks = [];
     this.cachedTransactions = [];
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
+    this.emptyBlockTracker = new EmptyBlockTracker(this.rpcClient);
     this.state = context.workspaceState;
     this.blockchainId = this.getBlock(0, false).then((_) => _.hash);
     this.refreshLoop();
   }
 
-  onClose() {}
+  onClose() {
+    this.emptyBlockTracker.dispose();
+  }
 
   protected async onRequest(request: TrackerViewRequest) {
     if (request.search) {
