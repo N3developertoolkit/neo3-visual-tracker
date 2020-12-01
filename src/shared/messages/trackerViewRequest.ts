@@ -4,6 +4,7 @@ type TrackerViewRequest = {
   selectTransaction?: string;
   setStartAtBlock?: number;
   search?: string;
+  togglePopulatedBlockFilter?: { enabled: boolean };
 };
 
 export default TrackerViewRequest;

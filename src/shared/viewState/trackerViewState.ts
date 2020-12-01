@@ -11,6 +11,8 @@ type TrackerViewState = {
   blockHeight: number;
   blocks: BlockJson[];
   paginationDistance: number;
+  populatedBlocksFilterEnabled: boolean;
+  populatedBlocksFilterSupported: boolean;
   searchHistory: string[];
   selectedAddress: AddressInfo | null;
   selectedBlock: BlockJson | null;

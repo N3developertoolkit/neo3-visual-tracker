@@ -45,6 +45,8 @@ export default class TrackerPanelController extends PanelControllerBase<
         blockHeight: 0,
         blocks: [],
         paginationDistance: PAGINATION_DISTANCE,
+        populatedBlocksFilterEnabled: false,
+        populatedBlocksFilterSupported: false,
         searchHistory: [],
         selectedAddress: null,
         selectedTransaction: null,
@@ -59,6 +61,9 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.emptyBlockTracker = new EmptyBlockTracker(this.rpcClient);
     this.state = context.workspaceState;
     this.blockchainId = this.getBlock(0, false).then((_) => _.hash);
+    this.emptyBlockTracker.onChange(
+      async () => await this.onNewEmptyBlockDataAvailable()
+    );
     this.refreshLoop();
   }
 
@@ -70,6 +75,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     if (request.search) {
       await this.resolveSearch(request);
     }
+
     if (request.selectAddress !== undefined) {
       if (request.selectAddress) {
         await this.updateViewState({
@@ -83,16 +89,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         });
       }
     }
-    if (request.setStartAtBlock !== undefined) {
-      await this.updateViewState({
-        startAtBlock: request.setStartAtBlock,
-        blocks: await this.getBlocks(
-          request.setStartAtBlock,
-          this.viewState.blockHeight
-        ),
-        searchHistory: await this.getSearchHistory(),
-      });
-    }
+
     if (request.selectBlock !== undefined) {
       if (request.selectBlock) {
         const selectedBlock = await this.getBlock(request.selectBlock, true);
@@ -109,6 +106,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         });
       }
     }
+
     if (request.selectTransaction !== undefined) {
       if (request.selectTransaction) {
         const selectedTransaction = await this.getTransaction(
@@ -129,6 +127,25 @@ export default class TrackerPanelController extends PanelControllerBase<
           searchHistory: await this.getSearchHistory(),
         });
       }
+    }
+
+    if (request.setStartAtBlock !== undefined) {
+      await this.updateViewState({
+        startAtBlock: request.setStartAtBlock,
+        blocks: await this.getBlocks(
+          request.setStartAtBlock,
+          this.viewState.blockHeight
+        ),
+        searchHistory: await this.getSearchHistory(),
+      });
+    }
+
+    if (request.togglePopulatedBlockFilter !== undefined) {
+      await this.updateViewState({
+        populatedBlocksFilterEnabled:
+          request.togglePopulatedBlockFilter.enabled,
+      });
+      await this.onNewEmptyBlockDataAvailable();
     }
   }
 
@@ -237,15 +254,19 @@ export default class TrackerPanelController extends PanelControllerBase<
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
     let newBlocks: Promise<BlockJson>[] = [];
-    startAtBlock =
+    let blockNumber =
       startAtBlock < 0 || startAtBlock >= blockHeight
         ? blockHeight - 1
         : startAtBlock;
-    for (let i = 0; i < BLOCKS_PER_PAGE; i++) {
-      const blockNumber = startAtBlock - i;
-      if (blockNumber >= 0) {
+    while (newBlocks.length < BLOCKS_PER_PAGE && blockNumber >= 0) {
+      if (
+        !this.viewState.populatedBlocksFilterEnabled ||
+        !this.viewState.populatedBlocksFilterSupported ||
+        this.emptyBlockTracker.isPopulated(blockNumber)
+      ) {
         newBlocks.push(this.getBlock(blockNumber, false));
       }
+      blockNumber--;
     }
     return Promise.all(newBlocks);
   }
@@ -290,6 +311,25 @@ export default class TrackerPanelController extends PanelControllerBase<
       await this.updateViewState({
         blockHeight,
         blocks: await this.getBlocks(-1, blockHeight),
+        searchHistory: await this.getSearchHistory(),
+      });
+    }
+  }
+
+  private async onNewEmptyBlockDataAvailable() {
+    if (this.viewState.startAtBlock >= 0) {
+      await this.updateViewState({
+        blocks: await this.getBlocks(
+          this.viewState.startAtBlock,
+          this.viewState.blockHeight
+        ),
+        populatedBlocksFilterSupported: this.emptyBlockTracker.isFilterAvailable(),
+        searchHistory: await this.getSearchHistory(),
+      });
+    } else {
+      await this.updateViewState({
+        blocks: await this.getBlocks(-1, this.viewState.blockHeight),
+        populatedBlocksFilterSupported: this.emptyBlockTracker.isFilterAvailable(),
         searchHistory: await this.getSearchHistory(),
       });
     }
