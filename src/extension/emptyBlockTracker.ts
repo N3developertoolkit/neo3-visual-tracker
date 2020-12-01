@@ -1,11 +1,16 @@
 import * as bitset from "bitset";
 import * as neonCore from "@cityofzion/neon-core";
+import * as vscode from "vscode";
 
 const LOG_PREFIX = "[EmptyBlockTracker]";
 const BLOCKS_PER_QUERY = 100;
 const REFRESH_INTERVAL_MS = 1000 * 5; // check for new blocks every 5 seconds
 
 export default class EmptyBlockTracker {
+  onChange: vscode.Event<void>;
+
+  private readonly onChangeEmitter: vscode.EventEmitter<void>;
+
   private disposed: boolean;
   private getPopulatedBlocksSuccess: boolean;
   private lastKnownBlockHeight: number;
@@ -20,11 +25,16 @@ export default class EmptyBlockTracker {
     this.populatedBlocks = new bitset.default();
     this.rpcId = 0;
     this.tryGetPopulatedBlocks = true;
+
+    this.onChangeEmitter = new vscode.EventEmitter<void>();
+    this.onChange = this.onChangeEmitter.event;
+
     this.refreshLoop();
   }
 
   dispose() {
     this.disposed = true;
+    this.onChangeEmitter.dispose();
   }
 
   isFilterAvailable() {
@@ -60,9 +70,11 @@ export default class EmptyBlockTracker {
       this.populatedBlocks = new bitset.default();
       this.tryGetPopulatedBlocks = true;
       this.getPopulatedBlocksSuccess = false;
+      this.onChangeEmitter.fire();
     }
 
     if (this.tryGetPopulatedBlocks) {
+      let changed = false;
       try {
         let start = blockHeight;
         while (start > this.lastKnownBlockHeight) {
@@ -76,9 +88,15 @@ export default class EmptyBlockTracker {
             id: this.rpcId++,
             jsonrpc: "2.0",
           })) as number[];
-          this.getPopulatedBlocksSuccess = true;
+          if (!this.getPopulatedBlocksSuccess) {
+            this.getPopulatedBlocksSuccess = true;
+            changed = true;
+          }
           for (const blockNumber of result) {
-            this.populatedBlocks.set(blockNumber);
+            if (!this.populatedBlocks.get(blockNumber)) {
+              this.populatedBlocks.set(blockNumber);
+              changed = true;
+            }
           }
           start = result.length ? result[result.length - 1] : 0;
         }
@@ -87,6 +105,10 @@ export default class EmptyBlockTracker {
           this.tryGetPopulatedBlocks = false;
         } else {
           throw e;
+        }
+      } finally {
+        if (changed) {
+          this.onChangeEmitter.fire();
         }
       }
     }
