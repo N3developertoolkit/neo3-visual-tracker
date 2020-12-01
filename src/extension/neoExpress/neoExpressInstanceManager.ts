@@ -115,7 +115,7 @@ export default class NeoExpressInstanceManager {
           terminal.dispose();
           while (!terminal.exitStatus) {
             console.log("Waiting for terminal to close...");
-            await new Promise((resolve) => setTimeout(resolve, 100));
+            await new Promise((resolve) => setTimeout(resolve, 500));
           }
         }
       }
