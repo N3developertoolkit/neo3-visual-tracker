@@ -2,11 +2,11 @@ import * as bitset from "bitset";
 import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
-const LOG_PREFIX = "[EmptyBlockTracker]";
+const LOG_PREFIX = "[BlockchainMonitor]";
 const BLOCKS_PER_QUERY = 100;
 const REFRESH_INTERVAL_MS = 1000 * 5; // check for new blocks every 5 seconds
 
-export default class EmptyBlockTracker {
+export default class BlockchainMonitor {
   onChange: vscode.Event<void>;
 
   private readonly onChangeEmitter: vscode.EventEmitter<void>;
