@@ -26,6 +26,7 @@ export default class BlockchainMonitor {
   private disposed: boolean;
   private getPopulatedBlocksSuccess: boolean;
   private lastKnownBlockHeight: number;
+  private lastKnownCacheId: string;
   private populatedBlocks: bitset.BitSet;
   private rpcId: number;
   private tryGetPopulatedBlocks: boolean;
@@ -36,6 +37,7 @@ export default class BlockchainMonitor {
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
     this.lastKnownBlockHeight = 0;
+    this.lastKnownCacheId = "";
     this.populatedBlocks = new bitset.default();
     this.rpcId = 0;
     this.tryGetPopulatedBlocks = true;
@@ -172,20 +174,6 @@ export default class BlockchainMonitor {
     const blockHeight = await this.rpcClient.getBlockCount();
     let fireChangeEvent = blockHeight !== this.lastKnownBlockHeight;
 
-    // TODO: More resilient way of detecting resets and checkpoint applications
-    if (
-      blockHeight !== this.lastKnownBlockHeight &&
-      blockHeight !== this.lastKnownBlockHeight + 1
-    ) {
-      console.log(LOG_PREFIX, "Potential blockchain reset; clearing cache");
-      this.populatedBlocks = new bitset.default();
-      this.tryGetPopulatedBlocks = true;
-      this.getPopulatedBlocksSuccess = false;
-      this.lastKnownBlockHeight = 0;
-      this.cachedBlocks = [];
-      this.cachedTransactions = [];
-    }
-
     if (this.tryGetPopulatedBlocks) {
       try {
         let start = blockHeight;
@@ -202,6 +190,20 @@ export default class BlockchainMonitor {
           })) as { blocks: number[]; cacheId: string };
           if (!this.getPopulatedBlocksSuccess) {
             this.getPopulatedBlocksSuccess = true;
+            fireChangeEvent = true;
+          }
+          if (result.cacheId !== this.lastKnownCacheId) {
+            console.log(
+              LOG_PREFIX,
+              "Potential blockchain reset; clearing cache"
+            );
+            this.populatedBlocks = new bitset.default();
+            this.tryGetPopulatedBlocks = true;
+            this.getPopulatedBlocksSuccess = false;
+            this.lastKnownBlockHeight = 0;
+            this.lastKnownCacheId = result.cacheId;
+            this.cachedBlocks = [];
+            this.cachedTransactions = [];
             fireChangeEvent = true;
           }
           for (const blockNumber of result.blocks) {
