@@ -199,18 +199,20 @@ export default class BlockchainMonitor {
             params: [count, start],
             id: this.rpcId++,
             jsonrpc: "2.0",
-          })) as number[];
+          })) as { blocks: number[]; cacheId: string };
           if (!this.getPopulatedBlocksSuccess) {
             this.getPopulatedBlocksSuccess = true;
             fireChangeEvent = true;
           }
-          for (const blockNumber of result) {
+          for (const blockNumber of result.blocks) {
             if (!this.populatedBlocks.get(blockNumber)) {
               this.populatedBlocks.set(blockNumber);
               fireChangeEvent = true;
             }
           }
-          start = result.length ? result[result.length - 1] : 0;
+          start = result.blocks.length
+            ? result.blocks[result.blocks.length - 1]
+            : 0;
         }
       } catch (e) {
         if (e.message?.indexOf("Method not found") !== -1) {
