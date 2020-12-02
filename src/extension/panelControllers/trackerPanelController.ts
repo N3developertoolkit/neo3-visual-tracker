@@ -10,24 +10,17 @@ import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 
-const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "[TrackerPanelController]";
 const PAGINATION_DISTANCE = 5;
-const REFRESH_INTERVAL_MS = 1000 * 2; // check for new blocks every 2 seconds
-const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
-const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
-const SLEEP_ON_ERROR_MS = 1000 * 3;
-const TRANSACTION_CACHE_SIZE = 1024;
+const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
   TrackerViewRequest
 > {
   private readonly blockchainId: Promise<string>;
-  private readonly cachedBlocks: BlockJson[];
-  private readonly cachedTransactions: TransactionJson[];
   private readonly blockchainMonitor: BlockchainMonitor;
   private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
@@ -55,15 +48,11 @@ export default class TrackerPanelController extends PanelControllerBase<
       },
       context
     );
-    this.cachedBlocks = [];
-    this.cachedTransactions = [];
+    this.state = context.workspaceState;
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.blockchainMonitor = new BlockchainMonitor(this.rpcClient);
-    this.state = context.workspaceState;
-    this.blockchainId = this.getBlock(0, false).then((_) => _.hash);
-    this.blockchainMonitor.onChange(
-      async () => await this.onNewEmptyBlockDataAvailable()
-    );
+    this.blockchainId = this.blockchainMonitor.getBlock(0).then((_) => _.hash);
+    this.blockchainMonitor.onChange(this.onBlockchainChange.bind(this));
     this.refreshLoop();
   }
 
@@ -92,7 +81,10 @@ export default class TrackerPanelController extends PanelControllerBase<
 
     if (request.selectBlock !== undefined) {
       if (request.selectBlock) {
-        const selectedBlock = await this.getBlock(request.selectBlock, true);
+        const selectedBlock = await this.blockchainMonitor.getBlock(
+          request.selectBlock
+        );
+        await this.addToSearchHistory(`${selectedBlock.index}`);
         await this.updateViewState({
           selectedBlock,
           selectedTransaction: null,
@@ -112,9 +104,8 @@ export default class TrackerPanelController extends PanelControllerBase<
         const selectedTransaction = await this.getTransaction(
           request.selectTransaction
         );
-        const selectedBlock = await this.getBlock(
-          (selectedTransaction as any).blockhash,
-          false
+        const selectedBlock = await this.blockchainMonitor.getBlock(
+          (selectedTransaction as any).blockhash
         );
         await this.updateViewState({
           selectedTransaction,
@@ -145,7 +136,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         populatedBlocksFilterEnabled:
           request.togglePopulatedBlockFilter.enabled,
       });
-      await this.onNewEmptyBlockDataAvailable();
+      await this.onBlockchainChange(this.viewState.blockHeight);
     }
   }
 
@@ -157,99 +148,9 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getAddress(address: string): Promise<AddressInfo> {
-    let retry = 0;
-    while (true) {
-      console.log(
-        LOG_PREFIX,
-        "Retrieving address",
-        address,
-        "- attempt",
-        retry + 1
-      );
-      try {
-        const result = {
-          address,
-          neoBalance: await this.getBalance(address, SCRIPTHASH_NEO),
-          gasBalance: await this.getBalance(address, SCRIPTHASH_GAS),
-        };
-        await this.addToSearchHistory(address);
-        return result;
-      } catch (e) {
-        console.warn(
-          LOG_PREFIX,
-          "Error retrieving address",
-          address,
-          e.message
-        );
-        await this.sleepBetweenRetries();
-      }
-    }
-  }
-
-  private async getBalance(address: string, assetScriptHash: string) {
-    const result: any = await this.rpcClient.query({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "invokefunction",
-      params: [
-        assetScriptHash,
-        "balanceOf",
-        [
-          {
-            type: "Hash160",
-            value: neonCore.wallet.getScriptHashFromAddress(address),
-          },
-        ],
-      ],
-    });
-    return parseInt((result.stack || [])[0]?.value || "0");
-  }
-
-  private async getBlock(
-    indexOrHash: string | number,
-    addToHistory: boolean
-  ): Promise<BlockJson> {
-    const cachedBlock = this.cachedBlocks.find(
-      (_) => _.index === indexOrHash || _.hash === indexOrHash
-    );
-    if (cachedBlock) {
-      if (addToHistory) {
-        this.addToSearchHistory(cachedBlock.index + "");
-      }
-      return cachedBlock;
-    }
-    let retry = 0;
-    while (true) {
-      console.log(
-        LOG_PREFIX,
-        "Retrieving block",
-        indexOrHash,
-        "- attempt",
-        retry++
-      );
-      try {
-        const block = await this.rpcClient.getBlock(indexOrHash, true);
-        // never cache head block
-        if (block.index < this.viewState.blockHeight - 1) {
-          if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
-            this.cachedBlocks.shift();
-          }
-          this.cachedBlocks.push(block);
-        }
-        if (addToHistory) {
-          this.addToSearchHistory(block.index + "");
-        }
-        return block;
-      } catch (e) {
-        console.warn(
-          LOG_PREFIX,
-          "Error retrieving block",
-          indexOrHash,
-          e.message
-        );
-        await this.sleepBetweenRetries();
-      }
-    }
+    const result = await this.blockchainMonitor.getAddress(address);
+    await this.addToSearchHistory(address);
+    return result;
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
@@ -262,9 +163,9 @@ export default class TrackerPanelController extends PanelControllerBase<
       if (
         !this.viewState.populatedBlocksFilterEnabled ||
         !this.viewState.populatedBlocksFilterSupported ||
-        this.blockchainMonitor.isPopulated(blockNumber)
+        this.blockchainMonitor.isBlockPopulated(blockNumber)
       ) {
-        newBlocks.push(this.getBlock(blockNumber, false));
+        newBlocks.push(this.blockchainMonitor.getBlock(blockNumber));
       }
       blockNumber--;
     }
@@ -276,62 +177,38 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getTransaction(hash: string): Promise<TransactionJson> {
-    const cachedTransaction = this.cachedTransactions.find(
-      (_) => _.hash === hash
-    );
-    if (cachedTransaction) {
-      this.addToSearchHistory(hash);
-      return cachedTransaction;
-    }
-    let retry = 0;
-    while (true) {
-      console.log(LOG_PREFIX, "Retrieving tx", hash, "- attempt", retry + 1);
-      try {
-        const transaction = await this.rpcClient.getRawTransaction(hash, true);
-        if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
-          this.cachedTransactions.shift();
-        }
-        this.cachedTransactions.push(transaction);
-        this.addToSearchHistory(hash);
-        return transaction;
-      } catch (e) {
-        console.warn(LOG_PREFIX, "Error retrieving tx", hash, e.message);
-        await this.sleepBetweenRetries();
+    const tx = await this.blockchainMonitor.getTransaction(hash);
+    await this.addToSearchHistory(hash);
+    return tx;
+  }
+
+  private async onBlockchainChange(blockHeight: number) {
+    try {
+      if (this.viewState.startAtBlock >= 0) {
+        await this.updateViewState({
+          blockHeight,
+          blocks: await this.getBlocks(
+            this.viewState.startAtBlock,
+            blockHeight
+          ),
+          populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
+          searchHistory: await this.getSearchHistory(),
+        });
+      } else {
+        await this.updateViewState({
+          blockHeight,
+          blocks: await this.getBlocks(-1, blockHeight),
+          populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
+          searchHistory: await this.getSearchHistory(),
+        });
       }
-    }
-  }
-
-  private async onNewBlockAvailable(blockHeight: number) {
-    if (this.viewState.startAtBlock >= 0) {
-      await this.updateViewState({
+    } catch (e) {
+      console.error(
+        LOG_PREFIX,
+        "Unexpected error processing blockchain update",
         blockHeight,
-        searchHistory: await this.getSearchHistory(),
-      });
-    } else {
-      await this.updateViewState({
-        blockHeight,
-        blocks: await this.getBlocks(-1, blockHeight),
-        searchHistory: await this.getSearchHistory(),
-      });
-    }
-  }
-
-  private async onNewEmptyBlockDataAvailable() {
-    if (this.viewState.startAtBlock >= 0) {
-      await this.updateViewState({
-        blocks: await this.getBlocks(
-          this.viewState.startAtBlock,
-          this.viewState.blockHeight
-        ),
-        populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
-        searchHistory: await this.getSearchHistory(),
-      });
-    } else {
-      await this.updateViewState({
-        blocks: await this.getBlocks(-1, this.viewState.blockHeight),
-        populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
-        searchHistory: await this.getSearchHistory(),
-      });
+        e.message
+      );
     }
   }
 
@@ -340,16 +217,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       return;
     }
     try {
-      const blockHeight = await this.rpcClient.getBlockCount();
-      if (Math.abs(blockHeight - this.viewState.blockHeight) > 1) {
-        console.log(LOG_PREFIX, "Potential reset detected", blockHeight);
-        this.cachedBlocks.length = 0;
-        this.cachedTransactions.length = 0;
-        await this.onNewBlockAvailable(blockHeight);
-      } else if (blockHeight > this.viewState.blockHeight) {
-        console.log(LOG_PREFIX, "New block available", blockHeight);
-        await this.onNewBlockAvailable(blockHeight);
-      }
+      // TODO: Use an event-driven mechanism for this (instead of polling):
       await this.updateViewState({ autoCompleteData: this.autoComplete.data });
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
@@ -357,10 +225,12 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async resolveSearch(request: TrackerViewRequest) {
+    // TODO: This can be made more efficient by guessing whether the input is more
+    //       likely to be a block number or an address before starting.
     const query = (request.search || "").trim();
     if (parseInt(query) + "" === query) {
       try {
-        const block = await this.getBlock(parseInt(query), false);
+        const block = await this.blockchainMonitor.getBlock(parseInt(query));
         request.selectBlock = block.hash;
         return;
       } catch {
@@ -368,7 +238,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       }
     }
     try {
-      const block = await this.getBlock(query, false);
+      const block = await this.blockchainMonitor.getBlock(query);
       request.selectBlock = block.hash;
       return;
     } catch {
@@ -384,9 +254,5 @@ export default class TrackerPanelController extends PanelControllerBase<
         } catch {}
       }
     }
-  }
-
-  private async sleepBetweenRetries() {
-    return new Promise((resolve) => setTimeout(resolve, SLEEP_ON_ERROR_MS));
   }
 }
