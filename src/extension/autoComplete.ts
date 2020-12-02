@@ -1,7 +1,8 @@
+import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import * as fs from "fs";
 import * as path from "path";
 import * as temp from "temp";
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import * as vscode from "vscode";
 
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
@@ -23,6 +24,10 @@ const WELL_KNOWN_NAMES = {
 };
 
 export default class AutoComplete {
+  onChange: vscode.Event<AutoCompleteData>;
+
+  private readonly onChangeEmitter: vscode.EventEmitter<AutoCompleteData>;
+
   private disposed = false;
   private latestData: AutoCompleteData;
 
@@ -49,12 +54,15 @@ export default class AutoComplete {
       wellKnownAddresses: {},
       addressNames: {},
     };
-    this.refreshLoop();
+    this.onChangeEmitter = new vscode.EventEmitter<AutoCompleteData>();
+    this.onChange = this.onChangeEmitter.event;
     this.initializeWellKnownManifests();
+    this.refreshLoop();
   }
 
   dispose() {
     this.disposed = true;
+    this.onChangeEmitter.dispose();
   }
 
   private async initializeWellKnownManifests() {
@@ -126,6 +134,8 @@ export default class AutoComplete {
     }
     try {
       await this.periodicUpdate();
+    } catch (e) {
+      console.error(LOG_PREFIX, "Unexpected error", e.message);
     } finally {
       setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
@@ -222,6 +232,12 @@ export default class AutoComplete {
       }
     }
 
+    const changed = JSON.stringify(this.latestData) !== JSON.stringify(newData);
+
     this.latestData = newData;
+
+    if (changed) {
+      this.onChangeEmitter.fire(newData);
+    }
   }
 }

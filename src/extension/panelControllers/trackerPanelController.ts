@@ -14,7 +14,6 @@ const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "[TrackerPanelController]";
 const PAGINATION_DISTANCE = 5;
-const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class TrackerPanelController extends PanelControllerBase<
   TrackerViewState,
@@ -28,7 +27,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   constructor(
     context: vscode.ExtensionContext,
     rpcUrl: string,
-    private readonly autoComplete: AutoComplete
+    autoComplete: AutoComplete
   ) {
     super(
       {
@@ -53,7 +52,9 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.blockchainMonitor = new BlockchainMonitor(this.rpcClient);
     this.blockchainId = this.blockchainMonitor.getBlock(0).then((_) => _.hash);
     this.blockchainMonitor.onChange(this.onBlockchainChange.bind(this));
-    this.refreshLoop();
+    autoComplete.onChange((autoCompleteData) =>
+      this.updateViewState({ autoCompleteData })
+    );
   }
 
   onClose() {
@@ -209,18 +210,6 @@ export default class TrackerPanelController extends PanelControllerBase<
         blockHeight,
         e.message
       );
-    }
-  }
-
-  private async refreshLoop() {
-    if (this.isClosed) {
-      return;
-    }
-    try {
-      // TODO: Use an event-driven mechanism for this (instead of polling):
-      await this.updateViewState({ autoCompleteData: this.autoComplete.data });
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
     }
   }
 
