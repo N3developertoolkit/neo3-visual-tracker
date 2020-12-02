@@ -11,10 +11,10 @@ const BLOCKS_PER_QUERY = 100;
 const LOG_PREFIX = "[BlockchainMonitor]";
 const MAX_RETRIES = 3;
 const REFRESH_INTERVAL_MS = 1000 * 2; // check for new blocks every 2 seconds
-const TRANSACTION_CACHE_SIZE = 1024;
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
 const SLEEP_ON_ERROR_MS = 500;
+const TRANSACTION_CACHE_SIZE = 1024;
 
 export default class BlockchainMonitor {
   onChange: vscode.Event<number>;
