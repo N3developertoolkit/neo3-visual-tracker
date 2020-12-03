@@ -148,8 +148,14 @@ export default class TrackerPanelController extends PanelControllerBase<
     await this.state.update(`history_${await this.blockchainId}`, history);
   }
 
-  private async getAddress(address: string): Promise<AddressInfo> {
-    const result = await this.blockchainMonitor.getAddress(address);
+  private async getAddress(
+    address: string,
+    retryOnFailure: boolean = true
+  ): Promise<AddressInfo> {
+    const result = await this.blockchainMonitor.getAddress(
+      address,
+      retryOnFailure
+    );
     await this.addToSearchHistory(address);
     return result;
   }
@@ -177,8 +183,14 @@ export default class TrackerPanelController extends PanelControllerBase<
     return this.state.get<string[]>(`history_${await this.blockchainId}`, []);
   }
 
-  private async getTransaction(hash: string): Promise<TransactionJson> {
-    const tx = await this.blockchainMonitor.getTransaction(hash);
+  private async getTransaction(
+    hash: string,
+    retryOnFailure: boolean = true
+  ): Promise<TransactionJson> {
+    const tx = await this.blockchainMonitor.getTransaction(
+      hash,
+      retryOnFailure
+    );
     await this.addToSearchHistory(hash);
     return tx;
   }
@@ -214,33 +226,43 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async resolveSearch(request: TrackerViewRequest) {
-    // TODO: This can be made more efficient by guessing whether the input is more
-    //       likely to be a block number or an address before starting.
     const query = (request.search || "").trim();
+
     if (parseInt(query) + "" === query) {
       try {
         const block = await this.blockchainMonitor.getBlock(parseInt(query));
         request.selectBlock = block.hash;
-        return;
       } catch {
-        return;
+        await vscode.window.showErrorMessage(
+          `Could not retrieve block ${parseInt(query)}`
+        );
       }
-    }
-    try {
-      const block = await this.blockchainMonitor.getBlock(query);
-      request.selectBlock = block.hash;
       return;
+    }
+
+    if (query.startsWith("N")) {
+      try {
+        await this.getAddress(query, false);
+        request.selectAddress = query;
+      } catch {
+        await vscode.window.showErrorMessage(
+          `Could not retrieve address ${query}`
+        );
+      }
+      return;
+    }
+
+    try {
+      const block = await this.blockchainMonitor.getBlock(query, false);
+      request.selectBlock = block.hash;
     } catch {
       try {
-        const tx = await this.getTransaction(query.toLowerCase());
+        const tx = await this.getTransaction(query.toLowerCase(), false);
         request.selectTransaction = tx.hash;
-        return;
       } catch {
-        try {
-          await this.getAddress(query);
-          request.selectAddress = query;
-          return;
-        } catch {}
+        await vscode.window.showErrorMessage(
+          `Could not retrieve block or transaction with hash ${query}`
+        );
       }
     }
   }

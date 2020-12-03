@@ -58,9 +58,12 @@ export default class BlockchainMonitor {
     this.onChangeEmitter.dispose();
   }
 
-  async getAddress(address: string): Promise<AddressInfo> {
+  async getAddress(
+    address: string,
+    retryOnFailure: boolean = true
+  ): Promise<AddressInfo> {
     let retry = 0;
-    while (retry < MAX_RETRIES) {
+    do {
       console.log(
         LOG_PREFIX,
         `Retrieving address ${address} (attempt ${retry++})`
@@ -78,13 +81,20 @@ export default class BlockchainMonitor {
             e.message || "Unknown error"
           })`
         );
-        await this.sleepBetweenRetries();
+        if (retryOnFailure) {
+          await this.sleepBetweenRetries();
+        } else {
+          throw e;
+        }
       }
-    }
+    } while (retry < MAX_RETRIES);
     throw new Error("Could not get address");
   }
 
-  async getBlock(indexOrHash: string | number): Promise<BlockJson> {
+  async getBlock(
+    indexOrHash: string | number,
+    retryonFailure: boolean = true
+  ): Promise<BlockJson> {
     const cachedBlock = this.state.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
@@ -92,7 +102,7 @@ export default class BlockchainMonitor {
       return cachedBlock;
     }
     let retry = 0;
-    while (retry < MAX_RETRIES) {
+    do {
       console.log(
         LOG_PREFIX,
         `Retrieving block ${indexOrHash} (attempt ${retry++})`
@@ -114,13 +124,20 @@ export default class BlockchainMonitor {
             e.message || "Unknown error"
           }`
         );
-        await this.sleepBetweenRetries();
+        if (retryonFailure) {
+          await this.sleepBetweenRetries();
+        } else {
+          throw e;
+        }
       }
-    }
+    } while (retry < MAX_RETRIES);
     throw new Error("Could not get block");
   }
 
-  async getTransaction(hash: string): Promise<TransactionJson> {
+  async getTransaction(
+    hash: string,
+    retryonFailure: boolean = true
+  ): Promise<TransactionJson> {
     const cachedTransaction = this.state.cachedTransactions.find(
       (_) => _.hash === hash
     );
@@ -128,7 +145,7 @@ export default class BlockchainMonitor {
       return cachedTransaction;
     }
     let retry = 0;
-    while (retry < MAX_RETRIES) {
+    do {
       console.log(LOG_PREFIX, `Retrieving tx ${hash} (attempt ${retry++})`);
       try {
         const transaction = await this.rpcClient.getRawTransaction(hash, true);
@@ -142,9 +159,13 @@ export default class BlockchainMonitor {
           LOG_PREFIX,
           `Error retrieving tx ${hash}: ${e.message || "Unknown error"}`
         );
-        await this.sleepBetweenRetries();
+        if (retryonFailure) {
+          await this.sleepBetweenRetries();
+        } else {
+          throw e;
+        }
       }
-    }
+    } while (retry < MAX_RETRIES);
     throw new Error("Could not get transaction");
   }
 
