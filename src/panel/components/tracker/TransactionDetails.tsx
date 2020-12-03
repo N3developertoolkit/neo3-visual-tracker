@@ -92,14 +92,20 @@ export default function TransactionDetails({
                   <small>Invocation</small>
                 </strong>
                 <br />
-                <Hash hash={witness.invocation} />
+                <Script
+                  autoCompleteData={autoCompleteData}
+                  script={witness.invocation}
+                />
               </div>
               <div style={{ marginTop: 4 }}>
                 <strong>
                   <small>Verification</small>
                 </strong>
                 <br />
-                <Hash hash={witness.verification} />
+                <Script
+                  autoCompleteData={autoCompleteData}
+                  script={witness.verification}
+                />
               </div>
             </MetadataBadge>
           </div>
