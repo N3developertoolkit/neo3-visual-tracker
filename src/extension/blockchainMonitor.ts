@@ -16,35 +16,40 @@ const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
 const SLEEP_ON_ERROR_MS = 500;
 const TRANSACTION_CACHE_SIZE = 1024;
 
+class BlockchainState {
+  public readonly cachedBlocks: BlockJson[];
+  public readonly cachedTransactions: TransactionJson[];
+  public readonly populatedBlocks: bitset.BitSet;
+
+  public lastKnownBlockHeight: number;
+
+  constructor(public readonly lastKnownCacheId: string = "") {
+    this.cachedBlocks = [];
+    this.cachedTransactions = [];
+    this.lastKnownBlockHeight = 0;
+    this.populatedBlocks = new bitset.default();
+  }
+}
+
 export default class BlockchainMonitor {
   onChange: vscode.Event<number>;
 
   private readonly onChangeEmitter: vscode.EventEmitter<number>;
 
-  private cachedBlocks: BlockJson[];
-  private cachedTransactions: TransactionJson[];
   private disposed: boolean;
   private getPopulatedBlocksSuccess: boolean;
-  private lastKnownBlockHeight: number;
-  private lastKnownCacheId: string;
-  private populatedBlocks: bitset.BitSet;
   private rpcId: number;
+  private state: BlockchainState;
   private tryGetPopulatedBlocks: boolean;
 
   constructor(private readonly rpcClient: neonCore.rpc.RPCClient) {
-    this.cachedBlocks = [];
-    this.cachedTransactions = [];
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
-    this.lastKnownBlockHeight = 0;
-    this.lastKnownCacheId = "";
-    this.populatedBlocks = new bitset.default();
     this.rpcId = 0;
+    this.state = new BlockchainState();
     this.tryGetPopulatedBlocks = true;
-
     this.onChangeEmitter = new vscode.EventEmitter<number>();
     this.onChange = this.onChangeEmitter.event;
-
     this.refreshLoop();
   }
 
@@ -80,7 +85,7 @@ export default class BlockchainMonitor {
   }
 
   async getBlock(indexOrHash: string | number): Promise<BlockJson> {
-    const cachedBlock = this.cachedBlocks.find(
+    const cachedBlock = this.state.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
     if (cachedBlock) {
@@ -95,11 +100,11 @@ export default class BlockchainMonitor {
       try {
         const block = await this.rpcClient.getBlock(indexOrHash, true);
         // never cache head block
-        if (block.index < this.lastKnownBlockHeight - 1) {
-          if (this.cachedBlocks.length === BLOCK_CACHE_SIZE) {
-            this.cachedBlocks.shift();
+        if (block.index < this.state.lastKnownBlockHeight - 1) {
+          if (this.state.cachedBlocks.length === BLOCK_CACHE_SIZE) {
+            this.state.cachedBlocks.shift();
           }
-          this.cachedBlocks.push(block);
+          this.state.cachedBlocks.push(block);
         }
         return block;
       } catch (e) {
@@ -116,7 +121,7 @@ export default class BlockchainMonitor {
   }
 
   async getTransaction(hash: string): Promise<TransactionJson> {
-    const cachedTransaction = this.cachedTransactions.find(
+    const cachedTransaction = this.state.cachedTransactions.find(
       (_) => _.hash === hash
     );
     if (cachedTransaction) {
@@ -127,10 +132,10 @@ export default class BlockchainMonitor {
       console.log(LOG_PREFIX, `Retrieving tx ${hash} (attempt ${retry++})`);
       try {
         const transaction = await this.rpcClient.getRawTransaction(hash, true);
-        if (this.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
-          this.cachedTransactions.shift();
+        if (this.state.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
+          this.state.cachedTransactions.shift();
         }
-        this.cachedTransactions.push(transaction);
+        this.state.cachedTransactions.push(transaction);
         return transaction;
       } catch (e) {
         console.warn(
@@ -145,7 +150,8 @@ export default class BlockchainMonitor {
 
   isBlockPopulated(blockIndex: number) {
     return (
-      !this.getPopulatedBlocksSuccess || this.populatedBlocks.get(blockIndex)
+      !this.getPopulatedBlocksSuccess ||
+      this.state.populatedBlocks.get(blockIndex)
     );
   }
 
@@ -172,15 +178,15 @@ export default class BlockchainMonitor {
 
   private async updateState() {
     const blockHeight = await this.rpcClient.getBlockCount();
-    let fireChangeEvent = blockHeight !== this.lastKnownBlockHeight;
+    let fireChangeEvent = blockHeight !== this.state.lastKnownBlockHeight;
 
     if (this.tryGetPopulatedBlocks) {
       try {
         let start = blockHeight;
-        while (start > this.lastKnownBlockHeight) {
-          const count = Math.min(
-            start - this.lastKnownBlockHeight,
-            BLOCKS_PER_QUERY
+        do {
+          const count = Math.max(
+            1,
+            Math.min(start - this.state.lastKnownBlockHeight, BLOCKS_PER_QUERY)
           );
           const result = (await this.rpcClient.query({
             method: "expressgetpopulatedblocks",
@@ -192,30 +198,21 @@ export default class BlockchainMonitor {
             this.getPopulatedBlocksSuccess = true;
             fireChangeEvent = true;
           }
-          if (result.cacheId !== this.lastKnownCacheId) {
-            console.log(
-              LOG_PREFIX,
-              "Potential blockchain reset; clearing cache"
-            );
-            this.populatedBlocks = new bitset.default();
-            this.tryGetPopulatedBlocks = true;
-            this.getPopulatedBlocksSuccess = false;
-            this.lastKnownBlockHeight = 0;
-            this.lastKnownCacheId = result.cacheId;
-            this.cachedBlocks = [];
-            this.cachedTransactions = [];
+          if (result.cacheId !== this.state.lastKnownCacheId) {
+            console.log(LOG_PREFIX, "Clearing cache");
+            this.state = new BlockchainState(result.cacheId);
             fireChangeEvent = true;
           }
           for (const blockNumber of result.blocks) {
-            if (!this.populatedBlocks.get(blockNumber)) {
-              this.populatedBlocks.set(blockNumber);
+            if (!this.state.populatedBlocks.get(blockNumber)) {
+              this.state.populatedBlocks.set(blockNumber);
               fireChangeEvent = true;
             }
           }
           start = result.blocks.length
             ? result.blocks[result.blocks.length - 1]
             : 0;
-        }
+        } while (start > this.state.lastKnownBlockHeight);
       } catch (e) {
         if (e.message?.indexOf("Method not found") !== -1) {
           this.tryGetPopulatedBlocks = false;
@@ -225,7 +222,7 @@ export default class BlockchainMonitor {
       }
     }
 
-    this.lastKnownBlockHeight = blockHeight;
+    this.state.lastKnownBlockHeight = blockHeight;
 
     if (fireChangeEvent) {
       this.onChangeEmitter.fire(blockHeight);
