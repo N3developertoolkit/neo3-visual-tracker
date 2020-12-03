@@ -3,13 +3,22 @@ import React from "react";
 import NavButton from "./NavButton";
 
 type Props = {
+  affinity?: "top-left" | "middle" | "bottom-right";
   children: any;
-  text?: string;
+  closeButtonText?: string;
+  title?: string;
   onClose: () => void;
 };
 
-export default function Dialog({ children, text, onClose }: Props) {
-  text = text || "Close";
+export default function Dialog({
+  affinity,
+  children,
+  closeButtonText,
+  title,
+  onClose,
+}: Props) {
+  affinity = affinity || "middle";
+  closeButtonText = closeButtonText || "Close";
   return (
     <div
       style={{
@@ -21,8 +30,18 @@ export default function Dialog({ children, text, onClose }: Props) {
         cursor: "pointer",
         display: "flex",
         backgroundColor: "rgba(255,255,255,0.50)",
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent:
+          affinity === "top-left"
+            ? "flex-start"
+            : affinity === "bottom-right"
+            ? "flex-end"
+            : "center",
+        alignItems:
+          affinity === "top-left"
+            ? "flex-start"
+            : affinity === "bottom-right"
+            ? "flex-end"
+            : "center",
         zIndex: 100,
       }}
       onClick={onClose}
@@ -33,14 +52,11 @@ export default function Dialog({ children, text, onClose }: Props) {
           backgroundColor: "var(--vscode-editor-background)",
           color: "var(--vscode-editor-foreground)",
           border: "1px solid var(--vscode-focusBorder)",
-          boxShadow: "-1px 1px 3px 0px var(--vscode-focusBorder)",
+          boxShadow: "-1px 1px 2px 0px var(--vscode-focusBorder)",
           borderRadius: 10,
           padding: 20,
-          maxHeight: "80vh",
-          maxWidth: "80vw",
+          margin: 40,
           overflow: "auto",
-          minWidth: "40vw",
-          minHeight: "40vh",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-evenly",
@@ -48,9 +64,14 @@ export default function Dialog({ children, text, onClose }: Props) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div>{children}</div>
+        {!!title && (
+          <h2 style={{ margin: 0, padding: 0, textAlign: "center" }}>
+            {title}
+          </h2>
+        )}
+        <div style={{ margin: 15 }}>{children}</div>
         <div>
-          <NavButton onClick={onClose}>{text}</NavButton>
+          <NavButton onClick={onClose}>{closeButtonText}</NavButton>
         </div>
       </div>
     </div>

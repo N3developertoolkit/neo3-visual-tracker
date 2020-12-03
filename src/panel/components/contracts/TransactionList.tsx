@@ -25,7 +25,7 @@ export default function TransactionList({
   return (
     <div>
       {!!selectedEntry?.tx && (
-        <Dialog onClose={() => onSelectTransaction(null)}>
+        <Dialog title="Transaction" onClose={() => onSelectTransaction(null)}>
           <TransactionDetails
             transaction={selectedEntry.tx}
             autoCompleteData={autoCompleteData}

@@ -21,10 +21,10 @@ export default function InvokeFileInteractiveEditor({
   if (!!viewState.errorText) {
     return (
       <Dialog
+        closeButtonText="Switch to JSON editor"
+        title="There was a problem parsing this file"
         onClose={() => postMessage({ toggleJsonMode: true })}
-        text="Switch to JSON editor"
       >
-        <h2>There was a problem parsing this file.</h2>
         <p>
           This file could not be parsed as a{" "}
           <span style={{ fontFamily: "monospace" }}>.neo-invoke.json</span>{" "}
