@@ -23,7 +23,7 @@ export default function TransactionDetails({
       style={{
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "flex-end",
+        justifyContent: "center",
         alignItems: "stretch",
       }}
     >
