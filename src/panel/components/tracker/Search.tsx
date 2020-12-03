@@ -2,6 +2,16 @@ import React, { useState } from "react";
 
 import NavButton from "../NavButton";
 
+function condenseSearchString(input: string) {
+  if (input.length < 32) {
+    return input;
+  }
+  if (input.startsWith("0x")) {
+    input = input.substring(2);
+  }
+  return `${input.substring(0, 6)}...${input.substring(input.length - 6)}`;
+}
+
 type Props = {
   searchHistory: string[];
   onSearch: (query: string) => void;
@@ -58,7 +68,7 @@ export default function Search({ searchHistory, onSearch }: Props) {
             style={{ marginRight: 10, display: "inline" }}
             onClick={() => onSearch(_)}
           >
-            {_}
+            {condenseSearchString(_)}
           </NavButton>
         ))}
       </div>
