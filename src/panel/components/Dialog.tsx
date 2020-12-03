@@ -55,7 +55,7 @@ export default function Dialog({
           boxShadow: "-1px 1px 2px 0px var(--vscode-focusBorder)",
           borderRadius: 10,
           padding: 20,
-          margin: 40,
+          margin: 30,
           overflow: "auto",
           display: "flex",
           flexDirection: "column",
