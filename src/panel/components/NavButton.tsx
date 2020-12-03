@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 type Props = {
   children: JSX.Element | string;
+  clickOnEnter?: boolean;
   roundedBadge?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;
@@ -10,6 +11,7 @@ type Props = {
 
 export default function NavButton({
   children,
+  clickOnEnter,
   roundedBadge,
   disabled,
   style,
@@ -17,6 +19,14 @@ export default function NavButton({
 }: Props) {
   const [hover, setHover] = useState(false);
   useEffect(() => setHover(disabled ? false : hover), [disabled]);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (clickOnEnter) {
+      buttonRef.current?.focus();
+    } else {
+      buttonRef.current?.blur();
+    }
+  });
   const buttonStyle: React.CSSProperties = {
     backgroundColor: disabled
       ? "var(--vscode-button-secondaryBackground)"
@@ -47,6 +57,7 @@ export default function NavButton({
         }}
         onMouseMove={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        ref={buttonRef}
       >
         {children}
       </button>

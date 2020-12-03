@@ -71,7 +71,9 @@ export default function Dialog({
         )}
         <div style={{ margin: 15 }}>{children}</div>
         <div>
-          <NavButton onClick={onClose}>{closeButtonText}</NavButton>
+          <NavButton clickOnEnter onClick={onClose}>
+            {closeButtonText}
+          </NavButton>
         </div>
       </div>
     </div>
