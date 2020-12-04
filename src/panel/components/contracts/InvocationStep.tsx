@@ -47,9 +47,16 @@ export default function InvocationStep({
   onUpdate,
 }: Props) {
   let operations: ContractMethodDefinitionJson[] = [];
+  let canRun = false;
+  let canDebug = false;
   if (contract) {
     const contractHash = autoCompleteData.contractHashes[contract] || contract;
     const manifest = autoCompleteData.contractManifests[contractHash];
+    if (operation) {
+      canRun = true;
+      const paths = autoCompleteData.contractPaths[contractHash] || [];
+      canDebug = paths.length > 0;
+    }
     if (manifest?.abi) {
       operations = manifest.abi.methods;
     }
@@ -123,7 +130,15 @@ export default function InvocationStep({
           {!isPartOfDiffView && (
             <>
               {" "}
-              <NavButton onClick={onRun} disabled={isReadOnly}>
+              <NavButton
+                onClick={onRun}
+                disabled={isReadOnly || !canRun}
+                title={
+                  canRun
+                    ? undefined
+                    : "You must at least specify a contract and an operaton name."
+                }
+              >
                 Run this step
               </NavButton>
             </>
@@ -131,7 +146,15 @@ export default function InvocationStep({
           {!isPartOfDiffView && (
             <>
               {" "}
-              <NavButton onClick={onDebug} disabled={isReadOnly}>
+              <NavButton
+                onClick={onDebug}
+                disabled={isReadOnly || !canDebug}
+                title={
+                  canDebug
+                    ? undefined
+                    : "To debug, the contract source code must be in the current workspace and the contract must be built."
+                }
+              >
                 Debug this step
               </NavButton>
             </>

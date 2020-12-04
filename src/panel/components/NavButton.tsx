@@ -6,6 +6,7 @@ type Props = {
   roundedBadge?: boolean;
   disabled?: boolean;
   style?: React.CSSProperties;
+  title?: string;
   onClick: () => void;
 };
 
@@ -15,6 +16,7 @@ export default function NavButton({
   roundedBadge,
   disabled,
   style,
+  title,
   onClick,
 }: Props) {
   const [hover, setHover] = useState(false);
@@ -58,6 +60,7 @@ export default function NavButton({
         onMouseMove={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
         ref={buttonRef}
+        title={title}
       >
         {children}
       </button>
