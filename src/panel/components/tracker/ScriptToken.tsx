@@ -83,22 +83,22 @@ export default function ScriptToken({
       }
       if (printableAscii) {
         return (
-          <strong style={style} title={`Text:\n ${token}\n  ${asText}`}>
-            {token.length > 8 ? (
-              <>
-                {token.substring(0, 4)}..
-                {token.substring(token.length - 4)}
-              </>
-            ) : (
-              <>{token}</>
-            )}{" "}
-            ("
-            <i>
-              {asText.substring(0, 20)}
-              {asText.length > 20 ? "..." : ""}
-            </i>
-            ")
-          </strong>
+          <span style={style} title={`Text:\n ${token}\n  ${asText}`}>
+            <strong>
+              {" "}
+              {token.length > 8 ? (
+                <>
+                  {token.substring(0, 4)}..
+                  {token.substring(token.length - 4)}
+                </>
+              ) : (
+                <>{token}</>
+              )}{" "}
+              ("
+            </strong>
+            <i>{asText}</i>
+            <strong>")</strong>
+          </span>
         );
       }
     }
