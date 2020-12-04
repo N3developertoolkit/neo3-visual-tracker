@@ -1,20 +1,26 @@
 import React from "react";
 
 type Props = {
+  alignLeft?: boolean;
   children: any;
   grow?: boolean;
   title: string;
 };
 
-export default function MetadataBadge({ children, grow, title }: Props) {
+export default function MetadataBadge({
+  alignLeft,
+  children,
+  grow,
+  title,
+}: Props) {
   const style: React.CSSProperties = {
-    textAlign: "left",
+    textAlign: alignLeft ? "left" : "center",
     margin: 5,
   };
   const titleStyle: React.CSSProperties = {
+    textAlign: "center",
     fontWeight: "bold",
     fontSize: "0.6rem",
-    textAlign: "center",
     textTransform: "uppercase",
     marginBottom: 2,
   };

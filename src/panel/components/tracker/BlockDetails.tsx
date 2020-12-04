@@ -60,6 +60,7 @@ export default function BlockDetails({
       {!!block.witnesses &&
         block.witnesses.map((witness) => (
           <MetadataBadge
+            alignLeft
             grow
             key={`${witness.invocation}-${witness.verification}`}
             title="Witness"
