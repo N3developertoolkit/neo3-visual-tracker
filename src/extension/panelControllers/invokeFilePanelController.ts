@@ -162,8 +162,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
             );
           }
         }
-        await this.applyEdit(updatedJson);
       }
+      await this.applyEdit(updatedJson);
     }
     if (request.updateJson !== undefined) {
       await this.applyEdit(request.updateJson);
