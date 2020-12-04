@@ -69,7 +69,9 @@ export default function Dialog({
             {title}
           </h2>
         )}
-        <div style={{ margin: 15 }}>{children}</div>
+        <div style={{ margin: 15, maxHeight: "65vh", overflow: "auto" }}>
+          {children}
+        </div>
         <div>
           <NavButton clickOnEnter onClick={onClose}>
             {closeButtonText}
