@@ -96,9 +96,10 @@ export default function InvokeFileInteractiveEditor({
               args={_.args}
               autoCompleteData={viewState.autoCompleteData}
               argumentSuggestionListId={argumentSuggestionListId}
+              onDebug={() => postMessage({ debugStep: { i } })}
+              onDelete={() => postMessage({ deleteStep: { i } })}
               onDragStart={() => setDragActive(true)}
               onDragEnd={() => setDragActive(false)}
-              onDelete={() => postMessage({ deleteStep: { i } })}
               onRun={() => postMessage({ runStep: { i } })}
               onUpdate={(contract, operation, args) =>
                 postMessage({

@@ -1,6 +1,7 @@
 type InvokeFileViewRequest = {
   addStep?: boolean;
   close?: boolean;
+  debugStep?: { i: number };
   deleteStep?: { i: number };
   moveStep?: { from: number; to: number };
   runAll?: boolean;

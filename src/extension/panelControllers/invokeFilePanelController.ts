@@ -113,6 +113,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     if (request.runStep) {
       await this.runFragment(this.viewState.fileContents[request.runStep.i]);
     }
+    if (request.debugStep) {
+      // TODO: Implement this
+      await vscode.window.showInformationMessage(
+        "Coming soon: Support for launching the debugger from the .neo-invoke.json editor."
+      );
+    }
     if (request.selectTransaction) {
       this.updateViewState({
         selectedTransactionId: request.selectTransaction.txid,

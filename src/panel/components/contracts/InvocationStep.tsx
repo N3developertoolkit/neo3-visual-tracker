@@ -17,10 +17,11 @@ type Props = {
   forceFocus?: boolean;
   isPartOfDiffView: boolean;
   isReadOnly: boolean;
+  onDebug: () => void;
   onDelete: () => void;
-  onRun: () => void;
   onDragStart: () => void;
   onDragEnd: () => void;
+  onRun: () => void;
   onUpdate: (
     contract?: string,
     operation?: string,
@@ -38,8 +39,9 @@ export default function InvocationStep({
   forceFocus,
   isPartOfDiffView,
   isReadOnly,
-  onDelete,
+  onDebug,
   onRun,
+  onDelete,
   onDragStart,
   onDragEnd,
   onUpdate,
@@ -117,11 +119,22 @@ export default function InvocationStep({
             }}
           >
             Delete this step
-          </NavButton>{" "}
+          </NavButton>
           {!isPartOfDiffView && (
-            <NavButton onClick={onRun} disabled={isReadOnly}>
-              Run this step
-            </NavButton>
+            <>
+              {" "}
+              <NavButton onClick={onRun} disabled={isReadOnly}>
+                Run this step
+              </NavButton>
+            </>
+          )}
+          {!isPartOfDiffView && (
+            <>
+              {" "}
+              <NavButton onClick={onDebug} disabled={isReadOnly}>
+                Debug this step
+              </NavButton>
+            </>
           )}
         </div>
       )}
