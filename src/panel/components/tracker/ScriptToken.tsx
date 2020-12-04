@@ -104,5 +104,9 @@ export default function ScriptToken({
     }
   } catch {}
 
+  // TODO: For smaller hex values (maybe below 16 or 32 bit) also show them as
+  //       base 10 (as it is quite likely they may be integer arguments to
+  //       contracts)
+
   return <span style={style}>{token}</span>;
 }
