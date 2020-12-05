@@ -42,6 +42,7 @@ export default function TransactionList({
       </div>
       {transactions.map((entry) => (
         <div
+          key={entry.txid}
           style={{
             marginBottom: 10,
             backgroundColor: "var(--vscode-editorWidget-background)",
