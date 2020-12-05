@@ -114,9 +114,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.runFragment(this.viewState.fileContents[request.runStep.i]);
     }
     if (request.debugStep) {
-      // TODO: Implement this
-      await vscode.window.showInformationMessage(
-        "Coming soon: Support for launching the debugger from the .neo-invoke.json editor."
+      await this.runFragmentInDebugger(
+        this.viewState.fileContents[request.debugStep.i]
       );
     }
     if (request.selectTransaction) {
@@ -400,6 +399,55 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           e.message
         );
       }
+    }
+  }
+
+  private async runFragmentInDebugger(fragment: any) {
+    const contract: string = fragment?.contract || "";
+    const operation: string = fragment?.operation || "";
+    if (!contract || !operation) {
+      vscode.window.showErrorMessage(
+        "A contract and an operation must be selected to launch the debugger."
+      );
+      return;
+    }
+
+    let program = contract;
+    if (!program.endsWith(".nef")) {
+      const autoCompleteData = this.autoComplete.data;
+      if (!program.startsWith("0x")) {
+        program = autoCompleteData.contractHashes[program] || "";
+      }
+      if (program.startsWith("0x")) {
+        const paths = autoCompleteData.contractPaths[program];
+        program = paths[0] || "";
+      }
+    }
+    if (!program) {
+      vscode.window.showErrorMessage(
+        "Could not resolve the .nef file for the selected contract in the current workspace."
+      );
+      return;
+    }
+
+    const debugConfiguration: vscode.DebugConfiguration = {
+      name: `${path.basename(this.document.uri.fsPath)}-${operation}`,
+      type: "neo-contract",
+      request: "launch",
+      program,
+      operation,
+      args: Array.isArray(fragment.args) ? fragment.args : [],
+      storage: [],
+      runtime: {
+        witnesses: {
+          "check-result": true,
+        },
+      },
+    };
+    if (!(await vscode.debug.startDebugging(undefined, debugConfiguration))) {
+      vscode.window.showErrorMessage(
+        "There was a problem launching the debugger."
+      );
     }
   }
 }
