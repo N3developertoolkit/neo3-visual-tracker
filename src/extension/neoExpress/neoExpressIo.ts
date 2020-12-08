@@ -35,9 +35,9 @@ export default class NeoExpressIo {
   static async contractList(
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
-  ): Promise<ContractManifestJson[]> {
+  ): Promise<{ [name: string]: ContractManifestJson }> {
     if (identifer.blockchainType !== "express") {
-      return [];
+      return {};
     }
     const output = neoExpress.runSync(
       "contract",
@@ -48,10 +48,28 @@ export default class NeoExpressIo {
     );
     if (output.isError) {
       console.error(LOG_PREFIX, "List contract invoke error", output.message);
-      return [];
+      return {};
     }
     try {
-      return JSONC.parse(output.message);
+      let result: { [name: string]: ContractManifestJson } = {};
+      let contractSummaries = JSONC.parse(output.message);
+      for (const contractSummary of contractSummaries) {
+        const contractQuery = await this.contractGet(
+          neoExpress,
+          identifer,
+          contractSummary.hash
+        );
+        if (!contractQuery) {
+          console.error(
+            LOG_PREFIX,
+            "Could not get manifest from neo-express",
+            contractSummary.hash
+          );
+        } else {
+          result[contractSummary.name] = contractQuery;
+        }
+      }
+      return result;
     } catch (e) {
       throw Error(`List contract parse error: ${e.message}`);
     }

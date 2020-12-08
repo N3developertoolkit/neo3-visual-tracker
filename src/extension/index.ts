@@ -56,6 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
     activeConnection
   );
   const autoComplete = new AutoComplete(
+    context,
     neoExpress,
     activeConnection,
     contractDetector,

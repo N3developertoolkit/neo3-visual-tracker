@@ -6,8 +6,8 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
+import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./fileDetectors/contractDetector";
-import JSONC from "./util/JSONC";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
 import dedupeAndSort from "./util/dedupeAndSort";
@@ -34,6 +34,7 @@ export default class AutoComplete {
   }
 
   constructor(
+    private readonly context: vscode.ExtensionContext,
     private readonly neoExpress: NeoExpress,
     private readonly activeConnection: ActiveConnection,
     private readonly contractDetector: ContractDetector,
@@ -72,54 +73,29 @@ export default class AutoComplete {
         "1",
         tempFile.path
       );
-      if (result.isError) {
+      const identifier = BlockchainIdentifier.fromNeoExpressConfig(
+        this.context.extensionPath,
+        tempFile.path
+      );
+      if (!identifier || result.isError) {
         console.error(
           LOG_PREFIX,
           "Could not create temporary neo-express instance, built-in contract manifests will be unavailable",
+          identifier,
           result.message
         );
       } else {
-        const contractsQuery = this.neoExpress.runSync(
-          "contract",
-          "list",
-          "-i",
-          tempFile.path,
-          "--json"
+        const wellKnownContracts = await NeoExpressIo.contractList(
+          this.neoExpress,
+          identifier
         );
-        if (contractsQuery.isError) {
-          console.error(
-            LOG_PREFIX,
-            "Could not query dummy neo-express instance for built-in contracts",
-            contractsQuery.message
-          );
-        } else {
-          const wellKnownContracts = JSONC.parse(contractsQuery.message);
-          for (const wellKnownContract of wellKnownContracts) {
-            const contractQuery = this.neoExpress.runSync(
-              "contract",
-              "get",
-              wellKnownContract.hash,
-              "-i",
-              tempFile.path
-            );
-            if (contractQuery.isError) {
-              console.error(
-                LOG_PREFIX,
-                "Could not get manifest from neo-express for built-in contract",
-                wellKnownContract.name,
-                wellKnownContract.hash,
-                contractQuery.message
-              );
-            } else {
-              this.wellKnownNames[wellKnownContract.hash] = [
-                wellKnownContract.name,
-                `#${wellKnownContract.name}`,
-              ];
-              this.wellKnownManifests[wellKnownContract.hash] = JSONC.parse(
-                contractQuery.message
-              ) as Partial<ContractManifestJson>;
-            }
-          }
+        for (const wellKnownContractName of Object.keys(wellKnownContracts)) {
+          const manifest = wellKnownContracts[wellKnownContractName];
+          this.wellKnownNames[manifest.abi.hash] = [
+            wellKnownContractName,
+            `#${wellKnownContractName}`,
+          ];
+          this.wellKnownManifests[manifest.abi.hash] = manifest;
         }
       }
     } catch (e) {
@@ -224,7 +200,7 @@ export default class AutoComplete {
           this.neoExpress,
           connection.blockchainIdentifier
         );
-        for (const deployedContract of deployedContracts) {
+        for (const deployedContract of Object.values(deployedContracts)) {
           newData.contractManifests[
             deployedContract.abi.hash
           ] = deployedContract;
