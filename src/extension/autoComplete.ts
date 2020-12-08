@@ -15,18 +15,12 @@ import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
 const REFRESH_INTERVAL_MS = 1000 * 5;
-const WELL_KNOWN_NAMES = {
-  "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc": ["GAS", "#GAS"],
-  "0xde5f57d430d3dece511cf975a8d37848cb9e0525": ["NEO", "#NEO"],
-  "0x763afecf3ebba0a67568a2c8be06e8f068c62666": ["Designation", "#Designation"],
-  "0x3c05b488bf4cf699d0631bf80190896ebbf38c3b": ["Oracle", "#Oracle"],
-  "0xce06595079cd69583126dbfd1d2e25cca74cffe9": ["Policy", "#Policy"],
-};
 
 export default class AutoComplete {
   onChange: vscode.Event<AutoCompleteData>;
 
   private readonly onChangeEmitter: vscode.EventEmitter<AutoCompleteData>;
+  private readonly wellKnownNames: { [hash: string]: string[] };
 
   private disposed = false;
   private latestData: AutoCompleteData;
@@ -56,6 +50,7 @@ export default class AutoComplete {
     };
     this.onChangeEmitter = new vscode.EventEmitter<AutoCompleteData>();
     this.onChange = this.onChangeEmitter.event;
+    this.wellKnownNames = {};
     this.initializeWellKnownManifests();
     this.refreshLoop();
   }
@@ -84,33 +79,45 @@ export default class AutoComplete {
           result.message
         );
       } else {
-        for (const hash of Object.keys(WELL_KNOWN_NAMES)) {
-          const contractQuery = this.neoExpress.runSync(
-            "contract",
-            "get",
-            hash,
-            "-i",
-            tempFile.path
+        const contractsQuery = this.neoExpress.runSync(
+          "contract",
+          "list",
+          "-i",
+          tempFile.path,
+          "--json"
+        );
+        if (contractsQuery.isError) {
+          console.error(
+            LOG_PREFIX,
+            "Could not query dummy neo-express instance for built-in contracts",
+            contractsQuery.message
           );
-          if (contractQuery.isError) {
-            console.error(
-              LOG_PREFIX,
-              "Could not get manifest from neo-express for built-in contract",
-              hash,
-              result.message
+        } else {
+          const wellKnownContracts = JSONC.parse(contractsQuery.message);
+          for (const wellKnownContract of wellKnownContracts) {
+            const contractQuery = this.neoExpress.runSync(
+              "contract",
+              "get",
+              wellKnownContract.hash,
+              "-i",
+              tempFile.path
             );
-          } else {
-            try {
-              this.wellKnownManifests[hash] = JSONC.parse(
-                contractQuery.message
-              ) as Partial<ContractManifestJson>;
-            } catch (e) {
+            if (contractQuery.isError) {
               console.error(
                 LOG_PREFIX,
-                "Could not parse manifest from neo-express for built-in contract",
-                hash,
-                e.message
+                "Could not get manifest from neo-express for built-in contract",
+                wellKnownContract.name,
+                wellKnownContract.hash,
+                contractQuery.message
               );
+            } else {
+              this.wellKnownNames[wellKnownContract.hash] = [
+                wellKnownContract.name,
+                `#${wellKnownContract.name}`,
+              ];
+              this.wellKnownManifests[wellKnownContract.hash] = JSONC.parse(
+                contractQuery.message
+              ) as Partial<ContractManifestJson>;
             }
           }
         }
@@ -148,14 +155,14 @@ export default class AutoComplete {
       contractManifests: { ...this.wellKnownManifests },
       contractHashes: {},
       contractPaths: {},
-      contractNames: { ...WELL_KNOWN_NAMES },
-      contractWellKnownNames: { ...WELL_KNOWN_NAMES },
+      contractNames: { ...this.wellKnownNames },
+      contractWellKnownNames: { ...this.wellKnownNames },
       wellKnownAddresses: {},
       addressNames: {},
     };
 
-    for (const hash of Object.keys(WELL_KNOWN_NAMES)) {
-      const names = (WELL_KNOWN_NAMES as any)[hash] as string[];
+    for (const hash of Object.keys(this.wellKnownNames)) {
+      const names = (this.wellKnownNames as any)[hash] as string[];
       for (const name of names) {
         newData.contractHashes[name] = hash;
       }
