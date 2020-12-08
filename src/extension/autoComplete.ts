@@ -90,12 +90,13 @@ export default class AutoComplete {
           identifier
         );
         for (const wellKnownContractName of Object.keys(wellKnownContracts)) {
-          const manifest = wellKnownContracts[wellKnownContractName];
-          this.wellKnownNames[manifest.abi.hash] = [
+          const wellKnownContract = wellKnownContracts[wellKnownContractName];
+          this.wellKnownNames[wellKnownContract.hash] = [
             wellKnownContractName,
             `#${wellKnownContractName}`,
           ];
-          this.wellKnownManifests[manifest.abi.hash] = manifest;
+          this.wellKnownManifests[wellKnownContract.hash] =
+            wellKnownContract.manifest;
         }
       }
     } catch (e) {
@@ -201,9 +202,8 @@ export default class AutoComplete {
           connection.blockchainIdentifier
         );
         for (const deployedContract of Object.values(deployedContracts)) {
-          newData.contractManifests[
-            deployedContract.abi.hash
-          ] = deployedContract;
+          newData.contractManifests[deployedContract.hash] =
+            deployedContract.manifest;
         }
       } catch (e) {
         console.warn(
