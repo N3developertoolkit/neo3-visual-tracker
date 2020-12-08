@@ -227,7 +227,7 @@ export default class AutoComplete {
           LOG_PREFIX,
           "Could not list neo-express contracts",
           connection.blockchainIdentifier.configPath,
-          e
+          e.message
         );
       }
     }
