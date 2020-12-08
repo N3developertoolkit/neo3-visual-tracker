@@ -43,20 +43,15 @@ export default class NeoExpressIo {
       "contract",
       "list",
       "-i",
-      identifer.configPath
+      identifer.configPath,
+      "--json"
     );
     if (output.isError) {
       console.error(LOG_PREFIX, "List contract invoke error", output.message);
       return [];
     }
     try {
-      // TODO: This is a hack. Consider either:
-      //       a) Update `nxp3 contract list` to return a JSON array, OR
-      //       b) Call expresslistcontracts over RPC instead
-      return `}\n${output.message.trim()}\n{`
-        .split("}\n{")
-        .filter((_) => !!_?.trim())
-        .map((_) => JSONC.parse("{" + _ + "}") as ContractManifestJson);
+      return JSONC.parse(output.message);
     } catch (e) {
       throw Error(`List contract parse error: ${e.message}`);
     }
