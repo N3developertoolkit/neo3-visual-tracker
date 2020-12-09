@@ -65,13 +65,8 @@ export default function InvokeFileInteractiveEditor({
             <option key={`name_${addressName}`} value={`@${addressName}`} />
           )
         )}
-        {Object.values(viewState.autoCompleteData.wellKnownAddresses).map(
-          (address) => (
-            <option key={`adr1_${address}`} value={`@${address}`} />
-          )
-        )}
         {Object.keys(viewState.autoCompleteData.addressNames).map((address) => (
-          <option key={`adr2_${address}`} value={`@${address}`} />
+          <option key={`adr_${address}`} value={`@${address}`} />
         ))}
       </datalist>
       <div
