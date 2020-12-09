@@ -7,7 +7,6 @@ type AutoCompleteData = {
   contractManifests: { [contractHash: string]: Partial<ContractManifestJson> };
   contractHashes: { [contractPathOrWellKnownName: string]: string };
   contractNames: ContractNames;
-  contractWellKnownNames: { [contractHash: string]: string[] };
   contractPaths: { [contractHash: string]: string[] };
   wellKnownAddresses: { [addressName: string]: string };
   addressNames: AddressNames;

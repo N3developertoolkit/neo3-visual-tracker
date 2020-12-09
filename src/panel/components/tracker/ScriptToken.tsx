@@ -22,8 +22,7 @@ export default function ScriptToken({
 
   const contractHashes = Object.keys(autoCompleteData.contractNames);
   for (const contractHash of contractHashes) {
-    const allNames = autoCompleteData.contractNames[contractHash] || [];
-    const firstName = allNames[0] || "contract";
+    const name = autoCompleteData.contractNames[contractHash] || "contract";
     const contractHashRaw = contractHash
       .replace(/^0x/g, "")
       .toLowerCase()
@@ -34,11 +33,11 @@ export default function ScriptToken({
       return (
         <strong
           style={style}
-          title={`Contract:\n ${contractHashRaw}\n  (${allNames.join(", ")})`}
+          title={`Contract:\n ${contractHashRaw}\n  (${name})`}
         >
           {contractHashRaw.substring(0, 4)}..
           {contractHashRaw.substring(contractHashRaw.length - 4)} (#
-          <i>{firstName}</i>)
+          <i>{name}</i>)
         </strong>
       );
     }

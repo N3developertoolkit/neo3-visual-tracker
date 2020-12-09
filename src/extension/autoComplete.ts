@@ -1,6 +1,5 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import * as fs from "fs";
-import * as path from "path";
 import * as temp from "temp";
 import * as vscode from "vscode";
 
@@ -20,7 +19,7 @@ export default class AutoComplete {
   onChange: vscode.Event<AutoCompleteData>;
 
   private readonly onChangeEmitter: vscode.EventEmitter<AutoCompleteData>;
-  private readonly wellKnownNames: { [hash: string]: string[] };
+  private readonly wellKnownNames: { [hash: string]: string };
 
   private disposed = false;
   private latestData: AutoCompleteData;
@@ -44,7 +43,6 @@ export default class AutoComplete {
       contractManifests: {},
       contractHashes: {},
       contractNames: {},
-      contractWellKnownNames: {},
       contractPaths: {},
       wellKnownAddresses: {},
       addressNames: {},
@@ -91,10 +89,7 @@ export default class AutoComplete {
         );
         for (const wellKnownContractName of Object.keys(wellKnownContracts)) {
           const wellKnownContract = wellKnownContracts[wellKnownContractName];
-          this.wellKnownNames[wellKnownContract.hash] = [
-            wellKnownContractName,
-            `#${wellKnownContractName}`,
-          ];
+          this.wellKnownNames[wellKnownContract.hash] = wellKnownContractName;
           this.wellKnownManifests[wellKnownContract.hash] =
             wellKnownContract.manifest;
         }
@@ -133,16 +128,14 @@ export default class AutoComplete {
       contractHashes: {},
       contractPaths: {},
       contractNames: { ...this.wellKnownNames },
-      contractWellKnownNames: { ...this.wellKnownNames },
       wellKnownAddresses: {},
       addressNames: {},
     };
 
     for (const hash of Object.keys(this.wellKnownNames)) {
-      const names = (this.wellKnownNames as any)[hash] as string[];
-      for (const name of names) {
-        newData.contractHashes[name] = hash;
-      }
+      const name = (this.wellKnownNames as any)[hash] as string;
+      newData.contractHashes[`#${name}`] = hash;
+      newData.contractNames[hash] = `#${name}`;
     }
 
     const wallets = [...this.walletDetector.wallets];
@@ -164,21 +157,14 @@ export default class AutoComplete {
         newData.contractManifests[contractHash] = manifest;
         let name: string | undefined = (manifest as any).name;
         if (name) {
-          newData.contractHashes[name] = contractHash;
+          newData.contractHashes[`#${name}`] = contractHash;
+          newData.contractNames[contractHash] = `#${name}`;
         }
         newData.contractPaths[contractHash] =
           newData.contractPaths[contractHash] || [];
         newData.contractPaths[contractHash].push(contractPath);
         newData.contractPaths[contractHash] = dedupeAndSort(
           newData.contractPaths[contractHash]
-        );
-        newData.contractNames[contractHash] =
-          newData.contractNames[contractHash] || [];
-        newData.contractNames[contractHash].push(
-          path.basename(contractPath).replace(/\.nef$/, "")
-        );
-        newData.contractNames[contractHash] = dedupeAndSort(
-          newData.contractNames[contractHash]
         );
       }
     }

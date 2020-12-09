@@ -32,18 +32,11 @@ export default function ContractTile({
     marginRight: 10,
     borderRadius: 10,
   };
-  const names = autoCompleteData.contractNames[hash] || [];
+  const name = autoCompleteData.contractNames[hash];
   const paths = autoCompleteData.contractPaths[hash] || [];
-  const wellKnownNames = autoCompleteData.contractWellKnownNames[hash] || [];
-  const title = names[0]
-    ? names[0]
-    : paths[0]
-    ? paths[0]
-    : wellKnownNames[0]
-    ? wellKnownNames[0]
-    : "Unknown contract";
+  const title = name ? name : paths[0] ? paths[0] : "Unknown contract";
   const methods = abi.methods?.map((_) => _.name) || [];
-  const aka = [hash, ...paths, ...wellKnownNames].filter((_) => !!_);
+  const aka = [hash, name];
   return (
     <div
       style={style}
