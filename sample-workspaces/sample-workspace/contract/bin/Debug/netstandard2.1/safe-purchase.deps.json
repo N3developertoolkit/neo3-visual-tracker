@@ -7,16 +7,16 @@
   "targets": {
     ".NETStandard,Version=v2.1": {},
     ".NETStandard,Version=v2.1/": {
-      "safe-purchase/0.5.64-preview": {
+      "safe-purchase/0.5.319-preview": {
         "dependencies": {
-          "Neo.SmartContract.Framework": "3.0.0-preview3",
+          "Neo.SmartContract.Framework": "3.0.0-mono-master-00349",
           "Nerdbank.GitVersioning": "3.1.91"
         },
         "runtime": {
           "safe-purchase.dll": {}
         }
       },
-      "Neo.SmartContract.Framework/3.0.0-preview3": {
+      "Neo.SmartContract.Framework/3.0.0-mono-master-00349": {
         "runtime": {
           "lib/netstandard2.1/Neo.SmartContract.Framework.dll": {
             "assemblyVersion": "3.0.0.0",
@@ -28,17 +28,17 @@
     }
   },
   "libraries": {
-    "safe-purchase/0.5.64-preview": {
+    "safe-purchase/0.5.319-preview": {
       "type": "project",
       "serviceable": false,
       "sha512": ""
     },
-    "Neo.SmartContract.Framework/3.0.0-preview3": {
+    "Neo.SmartContract.Framework/3.0.0-mono-master-00349": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-bQDQX9cctusw0vzBxkkdwvFz4aZBo5xgWN+LyYf6DxlOHTyJzjqIJ8bmg9ZYckE2lls+v70NBdoFwg8G3Tygfw==",
-      "path": "neo.smartcontract.framework/3.0.0-preview3",
-      "hashPath": "neo.smartcontract.framework.3.0.0-preview3.nupkg.sha512"
+      "sha512": "sha512-1gMIqrryiASLbGGqiX4LWgiBkvR671UN6ysOaEwSAJm41Pn9tJRKcPMCZluMpGtQREozFWrs62lUfBqoo/XjuA==",
+      "path": "neo.smartcontract.framework/3.0.0-mono-master-00349",
+      "hashPath": "neo.smartcontract.framework.3.0.0-mono-master-00349.nupkg.sha512"
     },
     "Nerdbank.GitVersioning/3.1.91": {
       "type": "package",

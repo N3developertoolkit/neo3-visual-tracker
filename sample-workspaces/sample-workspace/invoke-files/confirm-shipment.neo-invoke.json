@@ -1,6 +1,6 @@
 [
   {
-    "contract": "../contract/bin/Debug/netstandard2.1/safe-purchase.nef",
+    "contract": "0xf96aacb0285950f9d6840b4c6c1d05195ca10478",
     "operation": "confirmShipment",
     "args": [
       "0xc977a809e5014ed49192919eb6beed15"

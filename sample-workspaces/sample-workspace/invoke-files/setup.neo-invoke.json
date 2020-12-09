@@ -1,20 +1,22 @@
 [
   {
-    "contract": "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc",
+    "contract": "#GAS",
     "operation": "transfer",
     "args": [
       "@Ni7FXvNy7WW2UfmctFevHYhvy7x7VvDDwa",
       "@NSWmpUp8hvqPJnEFAxcVPYzntXs3mkmQJg",
-      10000
+      10000,
+      "Setup"
     ]
   },
   {
-    "contract": "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc",
+    "contract": "GAS",
     "operation": "transfer",
     "args": [
       "@Ni7FXvNy7WW2UfmctFevHYhvy7x7VvDDwa",
       "@NYDFMq9WVddv1whVLmBLmoHk3PuL8e7RUo",
-      10000
+      10000,
+      "Setup"
     ]
   }
 ]

@@ -3,7 +3,7 @@
   "isRoot": true,
   "tools": {
     "neo.neon": {
-      "version": "3.0.0-preview3",
+      "version": "3.0.0-mono-master-00344",
       "commands": ["neon"]
     }
   }
