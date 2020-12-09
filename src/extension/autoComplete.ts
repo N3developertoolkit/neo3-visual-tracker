@@ -162,7 +162,10 @@ export default class AutoComplete {
       const contractPath = workspaceContract.absolutePathToNef;
       if (contractHash) {
         newData.contractManifests[contractHash] = manifest;
-        newData.contractHashes[contractPath] = contractHash;
+        let name: string | undefined = (manifest as any).name;
+        if (name) {
+          newData.contractHashes[name] = contractHash;
+        }
         newData.contractPaths[contractHash] =
           newData.contractPaths[contractHash] || [];
         newData.contractPaths[contractHash].push(contractPath);
