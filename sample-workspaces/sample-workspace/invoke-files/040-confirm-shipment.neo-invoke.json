@@ -1,6 +1,6 @@
 [
   {
-    "contract": "0xf96aacb0285950f9d6840b4c6c1d05195ca10478",
+    "contract": "#DevHawk.SafePurchase",
     "operation": "confirmShipment",
     "args": [
       "0xc977a809e5014ed49192919eb6beed15"
