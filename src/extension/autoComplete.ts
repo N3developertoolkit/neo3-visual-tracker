@@ -13,7 +13,6 @@ import dedupeAndSort from "./util/dedupeAndSort";
 import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
-const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class AutoComplete {
   onChange: vscode.Event<AutoCompleteData>;
@@ -21,7 +20,6 @@ export default class AutoComplete {
   private readonly onChangeEmitter: vscode.EventEmitter<AutoCompleteData>;
   private readonly wellKnownNames: { [hash: string]: string };
 
-  private disposed = false;
   private latestData: AutoCompleteData;
 
   private readonly wellKnownManifests: {
@@ -51,11 +49,13 @@ export default class AutoComplete {
     this.onChange = this.onChangeEmitter.event;
     this.wellKnownNames = {};
     this.initializeWellKnownManifests();
-    this.refreshLoop();
+    activeConnection.onChange(async () => await this.uodate());
+    contractDetector.onChange(async () => await this.uodate());
+    walletDetector.onChange(async () => await this.uodate());
+    this.uodate();
   }
 
   dispose() {
-    this.disposed = true;
     this.onChangeEmitter.dispose();
   }
 
@@ -107,20 +107,9 @@ export default class AutoComplete {
     }
   }
 
-  private async refreshLoop() {
-    if (this.disposed) {
-      return;
-    }
-    try {
-      await this.periodicUpdate();
-    } catch (e) {
-      console.error(LOG_PREFIX, "Unexpected error", e.message);
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
-    }
-  }
+  private async uodate() {
+    console.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
 
-  private async periodicUpdate() {
     const workspaceContracts = { ...this.contractDetector.contracts };
 
     const newData: AutoCompleteData = {
