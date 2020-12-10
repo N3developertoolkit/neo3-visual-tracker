@@ -17,7 +17,7 @@ import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
 const MAX_RECENT_TXS = 10;
-// Polling is needed to monitor for appearance of recent transactions on the blockchain:
+// TODO: Consume a BlockchainMonitor in the constructor and remove polling
 const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class InvokeFilePanelController extends PanelControllerBase<
