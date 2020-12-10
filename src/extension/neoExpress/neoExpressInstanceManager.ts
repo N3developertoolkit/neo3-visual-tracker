@@ -6,7 +6,8 @@ import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";
-const REFRESH_INTERVAL_MS = 1000 * 1;
+// VS Code does not offer an event-driven mechanism for detecting when a user closes a terminal, so polling is required:
+const REFRESH_INTERVAL_MS = 1000 * 2;
 
 export default class NeoExpressInstanceManager {
   onChange: vscode.Event<void>;
