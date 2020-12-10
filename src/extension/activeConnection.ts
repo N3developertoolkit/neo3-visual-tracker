@@ -73,6 +73,7 @@ export default class ActiveConnection {
       ) {
         this.connection = null;
         await this.updateConnectionState();
+        console.log(LOG_PREFIX, "Firing change event (disconnection)");
         await this.onChangeEmitter.fire(null);
       }
     }
@@ -112,6 +113,10 @@ export default class ActiveConnection {
       } finally {
         this.statusBarItem.command = "neo3-visual-devtracker.disconnect";
         if (connection.healthy !== wasHealthy) {
+          console.log(
+            LOG_PREFIX,
+            "Firing change event (connection health change)"
+          );
           await this.onChangeEmitter.fire(
             this.connection?.blockchainIdentifier || null
           );
