@@ -49,7 +49,10 @@ export default class TrackerPanelController extends PanelControllerBase<
     );
     this.state = context.workspaceState;
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
-    this.blockchainMonitor = new BlockchainMonitor(this.rpcClient);
+    this.blockchainMonitor = new BlockchainMonitor(
+      `trackerPanel:${rpcUrl}`,
+      this.rpcClient
+    );
     this.blockchainId = this.blockchainMonitor.getBlock(0).then((_) => _.hash);
     this.blockchainMonitor.onChange(this.onBlockchainChange.bind(this));
     autoComplete.onChange((autoCompleteData) =>

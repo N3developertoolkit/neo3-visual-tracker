@@ -42,7 +42,10 @@ export default class BlockchainMonitor {
   private state: BlockchainState;
   private tryGetPopulatedBlocks: boolean;
 
-  constructor(private readonly rpcClient: neonCore.rpc.RPCClient) {
+  constructor(
+    private readonly monitorName: string,
+    private readonly rpcClient: neonCore.rpc.RPCClient
+  ) {
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
     this.rpcId = 0;
@@ -185,6 +188,7 @@ export default class BlockchainMonitor {
       return;
     }
     try {
+      console.log(LOG_PREFIX, "Monitoring", this.monitorName);
       await this.updateState();
     } catch (e) {
       console.error(LOG_PREFIX, "Unexpected error", e.message);
