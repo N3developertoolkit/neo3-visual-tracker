@@ -7,7 +7,7 @@ import DetectorBase from "./detectorBase";
 
 const LOG_PREFIX = "[ContractDetector]";
 // Contract deployments can happen independently of the extension, so polling is required:
-const REFRESH_INTERVAL_MS = 1000 * 5;
+const REFRESH_INTERVAL_MS = 1000 * 30;
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
