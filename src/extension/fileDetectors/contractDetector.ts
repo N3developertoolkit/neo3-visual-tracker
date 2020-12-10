@@ -6,6 +6,7 @@ import JSONC from "../util/JSONC";
 import DetectorBase from "./detectorBase";
 
 const LOG_PREFIX = "[ContractDetector]";
+// Contract deployments can happen independently of the extension, so polling is required:
 const REFRESH_INTERVAL_MS = 1000 * 5;
 const SEARCH_PATTERN = "**/*.nef";
 
@@ -23,7 +24,11 @@ export default class ContractDetector extends DetectorBase {
 
   constructor(private readonly activeConnection: ActiveConnection) {
     super(SEARCH_PATTERN);
-    this.refreshLoop();
+    activeConnection.onChange(async () => {
+      if (await this.processFiles()) {
+        this.onChangeEmitter.fire();
+      }
+    });
   }
 
   async processFiles() {
@@ -93,8 +98,6 @@ export default class ContractDetector extends DetectorBase {
   }
 
   private async refreshLoop() {
-    // Contract deployments can happen independently of the extension, so
-    // we poll for changes in deployment state:
     if (this.isDisposed) {
       return;
     }
