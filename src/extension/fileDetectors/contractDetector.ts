@@ -31,18 +31,22 @@ export default class ContractDetector extends DetectorBase {
     const newSnapshot: ContractMap = {};
     for (const absolutePathToNef of this.files) {
       const manifest = ContractDetector.tryGetManifest(absolutePathToNef);
-      if (manifest?.abi?.hash) {
+      const contractName = (manifest as any)?.name;
+      if (!!contractName && manifest?.abi?.hash) {
         const contractHash = manifest.abi.hash;
         let deploymentRequired = false;
         let deployed = false;
         try {
           await this.activeConnection.connection?.rpcClient.getContractState(
-            contractHash
+            contractName
           );
           deployed = true;
         } catch (e) {
+          // TODO: Debug why this isn't behaving right on latest neo-express build
+          // https://github.com/ngdseattle/neo3-visual-tracker/issues/18
           if (`${e.message}`.toLowerCase().indexOf("unknown contract") !== -1) {
             deploymentRequired = true;
+            // console.error(contractName, contractHash, e.message, e);
           } else {
             console.warn(
               LOG_PREFIX,
