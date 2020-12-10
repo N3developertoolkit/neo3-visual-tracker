@@ -60,7 +60,6 @@ export default class ActiveConnection {
     } else {
       this.connection = null;
     }
-    await this.onChangeEmitter.fire(blockchainIdentifier || null);
     await this.updateConnectionState();
   }
 
@@ -74,6 +73,7 @@ export default class ActiveConnection {
       ) {
         this.connection = null;
         await this.updateConnectionState();
+        await this.onChangeEmitter.fire(null);
       }
     }
   }
@@ -92,6 +92,7 @@ export default class ActiveConnection {
   private async updateConnectionState() {
     const connection = this.connection;
     if (connection) {
+      const wasHealthy = connection.healthy;
       try {
         await connection.rpcClient.getBlockCount();
         connection.healthy = true;
@@ -108,8 +109,14 @@ export default class ActiveConnection {
         this.statusBarItem.color = new vscode.ThemeColor(
           "statusBarItem.remoteForeground"
         );
+      } finally {
+        this.statusBarItem.command = "neo3-visual-devtracker.disconnect";
+        if (connection.healthy !== wasHealthy) {
+          await this.onChangeEmitter.fire(
+            this.connection?.blockchainIdentifier || null
+          );
+        }
       }
-      this.statusBarItem.command = "neo3-visual-devtracker.disconnect";
     } else {
       this.statusBarItem.text = `${PREFIX} Not connected`;
       this.statusBarItem.tooltip = "Click to connect to a Neo blockchain";
