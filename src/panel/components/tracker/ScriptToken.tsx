@@ -31,14 +31,17 @@ export default function ScriptToken({
       .join("");
     if (token === contractHashRaw) {
       return (
-        <strong
+        <span
           style={style}
           title={`Contract:\n ${contractHashRaw}\n  (${name})`}
         >
-          {contractHashRaw.substring(0, 4)}..
-          {contractHashRaw.substring(contractHashRaw.length - 4)} (#
-          <i>{name}</i>)
-        </strong>
+          <strong>
+            {contractHashRaw.substring(0, 4)}..
+            {contractHashRaw.substring(contractHashRaw.length - 4)} (
+          </strong>
+          <i>{name}</i>
+          <strong>)</strong>
+        </span>
       );
     }
   }
