@@ -10,6 +10,7 @@ const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
 const LOG_PREFIX = "[BlockchainMonitor]";
 const MAX_RETRIES = 3;
+// TODO: Dynamically adapt based on recent observed block times
 const REFRESH_INTERVAL_MS = 1000 * 2; // check for new blocks every 2 seconds
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
