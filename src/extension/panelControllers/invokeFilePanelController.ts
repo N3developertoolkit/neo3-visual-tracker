@@ -17,7 +17,8 @@ import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
 const MAX_RECENT_TXS = 10;
-const REFRESH_INTERVAL_MS = 1000 * 5; // TODO: Use an event instead of polling
+// Polling is needed to monitor for appearance of recent transactions on the blockchain:
+const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewState,
@@ -59,6 +60,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       if (e.document.uri.toString() === document.uri.toString()) {
         this.onFileUpdate();
       }
+    });
+    this.autoComplete.onChange(async () => {
+      await this.updateViewState({
+        autoCompleteData: await this.augmentAutoCompleteData(
+          this.autoComplete.data
+        ),
+      });
     });
     this.refreshLoop();
   }
@@ -291,12 +299,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       })
     );
 
-    const autoCompleteData = await this.augmentAutoCompleteData(
-      this.autoComplete.data
-    );
-
     this.updateViewState({
-      autoCompleteData,
       recentTransactions,
       isPartOfDiffView: this.isPartOfDiffView,
     });
