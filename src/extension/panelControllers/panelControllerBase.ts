@@ -89,7 +89,12 @@ export default abstract class PanelControllerBase<
     if (JSON.stringify(mergedViewState) === JSON.stringify(this.viewState)) {
       return;
     }
-    console.log(LOG_PREFIX, "Update:", this.viewState.panelTitle, updates);
+    console.log(
+      LOG_PREFIX,
+      "Update:",
+      this.viewState.panelTitle,
+      JSON.stringify(Object.keys(updates))
+    );
     if (updates.panelTitle) {
       this.setTitle(updates.panelTitle);
     }
@@ -98,7 +103,12 @@ export default abstract class PanelControllerBase<
   }
 
   private recieveRequest(request: ViewRequest) {
-    console.log(LOG_PREFIX, "📬", request);
+    console.log(
+      LOG_PREFIX,
+      "Received:",
+      this.viewState.panelTitle,
+      JSON.stringify(Object.keys(request))
+    );
     if (request.retrieveViewState) {
       this.sendRequest({ viewState: this.viewState });
     }
@@ -108,7 +118,12 @@ export default abstract class PanelControllerBase<
   }
 
   private sendRequest(request: ControllerRequest) {
-    console.log(LOG_PREFIX, "📤", request);
+    console.log(
+      LOG_PREFIX,
+      "Sent:",
+      this.viewState.panelTitle,
+      JSON.stringify(Object.keys(request))
+    );
     this.postMessage(request);
   }
 }
