@@ -7,7 +7,7 @@ import IoHelpers from "./util/ioHelpers";
 
 const LOG_PREFIX = "[ActiveConnection]";
 const PREFIX = "NEO:";
-const REFRESH_INTERVAL_MS = 1000 * 5;
+const REFRESH_INTERVAL_MS = 1000 * 2;
 
 export default class ActiveConnection {
   connection: {
