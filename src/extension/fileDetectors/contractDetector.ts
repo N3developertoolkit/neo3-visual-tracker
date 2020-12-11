@@ -29,6 +29,7 @@ export default class ContractDetector extends DetectorBase {
         this.onChangeEmitter.fire();
       }
     });
+    this.refreshLoop();
   }
 
   async processFiles() {
@@ -43,15 +44,15 @@ export default class ContractDetector extends DetectorBase {
         let deployed = false;
         try {
           await this.activeConnection.connection?.rpcClient.getContractState(
-            contractName
+            contractHash
           );
           deployed = true;
         } catch (e) {
           // TODO: Debug why this isn't behaving right on latest neo-express build
           // https://github.com/ngdseattle/neo3-visual-tracker/issues/18
+          console.error(contractName, contractHash, e.message, e);
           if (`${e.message}`.toLowerCase().indexOf("unknown contract") !== -1) {
             deploymentRequired = true;
-            // console.error(contractName, contractHash, e.message, e);
           } else {
             console.warn(
               LOG_PREFIX,
