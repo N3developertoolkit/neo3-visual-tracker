@@ -6,7 +6,7 @@ import Table from "../Table";
 import Time from "../Time";
 
 type Props = {
-  blocks: BlockJson[];
+  blocks: (BlockJson | null)[];
   populatedBlocksFilterEnabled: boolean;
   populatedBlocksFilterSupported: boolean;
   selectedBlock: BlockJson | null;
@@ -26,6 +26,7 @@ export default function BlockList({
     textAlign: "center",
     padding: 30,
   };
+  const startingParity = blocks[0]?.index || 0;
   return (
     <>
       {populatedBlocksFilterSupported && (
@@ -59,17 +60,17 @@ export default function BlockList({
         rows={
           blocks.length
             ? blocks.map((block, i) => ({
-                key: block.hash,
-                parity: (blocks[0].index + i) % 2 === 0,
-                onClick: () => selectBlock(block.hash),
+                key: block?.hash || `missing_${i}`,
+                parity: (startingParity + i) % 2 === 0,
+                onClick: block ? () => selectBlock(block.hash) : undefined,
                 cells: [
-                  { content: <>{block.index}</> },
-                  { content: <Time ts={block.time} /> },
-                  { content: <>{block.tx.length}</> },
-                  { content: <Hash hash={block.hash} /> },
-                  { content: <>{block.size} bytes</> },
+                  { content: <>{block?.index || "..."}</> },
+                  { content: block ? <Time ts={block.time} /> : <>...</> },
+                  { content: <>{block?.tx?.length || 0}</> },
+                  { content: <Hash hash={block?.hash || "..."} /> },
+                  { content: <>{block?.size || 0} bytes</> },
                 ],
-                selected: selectedBlock?.hash === block.hash,
+                selected: selectedBlock?.hash === block?.hash,
               }))
             : [
                 {

@@ -4,7 +4,7 @@ import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import NavButton from "../NavButton";
 
 type Props = {
-  blocks: BlockJson[];
+  blocks: (BlockJson | null)[];
   blockHeight: number;
   paginationDistance: number;
   startAtBlock: number;
@@ -24,7 +24,8 @@ export default function BlockNavigation({
     return <></>;
   }
   const lastBlock =
-    blocks[Math.min(paginationDistance, blocks.length - 1)].index;
+    blocks[Math.min(paginationDistance, blocks.length - 1)]?.index ||
+    Number.MAX_SAFE_INTEGER;
   const buttonStyle: React.CSSProperties = {
     margin: "0.25em",
   };

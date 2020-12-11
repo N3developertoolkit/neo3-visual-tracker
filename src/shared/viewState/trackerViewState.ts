@@ -9,7 +9,7 @@ type TrackerViewState = {
   panelTitle: string;
   autoCompleteData: AutoCompleteData;
   blockHeight: number;
-  blocks: BlockJson[];
+  blocks: (BlockJson | null)[];
   paginationDistance: number;
   populatedBlocksFilterEnabled: boolean;
   populatedBlocksFilterSupported: boolean;

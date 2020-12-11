@@ -124,7 +124,7 @@ export default class BlockchainMonitor {
   async getBlock(
     indexOrHash: string | number,
     retryonFailure: boolean = true
-  ): Promise<BlockJson> {
+  ): Promise<BlockJson | null> {
     const cachedBlock = this.state.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
@@ -154,14 +154,14 @@ export default class BlockchainMonitor {
             e.message || "Unknown error"
           }`
         );
-        if (retryonFailure) {
+        if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
-          throw e;
+          return null;
         }
       }
     } while (retry < MAX_RETRIES);
-    throw new Error("Could not get block");
+    return null;
   }
 
   async getTransaction(

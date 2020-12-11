@@ -53,7 +53,13 @@ export default class TrackerPanelController extends PanelControllerBase<
       `trackerPanel:${rpcUrl}`,
       this.rpcClient
     );
-    this.blockchainId = this.blockchainMonitor.getBlock(0).then((_) => _.hash);
+    this.blockchainId = new Promise(async (resolve) => {
+      let genesisBlock: BlockJson | null = null;
+      while (!genesisBlock) {
+        genesisBlock = await this.blockchainMonitor.getBlock(0);
+      }
+      resolve(genesisBlock.hash);
+    });
     this.blockchainMonitor.onChange(this.onBlockchainChange.bind(this));
     autoComplete.onChange((autoCompleteData) =>
       this.updateViewState({ autoCompleteData })
@@ -88,12 +94,14 @@ export default class TrackerPanelController extends PanelControllerBase<
         const selectedBlock = await this.blockchainMonitor.getBlock(
           request.selectBlock
         );
-        await this.addToSearchHistory(`${selectedBlock.index}`);
-        await this.updateViewState({
-          selectedBlock,
-          selectedTransaction: null,
-          searchHistory: await this.getSearchHistory(),
-        });
+        if (selectedBlock) {
+          await this.addToSearchHistory(`${selectedBlock.index}`);
+          await this.updateViewState({
+            selectedBlock,
+            selectedTransaction: null,
+            searchHistory: await this.getSearchHistory(),
+          });
+        }
       } else {
         await this.updateViewState({
           selectedBlock: null,
@@ -164,7 +172,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
-    let newBlocks: Promise<BlockJson>[] = [];
+    let newBlocks: Promise<BlockJson | null>[] = [];
     let blockNumber =
       startAtBlock < 0 || startAtBlock >= blockHeight
         ? blockHeight - 1
@@ -234,7 +242,9 @@ export default class TrackerPanelController extends PanelControllerBase<
     if (parseInt(query) + "" === query) {
       try {
         const block = await this.blockchainMonitor.getBlock(parseInt(query));
-        request.selectBlock = block.hash;
+        if (block) {
+          request.selectBlock = block.hash;
+        }
       } catch {
         await vscode.window.showErrorMessage(
           `Could not retrieve block ${parseInt(query)}`
@@ -257,7 +267,9 @@ export default class TrackerPanelController extends PanelControllerBase<
 
     try {
       const block = await this.blockchainMonitor.getBlock(query, false);
-      request.selectBlock = block.hash;
+      if (block) {
+        request.selectBlock = block.hash;
+      }
     } catch {
       try {
         const tx = await this.getTransaction(query.toLowerCase(), false);
