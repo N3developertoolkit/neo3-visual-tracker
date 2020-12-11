@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 import AutoComplete from "../autoComplete";
 import BlockchainIdentifier from "../blockchainIdentifier";
+import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
@@ -56,7 +57,8 @@ export default class NeoExpressCommands {
     context: vscode.ExtensionContext,
     neoExpress: NeoExpress,
     neoExpressInstanceManager: NeoExpressInstanceManager,
-    autoComplete: AutoComplete
+    autoComplete: AutoComplete,
+    blockchainMonitorPool: BlockchainMonitorPool
   ) {
     const nodeCount = await IoHelpers.multipleChoice(
       "Number of nodes in the new instance",
@@ -94,7 +96,12 @@ export default class NeoExpressCommands {
         await neoExpressInstanceManager.run(identifier);
         const rpcUrl = await identifier.selectRpcUrl();
         if (rpcUrl) {
-          new TrackerPanelController(context, rpcUrl, autoComplete);
+          new TrackerPanelController(
+            context,
+            rpcUrl,
+            autoComplete,
+            blockchainMonitorPool
+          );
         }
       }
     }

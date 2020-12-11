@@ -6,6 +6,7 @@ import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 import AddressInfo from "../../shared/addressInfo";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitor from "../blockchainMonitor/blockchainMonitor";
+import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -27,7 +28,8 @@ export default class TrackerPanelController extends PanelControllerBase<
   constructor(
     context: vscode.ExtensionContext,
     rpcUrl: string,
-    autoComplete: AutoComplete
+    autoComplete: AutoComplete,
+    blockchainMonitorPool: BlockchainMonitorPool
   ) {
     super(
       {
@@ -49,10 +51,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     );
     this.state = context.workspaceState;
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
-    this.blockchainMonitor = new BlockchainMonitor(
-      `trackerPanel:${rpcUrl}`,
-      this.rpcClient
-    );
+    this.blockchainMonitor = blockchainMonitorPool.getMonitor(rpcUrl);
     this.blockchainId = new Promise(async (resolve) => {
       let genesisBlock: BlockJson | null = null;
       while (!genesisBlock) {

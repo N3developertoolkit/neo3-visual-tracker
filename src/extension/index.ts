@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import ActiveConnection from "./activeConnection";
 import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
+import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import ContractDetector from "./fileDetectors/contractDetector";
@@ -41,6 +42,7 @@ function registerBlockchainInstanceCommand(
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+  const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
   const serverListDetector = new ServerListDetector(context.extensionPath);
@@ -113,7 +115,8 @@ export async function activate(context: vscode.ExtensionContext) {
           context,
           neoExpress,
           neoExpressInstanceManager,
-          autoComplete
+          autoComplete,
+          blockchainMonitorPool
         )
     )
   );
@@ -232,7 +235,12 @@ export async function activate(context: vscode.ExtensionContext) {
     blockchainsTreeDataProvider,
     "neo3-visual-devtracker.tracker.openTracker",
     (identifier) =>
-      TrackerCommands.openTracker(context, identifier, autoComplete)
+      TrackerCommands.openTracker(
+        context,
+        identifier,
+        autoComplete,
+        blockchainMonitorPool
+      )
   );
 }
 

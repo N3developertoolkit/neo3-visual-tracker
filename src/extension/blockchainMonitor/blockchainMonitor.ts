@@ -62,6 +62,7 @@ export default class BlockchainMonitor {
   onChange: vscode.Event<number>;
 
   private readonly onChangeEmitter: vscode.EventEmitter<number>;
+  private readonly rpcClient: neonCore.rpc.RPCClient;
 
   private disposed: boolean;
   private getPopulatedBlocksSuccess: boolean;
@@ -69,10 +70,15 @@ export default class BlockchainMonitor {
   private state: BlockchainState;
   private tryGetPopulatedBlocks: boolean;
 
-  constructor(
-    private readonly monitorName: string,
-    private readonly rpcClient: neonCore.rpc.RPCClient
+  public static createForPool(url: string, onDispose: () => void) {
+    return new BlockchainMonitor(url, onDispose);
+  }
+
+  private constructor(
+    private readonly rpcUrl: string,
+    private readonly onDispose: () => void
   ) {
+    this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
     this.rpcId = 0;
@@ -83,9 +89,13 @@ export default class BlockchainMonitor {
     this.refreshLoop();
   }
 
-  dispose() {
-    this.disposed = true;
-    this.onChangeEmitter.dispose();
+  dispose(fromPool: boolean = false) {
+    if (fromPool) {
+      this.disposed = true;
+      this.onChangeEmitter.dispose();
+    } else {
+      this.onDispose();
+    }
   }
 
   async getAddress(
@@ -223,7 +233,7 @@ export default class BlockchainMonitor {
       setTimeout(() => this.refreshLoop(), refreshInterval);
       console.log(
         LOG_PREFIX,
-        `Monitoring ${this.monitorName}`,
+        `Monitoring ${this.rpcUrl}`,
         `Interval: ${refreshInterval}ms`
       );
     }
