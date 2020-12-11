@@ -197,12 +197,14 @@ export default class TrackerPanelController extends PanelControllerBase<
   private async getTransaction(
     hash: string,
     retryOnFailure: boolean = true
-  ): Promise<TransactionJson> {
+  ): Promise<TransactionJson | null> {
     const tx = await this.blockchainMonitor.getTransaction(
       hash,
       retryOnFailure
     );
-    await this.addToSearchHistory(hash);
+    if (tx) {
+      await this.addToSearchHistory(hash);
+    }
     return tx;
   }
 
@@ -274,7 +276,9 @@ export default class TrackerPanelController extends PanelControllerBase<
     } catch {
       try {
         const tx = await this.getTransaction(query.toLowerCase(), false);
-        request.selectTransaction = tx.hash;
+        if (tx) {
+          request.selectTransaction = tx.hash;
+        }
       } catch {
         await vscode.window.showErrorMessage(
           `Could not retrieve block or transaction with hash ${query}`

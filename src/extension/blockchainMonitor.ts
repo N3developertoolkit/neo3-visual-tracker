@@ -167,7 +167,7 @@ export default class BlockchainMonitor {
   async getTransaction(
     hash: string,
     retryonFailure: boolean = true
-  ): Promise<TransactionJson> {
+  ): Promise<TransactionJson | null> {
     const cachedTransaction = this.state.cachedTransactions.find(
       (_) => _.hash === hash
     );
@@ -189,14 +189,14 @@ export default class BlockchainMonitor {
           LOG_PREFIX,
           `Error retrieving tx ${hash}: ${e.message || "Unknown error"}`
         );
-        if (retryonFailure) {
+        if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
-          throw e;
+          return null;
         }
       }
     } while (retry < MAX_RETRIES);
-    throw new Error("Could not get transaction");
+    return null;
   }
 
   isBlockPopulated(blockIndex: number) {
