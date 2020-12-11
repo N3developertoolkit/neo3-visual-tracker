@@ -4,7 +4,7 @@ import * as neonCore from "@cityofzion/neon-core";
 import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
-import AddressInfo from "../shared/addressInfo";
+import AddressInfo from "../../shared/addressInfo";
 
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
