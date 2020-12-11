@@ -9,15 +9,19 @@ import AddressInfo from "../shared/addressInfo";
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
 const LOG_PREFIX = "[BlockchainMonitor]";
+const MAX_REFRESH_INTERVAL_MS = 1000; // initially check every 1s but adapt according to observed block times
 const MAX_RETRIES = 3;
-// TODO: Dynamically adapt based on recent observed block times
-const REFRESH_INTERVAL_MS = 1000 * 2; // check for new blocks every 2 seconds
+const MIN_REFRESH_INTERVAL_MS = 1000 * 30;
 const SCRIPTHASH_GAS = "0x668e0c1f9d7b70a99dd9e06eadd4c784d641afbc";
 const SCRIPTHASH_NEO = "0xde5f57d430d3dece511cf975a8d37848cb9e0525";
 const SLEEP_ON_ERROR_MS = 500;
+const SPEED_DETECTION_WINDOW = 10; // Analyze previous 10 block times to calculate block speed
 const TRANSACTION_CACHE_SIZE = 1024;
 
+const now = () => new Date().getTime();
+
 class BlockchainState {
+  public readonly blockTimes: number[];
   public readonly cachedBlocks: BlockJson[];
   public readonly cachedTransactions: TransactionJson[];
   public readonly populatedBlocks: bitset.BitSet;
@@ -25,10 +29,32 @@ class BlockchainState {
   public lastKnownBlockHeight: number;
 
   constructor(public readonly lastKnownCacheId: string = "") {
+    this.blockTimes = [now()];
     this.cachedBlocks = [];
     this.cachedTransactions = [];
     this.lastKnownBlockHeight = 0;
     this.populatedBlocks = new bitset.default();
+  }
+
+  currentRefreshInterval() {
+    let differencesSum: number = 0;
+    let differencesCount: number = 0;
+    let previous = now();
+    for (const timestamp of this.blockTimes) {
+      differencesSum += previous - timestamp;
+      differencesCount++;
+      previous = timestamp;
+    }
+    if (differencesCount === 0) {
+      return MAX_REFRESH_INTERVAL_MS;
+    }
+    return Math.min(
+      MIN_REFRESH_INTERVAL_MS,
+      Math.max(
+        Math.round((1.0 / 3.0) * (differencesSum / differencesCount)),
+        MAX_REFRESH_INTERVAL_MS
+      )
+    );
   }
 }
 
@@ -189,12 +215,17 @@ export default class BlockchainMonitor {
       return;
     }
     try {
-      console.log(LOG_PREFIX, "Monitoring", this.monitorName);
       await this.updateState();
     } catch (e) {
       console.error(LOG_PREFIX, "Unexpected error", e.message);
     } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+      const refreshInterval = this.state.currentRefreshInterval();
+      setTimeout(() => this.refreshLoop(), refreshInterval);
+      console.log(
+        LOG_PREFIX,
+        `Monitoring ${this.monitorName}`,
+        `Interval: ${refreshInterval}ms`
+      );
     }
   }
 
@@ -252,6 +283,11 @@ export default class BlockchainMonitor {
 
     if (fireChangeEvent) {
       this.onChangeEmitter.fire(blockHeight);
+      this.state.blockTimes.unshift(now());
+      this.state.blockTimes.length = Math.min(
+        SPEED_DETECTION_WINDOW,
+        this.state.blockTimes.length
+      );
     }
   }
 
