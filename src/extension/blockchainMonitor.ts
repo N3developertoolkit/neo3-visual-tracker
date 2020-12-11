@@ -91,7 +91,7 @@ export default class BlockchainMonitor {
   async getAddress(
     address: string,
     retryOnFailure: boolean = true
-  ): Promise<AddressInfo> {
+  ): Promise<AddressInfo | null> {
     let retry = 0;
     do {
       console.log(
@@ -111,14 +111,14 @@ export default class BlockchainMonitor {
             e.message || "Unknown error"
           })`
         );
-        if (retryOnFailure) {
+        if (retryOnFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
-          throw e;
+          return null;
         }
       }
     } while (retry < MAX_RETRIES);
-    throw new Error("Could not get address");
+    return null;
   }
 
   async getBlock(

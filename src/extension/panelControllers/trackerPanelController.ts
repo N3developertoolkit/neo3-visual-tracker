@@ -162,7 +162,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private async getAddress(
     address: string,
     retryOnFailure: boolean = true
-  ): Promise<AddressInfo> {
+  ): Promise<AddressInfo | null> {
     const result = await this.blockchainMonitor.getAddress(
       address,
       retryOnFailure
@@ -255,8 +255,9 @@ export default class TrackerPanelController extends PanelControllerBase<
 
     if (query.startsWith("N")) {
       try {
-        await this.getAddress(query, false);
-        request.selectAddress = query;
+        if (await this.getAddress(query, false)) {
+          request.selectAddress = query;
+        }
       } catch {
         await vscode.window.showErrorMessage(
           `Could not retrieve address ${query}`
