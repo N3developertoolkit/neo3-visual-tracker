@@ -3,8 +3,10 @@
   "isRoot": true,
   "tools": {
     "neo.neon": {
-      "version": "3.0.0-mono-master-00344",
-      "commands": ["neon"]
+      "version": "3.0.0-mono-master-00374",
+      "commands": [
+        "neon"
+      ]
     }
   }
 }

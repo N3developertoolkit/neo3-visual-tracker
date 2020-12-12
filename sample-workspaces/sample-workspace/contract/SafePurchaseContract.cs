@@ -30,11 +30,10 @@ namespace SafePurchaseSample
         public SaleState State;
     }
 
-    [ManifestName("DevHawk.SafePurchase")]
+    [DisplayName("DevHawk.SafePurchase")]
     [ManifestExtra("Author", "Harry Pierson")]
     [ManifestExtra("Email", "hpierson@ngd.neo.org")]
     [ManifestExtra("Description", "This is an example contract")]
-    // [Features(ContractFeatures.HasStorage | ContractFeatures.Payable)]
     public class SafePurchaseContract : SmartContract
     {
         static readonly UInt160 Owner = "NWoLj8g5Hr43B3CDkpMKDJFfBV3p6NM732".ToScriptHash();
@@ -137,8 +136,8 @@ namespace SafePurchaseSample
 
             if (!Runtime.CheckWitness(saleInfo.Buyer)) throw new Exception("must be buyer to confirm receipt");
 
-            GAS.Transfer(ExecutionEngine.ExecutingScriptHash, saleInfo.Buyer, saleInfo.Price);
-            GAS.Transfer(ExecutionEngine.ExecutingScriptHash, saleInfo.Seller, saleInfo.Price * 3);
+            GAS.Transfer(ExecutionEngine.ExecutingScriptHash, saleInfo.Buyer, saleInfo.Price, null);
+            GAS.Transfer(ExecutionEngine.ExecutingScriptHash, saleInfo.Seller, saleInfo.Price * 3, null);
 
             DeleteSale(saleInfo);
             OnSaleCompleted(saleInfo.Id);
