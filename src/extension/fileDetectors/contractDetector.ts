@@ -41,24 +41,27 @@ export default class ContractDetector extends DetectorBase {
         const contractHash = manifest.abi.hash;
         let deploymentRequired = false;
         let deployed = false;
-        try {
-          await this.activeConnection.connection?.rpcClient.getContractState(
-            contractHash
-          );
-          deployed = true;
-        } catch (e) {
-          // TODO: Debug why this isn't behaving right on latest neo-express build
-          // https://github.com/ngdseattle/neo3-visual-tracker/issues/18
-          if (`${e.message}`.toLowerCase().indexOf("unknown contract") !== -1) {
-            deploymentRequired = true;
-          } else {
-            console.warn(
-              LOG_PREFIX,
-              "Could not query for contract",
-              absolutePathToNef,
-              "Error:",
-              e.message
-            );
+        const connection = this.activeConnection.connection;
+        if (connection) {
+          try {
+            await connection.rpcClient.getContractState(contractHash);
+            deployed = true;
+          } catch (e) {
+            // TODO: Debug why this isn't behaving right on latest neo-express build
+            // https://github.com/ngdseattle/neo3-visual-tracker/issues/18
+            if (
+              `${e.message}`.toLowerCase().indexOf("unknown contract") !== -1
+            ) {
+              deploymentRequired = true;
+            } else {
+              console.warn(
+                LOG_PREFIX,
+                "Could not query for contract",
+                absolutePathToNef,
+                "Error:",
+                e.message
+              );
+            }
           }
         }
         if (
