@@ -34,6 +34,9 @@ class BlockchainState {
     this.cachedTransactions = [];
     this.lastKnownBlockHeight = 0;
     this.populatedBlocks = new bitset.default();
+    // Always consider the genesis block as "populated" (even though technically
+    // it has zero transactions, it is an significant part of the chain history):
+    this.populatedBlocks.set(0);
   }
 
   currentRefreshInterval() {
