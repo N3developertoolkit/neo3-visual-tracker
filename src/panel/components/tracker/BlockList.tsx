@@ -64,7 +64,11 @@ export default function BlockList({
                 parity: (startingParity + i) % 2 === 0,
                 onClick: block ? () => selectBlock(block.hash) : undefined,
                 cells: [
-                  { content: <>{block?.index || "..."}</> },
+                  {
+                    content: (
+                      <>{block?.index === undefined ? "..." : block.index}</>
+                    ),
+                  },
                   { content: block ? <Time ts={block.time} /> : <>...</> },
                   { content: <>{block?.tx?.length || 0}</> },
                   { content: <Hash hash={block?.hash || "..."} /> },
