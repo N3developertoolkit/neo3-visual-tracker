@@ -110,8 +110,6 @@ export default class AutoComplete {
   private async uodate() {
     console.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
 
-    const workspaceContracts = { ...this.contractDetector.contracts };
-
     const newData: AutoCompleteData = {
       contractManifests: { ...this.wellKnownManifests },
       contractHashes: {},
@@ -138,7 +136,8 @@ export default class AutoComplete {
       }
     }
 
-    for (const workspaceContract of Object.values(workspaceContracts)) {
+    const workspaceContracts = Object.values(this.contractDetector.contracts);
+    for (const workspaceContract of workspaceContracts) {
       const manifest = workspaceContract.manifest;
       const contractHash = manifest.abi?.hash;
       const contractPath = workspaceContract.absolutePathToNef;
