@@ -1,13 +1,17 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import * as extractZip from "extract-zip";
 import fs from "fs";
+import * as temp from "temp";
 
 import ActiveConnection from "../activeConnection";
-import JSONC from "../util/JSONC";
 import DetectorBase from "./detectorBase";
+import JSONC from "../util/JSONC";
+import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[ContractDetector]";
 // Contract deployments can happen independently of the extension, so polling is required:
-const REFRESH_INTERVAL_MS = 1000 * 30;
+// TODO: Use a BlockchainMonitor on the active connection to be faster at detecting deployment
+const REFRESH_INTERVAL_MS = 1000 * 5;
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
@@ -37,8 +41,8 @@ export default class ContractDetector extends DetectorBase {
     const newSnapshot: ContractMap = {};
     for (const absolutePathToNef of this.files) {
       const manifest = ContractDetector.tryGetManifest(absolutePathToNef);
-      if (manifest?.abi?.hash) {
-        const contractHash = manifest.abi.hash;
+      const contractHash = await ContractDetector.tryGetHash(absolutePathToNef);
+      if (manifest && contractHash) {
         let deploymentRequired = false;
         let deployed = false;
         const connection = this.activeConnection.connection;
@@ -47,8 +51,6 @@ export default class ContractDetector extends DetectorBase {
             await connection.rpcClient.getContractState(contractHash);
             deployed = true;
           } catch (e) {
-            // TODO: Debug why this isn't behaving right on latest neo-express build
-            // https://github.com/ngdseattle/neo3-visual-tracker/issues/18
             if (
               `${e.message}`.toLowerCase().indexOf("unknown contract") !== -1
             ) {
@@ -57,6 +59,7 @@ export default class ContractDetector extends DetectorBase {
               console.warn(
                 LOG_PREFIX,
                 "Could not query for contract",
+                contractHash,
                 absolutePathToNef,
                 "Error:",
                 e.message
@@ -82,6 +85,31 @@ export default class ContractDetector extends DetectorBase {
     }
     this.contracts = newSnapshot;
     return deploymentStatusChanged;
+  }
+
+  // TODO: Figure out why the hash returned by this is different to that returned
+  //       by nxp3 contract list
+  static async tryGetHash(fullPathToNef: string): Promise<string> {
+    try {
+      const fullPathToZippedDebugJson = fullPathToNef.replace(
+        /\.nef$/,
+        ".nefdbgnfo"
+      );
+      const dir = temp.mkdirSync();
+      await extractZip.default(fullPathToZippedDebugJson, { dir });
+      const fullPathToDebugJson = posixPath(dir, fs.readdirSync(dir)[0]);
+      return (
+        JSONC.parse(fs.readFileSync(fullPathToDebugJson).toString()).hash || ""
+      );
+    } catch (e) {
+      console.warn(
+        LOG_PREFIX,
+        "Error determining contract hash",
+        fullPathToNef,
+        e.message
+      );
+      return "";
+    }
   }
 
   static tryGetManifest(fullPathToNef: string) {
