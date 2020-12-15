@@ -253,9 +253,10 @@ export default class BlockchainMonitor {
     if (this.tryGetPopulatedBlocks) {
       try {
         let start = blockHeight;
+        let mayBeMoreResults = true;
         do {
           const count = Math.max(
-            1,
+            2,
             Math.min(start - this.state.lastKnownBlockHeight, BLOCKS_PER_QUERY)
           );
           const result = (await this.rpcClient.query({
@@ -282,7 +283,8 @@ export default class BlockchainMonitor {
           start = result.blocks.length
             ? result.blocks[result.blocks.length - 1]
             : 0;
-        } while (start > this.state.lastKnownBlockHeight);
+          mayBeMoreResults = result.blocks.length >= count;
+        } while (mayBeMoreResults);
       } catch (e) {
         if (e.message?.indexOf("Method not found") !== -1) {
           this.tryGetPopulatedBlocks = false;
