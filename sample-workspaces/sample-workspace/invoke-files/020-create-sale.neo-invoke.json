@@ -1,6 +1,6 @@
 [
   {
-    "contract": "#GAS",
+    "contract": "#GasToken",
     "operation": "transfer",
     "args": [
       "@seller",

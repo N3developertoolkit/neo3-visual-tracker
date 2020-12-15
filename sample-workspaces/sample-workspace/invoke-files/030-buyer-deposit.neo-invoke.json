@@ -1,6 +1,6 @@
 [
   {
-    "contract": "#GAS",
+    "contract": "#GasToken",
     "operation": "transfer",
     "args": ["@buyer", "#DevHawk.SafePurchase", 100, "Buyer funds contract"]
   },

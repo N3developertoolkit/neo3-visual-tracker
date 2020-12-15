@@ -1,6 +1,6 @@
 [
   {
-    "contract": "#GAS",
+    "contract": "#GasToken",
     "operation": "transfer",
     "args": [
       "@genesis",
@@ -10,7 +10,7 @@
     ]
   },
   {
-    "contract": "#GAS",
+    "contract": "#GasToken",
     "operation": "transfer",
     "args": [
       "@genesis",
