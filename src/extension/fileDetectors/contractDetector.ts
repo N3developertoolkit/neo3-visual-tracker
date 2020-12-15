@@ -1,17 +1,14 @@
 import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
-import * as extractZip from "extract-zip";
 import fs from "fs";
-import * as temp from "temp";
 
 import ActiveConnection from "../activeConnection";
 import DetectorBase from "./detectorBase";
 import JSONC from "../util/JSONC";
-import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[ContractDetector]";
 // Contract deployments can happen independently of the extension, so polling is required:
 // TODO: Use a BlockchainMonitor on the active connection to be faster at detecting deployment
-const REFRESH_INTERVAL_MS = 1000 * 5;
+const REFRESH_INTERVAL_MS = 1000 * 15;
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
@@ -41,41 +38,45 @@ export default class ContractDetector extends DetectorBase {
     const newSnapshot: ContractMap = {};
     for (const absolutePathToNef of this.files) {
       const manifest = ContractDetector.tryGetManifest(absolutePathToNef);
-      const contractHash = await ContractDetector.tryGetHash(absolutePathToNef);
-      if (manifest && contractHash) {
+      const contractName: string = (manifest as any)?.name || "";
+      if (manifest && contractName) {
         let deploymentRequired = false;
         let deployed = false;
         const connection = this.activeConnection.connection;
         if (connection) {
           try {
-            await connection.rpcClient.getContractState(contractHash);
-            deployed = true;
-          } catch (e) {
-            if (
-              `${e.message}`.toLowerCase().indexOf("unknown contract") !== -1
-            ) {
-              deploymentRequired = true;
+            // TODO: Replace with a call to an RPC method that also exists on TestNet/MainNet
+            const result = (await connection.rpcClient.query({
+              method: "expressgetcontractstate",
+              params: [contractName],
+              id: 0,
+              jsonrpc: "2.0",
+            })) as any[];
+            if (result.length) {
+              deployed = true;
             } else {
-              console.warn(
-                LOG_PREFIX,
-                "Could not query for contract",
-                contractHash,
-                absolutePathToNef,
-                "Error:",
-                e.message
-              );
+              deploymentRequired = true;
             }
+          } catch (e) {
+            console.warn(
+              LOG_PREFIX,
+              "Could not query for contract",
+              contractName,
+              absolutePathToNef,
+              "Error:",
+              e.message
+            );
           }
         }
         if (
-          this.contracts[contractHash] &&
-          (this.contracts[contractHash].deploymentRequired !==
+          this.contracts[contractName] &&
+          (this.contracts[contractName].deploymentRequired !==
             deploymentRequired ||
-            this.contracts[contractHash].deployed !== deployed)
+            this.contracts[contractName].deployed !== deployed)
         ) {
           deploymentStatusChanged = true;
         }
-        newSnapshot[contractHash] = {
+        newSnapshot[contractName] = {
           manifest,
           absolutePathToNef,
           deploymentRequired,
@@ -85,31 +86,6 @@ export default class ContractDetector extends DetectorBase {
     }
     this.contracts = newSnapshot;
     return deploymentStatusChanged;
-  }
-
-  // TODO: Figure out why the hash returned by this is different to that returned
-  //       by nxp3 contract list
-  static async tryGetHash(fullPathToNef: string): Promise<string> {
-    try {
-      const fullPathToZippedDebugJson = fullPathToNef.replace(
-        /\.nef$/,
-        ".nefdbgnfo"
-      );
-      const dir = temp.mkdirSync();
-      await extractZip.default(fullPathToZippedDebugJson, { dir });
-      const fullPathToDebugJson = posixPath(dir, fs.readdirSync(dir)[0]);
-      return (
-        JSONC.parse(fs.readFileSync(fullPathToDebugJson).toString()).hash || ""
-      );
-    } catch (e) {
-      console.warn(
-        LOG_PREFIX,
-        "Error determining contract hash",
-        fullPathToNef,
-        e.message
-      );
-      return "";
-    }
   }
 
   static tryGetManifest(fullPathToNef: string) {
