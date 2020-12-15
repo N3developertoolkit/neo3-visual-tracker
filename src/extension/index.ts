@@ -62,7 +62,8 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpress,
     activeConnection,
     contractDetector,
-    walletDetector
+    walletDetector,
+    neoExpressDetector
   );
   const neoInvokeFileEditorProvider = new NeoInvokeFileEditorProvider(
     context,

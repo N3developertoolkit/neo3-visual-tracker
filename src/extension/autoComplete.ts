@@ -7,9 +7,10 @@ import ActiveConnection from "./activeConnection";
 import AutoCompleteData from "../shared/autoCompleteData";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./fileDetectors/contractDetector";
-import NeoExpress from "./neoExpress/neoExpress";
-import NeoExpressIo from "./neoExpress/neoExpressIo";
 import dedupeAndSort from "./util/dedupeAndSort";
+import NeoExpress from "./neoExpress/neoExpress";
+import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
+import NeoExpressIo from "./neoExpress/neoExpressIo";
 import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "[AutoComplete]";
@@ -35,7 +36,8 @@ export default class AutoComplete {
     private readonly neoExpress: NeoExpress,
     private readonly activeConnection: ActiveConnection,
     private readonly contractDetector: ContractDetector,
-    private readonly walletDetector: WalletDetector
+    private readonly walletDetector: WalletDetector,
+    neoExpressDetector: NeoExpressDetector
   ) {
     this.latestData = {
       contractManifests: {},
@@ -49,10 +51,11 @@ export default class AutoComplete {
     this.onChange = this.onChangeEmitter.event;
     this.wellKnownNames = {};
     this.initializeWellKnownManifests();
-    activeConnection.onChange(async () => await this.uodate());
-    contractDetector.onChange(async () => await this.uodate());
-    walletDetector.onChange(async () => await this.uodate());
-    this.uodate();
+    activeConnection.onChange(async () => await this.update());
+    contractDetector.onChange(async () => await this.update());
+    walletDetector.onChange(async () => await this.update());
+    neoExpressDetector.onChange(async () => await this.update());
+    this.update();
   }
 
   dispose() {
@@ -107,7 +110,7 @@ export default class AutoComplete {
     }
   }
 
-  private async uodate() {
+  private async update() {
     console.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
 
     const newData: AutoCompleteData = {
