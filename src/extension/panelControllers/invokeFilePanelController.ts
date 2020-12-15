@@ -400,15 +400,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       return;
     }
 
-    let program = contract;
     const autoCompleteData = this.autoComplete.data;
-    if (!program.startsWith("0x")) {
-      program = autoCompleteData.contractHashes[program] || "";
+    let contractHashOrName = contract;
+    if (contractHashOrName.startsWith("#")) {
+      contractHashOrName = contractHashOrName.substring(1);
     }
-    if (program.startsWith("0x")) {
-      const paths = autoCompleteData.contractPaths[program];
-      program = paths[0] || "";
-    }
+    const paths = autoCompleteData.contractPaths[contractHashOrName] || [];
+    const program = paths[0] || "";
     if (!program) {
       vscode.window.showErrorMessage(
         "Could not resolve the .nef file for the selected contract in the current workspace."

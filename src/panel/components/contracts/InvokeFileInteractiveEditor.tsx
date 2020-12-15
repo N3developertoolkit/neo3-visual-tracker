@@ -68,7 +68,7 @@ export default function InvokeFileInteractiveEditor({
         {Object.keys(viewState.autoCompleteData.addressNames).map((address) => (
           <option key={`adr_${address}`} value={`@${address}`} />
         ))}
-        {Object.keys(viewState.autoCompleteData.contractHashes).map(
+        {Object.keys(viewState.autoCompleteData.contractNames).map(
           (contract) => (
             <option key={`${contract}`} value={contract} />
           )

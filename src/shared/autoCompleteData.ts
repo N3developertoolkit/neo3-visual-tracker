@@ -4,10 +4,11 @@ import AddressNames from "./addressNames";
 import ContractNames from "./contractNames";
 
 type AutoCompleteData = {
-  contractManifests: { [contractHash: string]: Partial<ContractManifestJson> };
-  contractHashes: { [contractPathOrWellKnownName: string]: string };
+  contractManifests: {
+    [contractHashOrName: string]: Partial<ContractManifestJson>;
+  };
   contractNames: ContractNames;
-  contractPaths: { [contractHash: string]: string[] };
+  contractPaths: { [contractHashOrName: string]: string[] };
   wellKnownAddresses: { [addressName: string]: string };
   addressNames: AddressNames;
 };

@@ -1,18 +1,15 @@
 import React, { Fragment } from "react";
-import { ContractAbiJson } from "@cityofzion/neon-core/lib/sc";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 
 type Props = {
-  hash: string;
-  abi: Partial<ContractAbiJson>;
+  contractHashOrName: string;
   autoCompleteData: AutoCompleteData;
   onMouseDown?: (newValue: string) => void;
 };
 
 export default function ContractTile({
-  hash,
-  abi,
+  contractHashOrName,
   autoCompleteData,
   onMouseDown,
 }: Props) {
@@ -32,41 +29,32 @@ export default function ContractTile({
     marginRight: 10,
     borderRadius: 10,
   };
-  const contractName = autoCompleteData.contractNames[hash];
-  const paths = autoCompleteData.contractPaths[hash] || [];
-  const title = contractName
-    ? contractName
-    : paths[0]
-    ? paths[0]
-    : "Unknown contract";
-  const methods = abi.methods?.map((_) => _.name) || [];
-  const aka = [hash, contractName];
+  const aka = autoCompleteData.contractNames[contractHashOrName];
+  let manifest = autoCompleteData.contractManifests[contractHashOrName];
+  if (!manifest) {
+    for (const contractHash of Object.keys(autoCompleteData.contractNames)) {
+      const contractName = autoCompleteData.contractNames[contractHash];
+      if (contractName === contractHashOrName) {
+        manifest = autoCompleteData.contractManifests[contractHash];
+      }
+    }
+  }
+  const methods = manifest?.abi?.methods?.map((_) => _.name) || [];
+  if (!contractHashOrName.startsWith("0x")) {
+    contractHashOrName = `#${contractHashOrName}`;
+  }
   return (
     <div
       style={style}
       onMouseDown={() => {
         if (onMouseDown) {
-          onMouseDown(hash);
+          onMouseDown(contractHashOrName);
         }
       }}
     >
       <div>
-        <strong>{title}</strong>
+        <strong>{contractHashOrName}</strong> {!!aka && <span>({aka})</span>}
       </div>
-      {!!aka.length && (
-        <ul
-          style={{
-            marginLeft: 10,
-            marginTop: 5,
-            marginBottom: 5,
-            paddingLeft: 15,
-          }}
-        >
-          {aka.map((_) => (
-            <li key={_}>{_}</li>
-          ))}
-        </ul>
-      )}
       {!!methods.length && (
         <div
           style={{

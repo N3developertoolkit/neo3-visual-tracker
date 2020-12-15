@@ -50,11 +50,22 @@ export default function InvocationStep({
   let canRun = false;
   let canDebug = false;
   if (contract) {
-    const contractHash = autoCompleteData.contractHashes[contract] || contract;
-    const manifest = autoCompleteData.contractManifests[contractHash];
+    let contractHashOrName = contract;
+    if (contractHashOrName.startsWith("#")) {
+      contractHashOrName = contractHashOrName.substring(1);
+    }
+    let manifest = autoCompleteData.contractManifests[contractHashOrName];
+    if (!manifest) {
+      for (const contractHash of Object.keys(autoCompleteData.contractNames)) {
+        const contractName = autoCompleteData.contractNames[contractHash];
+        if (contractName === contractHashOrName) {
+          manifest = autoCompleteData.contractManifests[contractHash];
+        }
+      }
+    }
     if (operation) {
       canRun = true;
-      const paths = autoCompleteData.contractPaths[contractHash] || [];
+      const paths = autoCompleteData.contractPaths[contractHashOrName] || [];
       canDebug = paths.length > 0;
     }
     if (manifest?.abi) {

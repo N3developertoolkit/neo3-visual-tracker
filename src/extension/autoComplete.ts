@@ -41,7 +41,6 @@ export default class AutoComplete {
   ) {
     this.latestData = {
       contractManifests: {},
-      contractHashes: {},
       contractNames: {},
       contractPaths: {},
       wellKnownAddresses: {},
@@ -115,18 +114,11 @@ export default class AutoComplete {
 
     const newData: AutoCompleteData = {
       contractManifests: { ...this.wellKnownManifests },
-      contractHashes: {},
       contractPaths: {},
       contractNames: { ...this.wellKnownNames },
       wellKnownAddresses: {},
       addressNames: {},
     };
-
-    for (const hash of Object.keys(this.wellKnownNames)) {
-      const name = (this.wellKnownNames as any)[hash] as string;
-      newData.contractHashes[`#${name}`] = hash;
-      newData.contractNames[hash] = `#${name}`;
-    }
 
     const wallets = [...this.walletDetector.wallets];
     for (const wallet of wallets) {
@@ -142,20 +134,15 @@ export default class AutoComplete {
     const workspaceContracts = Object.values(this.contractDetector.contracts);
     for (const workspaceContract of workspaceContracts) {
       const manifest = workspaceContract.manifest;
-      const contractHash = manifest.abi?.hash;
+      const contractName = (manifest as any)?.name;
       const contractPath = workspaceContract.absolutePathToNef;
-      if (contractHash) {
-        newData.contractManifests[contractHash] = manifest;
-        const contractName: string | undefined = (manifest as any)?.name;
-        if (contractName) {
-          newData.contractHashes[`#${contractName}`] = contractHash;
-          newData.contractNames[contractHash] = `#${contractName}`;
-        }
-        newData.contractPaths[contractHash] =
-          newData.contractPaths[contractHash] || [];
-        newData.contractPaths[contractHash].push(contractPath);
-        newData.contractPaths[contractHash] = dedupeAndSort(
-          newData.contractPaths[contractHash]
+      if (contractName) {
+        newData.contractManifests[contractName] = manifest;
+        newData.contractPaths[contractName] =
+          newData.contractPaths[contractName] || [];
+        newData.contractPaths[contractName].push(contractPath);
+        newData.contractPaths[contractName] = dedupeAndSort(
+          newData.contractPaths[contractName]
         );
       }
     }
@@ -181,9 +168,12 @@ export default class AutoComplete {
           this.neoExpress,
           connection.blockchainIdentifier
         );
-        for (const deployedContract of Object.values(deployedContracts)) {
-          newData.contractManifests[deployedContract.hash] =
-            deployedContract.manifest;
+        for (const contractName of Object.keys(deployedContracts)) {
+          const deployedContract = deployedContracts[contractName];
+          const contractHash = deployedContract.hash;
+          newData.contractManifests[contractHash] = deployedContract.manifest;
+          newData.contractManifests[contractName] = deployedContract.manifest;
+          newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
         console.warn(

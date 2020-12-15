@@ -1,7 +1,8 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
+import dedupeAndSort from "../../../extension/util/dedupeAndSort";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
@@ -40,11 +41,6 @@ export default function ContractInput({
     padding: 5,
     marginTop: 5,
   };
-  const descriptionStyle: React.CSSProperties = {
-    marginTop: 5,
-    marginLeft: 15,
-    fontWeight: "bold",
-  };
   const akaStyle: React.CSSProperties = {
     marginTop: 5,
     marginLeft: 30,
@@ -68,17 +64,23 @@ export default function ContractInput({
     maxHeight: "80vh",
     overflow: "auto",
   };
-  const allHashes = Object.keys(autoCompleteData.contractManifests);
-  const hash =
-    autoCompleteData.contractHashes[contract || ""] || contract || "";
-  const contractName = autoCompleteData.contractNames[hash];
-  const paths = autoCompleteData.contractPaths[hash] || [];
-  const title = contractName
-    ? contractName
-    : paths[0]
-    ? paths[0]
-    : "Unknown contract";
-  const aka = [hash, contractName].filter((_) => !!_ && _ !== contract);
+
+  const allNamesAndHashes = dedupeAndSort(
+    Object.keys(autoCompleteData.contractManifests).map((_) =>
+      _.startsWith("0x") ? autoCompleteData.contractNames[_] || _ : _
+    )
+  );
+
+  let contractHashOrName = contract || "";
+  if (contractHashOrName.startsWith("#")) {
+    contractHashOrName = contractHashOrName.substring(1);
+  }
+
+  let aka = autoCompleteData.contractNames[contractHashOrName];
+  if (aka) {
+    aka = `#${aka}`;
+  }
+
   return (
     <div style={{ ...style, position: "relative" }}>
       <input
@@ -91,35 +93,26 @@ export default function ContractInput({
         onFocus={() => setHasFocus(true)}
         onBlur={() => setHasFocus(false)}
       />
-      {hasFocus && !!allHashes.length && (
+      {hasFocus && !!allNamesAndHashes.length && (
         <div style={dropdownStyle}>
-          {allHashes.map((hash, i) => {
-            const manifest = autoCompleteData.contractManifests[hash];
-            return manifest?.abi ? (
+          {allNamesAndHashes.map((contractHashOrName) => {
+            return (
               <ContractTile
-                key={hash}
-                hash={hash}
-                abi={manifest.abi}
+                key={contractHashOrName}
+                contractHashOrName={contractHashOrName}
                 autoCompleteData={autoCompleteData}
                 onMouseDown={setContract}
               />
-            ) : (
-              <Fragment key={`missing_${i}`}></Fragment>
             );
           })}
         </div>
       )}
-      <div style={descriptionStyle}>{title}</div>
-      {!isPartOfDiffView && !!aka.length && (
+      {!isPartOfDiffView && !!aka && (
         <div style={akaStyle}>
-          <div>This contract can also be referred to as:</div>
-          <ul style={{ marginTop: 0 }}>
-            {aka.map((_) => (
-              <li key={_} style={akaItemStyle} onClick={() => setContract(_)}>
-                {_}
-              </li>
-            ))}
-          </ul>
+          This contract can also be referred to as:{" "}
+          <span style={akaItemStyle} onClick={() => setContract(aka)}>
+            {aka}
+          </span>
         </div>
       )}
     </div>
