@@ -5,7 +5,6 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import AutoCompleteData from "../../shared/autoCompleteData";
-import dedupeAndSort from "../util/dedupeAndSort";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../util/ioHelpers";
@@ -197,22 +196,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     data: AutoCompleteData
   ): Promise<AutoCompleteData> {
     const result = { ...data };
-    result.contractPaths = { ...result.contractPaths };
-    result.contractHashes = { ...result.contractHashes };
-
-    const baseHref = posixPath(path.dirname(this.document.uri.fsPath));
-    for (const hash of Object.keys(data.contractPaths)) {
-      const contractPaths = [...data.contractPaths[hash]];
-      for (const contractPath of contractPaths) {
-        if (path.isAbsolute(contractPath)) {
-          const relativePath = path.relative(baseHref, contractPath);
-          contractPaths.push(relativePath);
-          result.contractHashes[relativePath] =
-            result.contractHashes[contractPath];
-        }
-      }
-      result.contractPaths[hash] = dedupeAndSort(contractPaths);
-    }
+    result.contractManifests = { ...result.contractManifests };
 
     const connection = this.activeConnection.connection;
     if (connection?.rpcClient) {
@@ -220,6 +204,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         .filter((_) => _.contract?.startsWith("0x"))
         .map((_) => _.contract || "")) {
         try {
+          // TODO: Lookup by name instead
           const manifest = (
             await connection.rpcClient.getContractState(contractHash)
           ).toJson();
@@ -416,15 +401,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
 
     let program = contract;
-    if (!program.endsWith(".nef")) {
-      const autoCompleteData = this.autoComplete.data;
-      if (!program.startsWith("0x")) {
-        program = autoCompleteData.contractHashes[program] || "";
-      }
-      if (program.startsWith("0x")) {
-        const paths = autoCompleteData.contractPaths[program];
-        program = paths[0] || "";
-      }
+    const autoCompleteData = this.autoComplete.data;
+    if (!program.startsWith("0x")) {
+      program = autoCompleteData.contractHashes[program] || "";
+    }
+    if (program.startsWith("0x")) {
+      const paths = autoCompleteData.contractPaths[program];
+      program = paths[0] || "";
     }
     if (!program) {
       vscode.window.showErrorMessage(
