@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./util/ioHelpers";
+import Log from "../shared/log";
 
 const LOG_PREFIX = "[ActiveConnection]";
 const PREFIX = "NEO:";
@@ -73,7 +74,7 @@ export default class ActiveConnection {
       ) {
         this.connection = null;
         await this.updateConnectionState();
-        console.log(LOG_PREFIX, "Firing change event (disconnection)");
+        Log.log(LOG_PREFIX, "Firing change event (disconnection)");
         await this.onChangeEmitter.fire(null);
       }
     }
@@ -113,10 +114,7 @@ export default class ActiveConnection {
       } finally {
         this.statusBarItem.command = "neo3-visual-devtracker.disconnect";
         if (connection.healthy !== wasHealthy) {
-          console.log(
-            LOG_PREFIX,
-            "Firing change event (connection health change)"
-          );
+          Log.log(LOG_PREFIX, "Firing change event (connection health change)");
           await this.onChangeEmitter.fire(
             this.connection?.blockchainIdentifier || null
           );

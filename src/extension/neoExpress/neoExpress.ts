@@ -2,6 +2,7 @@ import * as childProcess from "child_process";
 import * as vscode from "vscode";
 import * as which from "which";
 
+import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 
 type Command =
@@ -93,7 +94,7 @@ export default class NeoExpress {
           childProcess.execFileSync(this.dotnetPath, ["--version"]).toString()
         ) >= 3;
     } catch (e) {
-      console.error(LOG_PREFIX, "checkForDotNet error:", e.message);
+      Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
       ok = false;
     }
     if (!ok) {

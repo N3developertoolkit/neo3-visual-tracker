@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import BlockchainType from "./blockchainType";
 import IoHelpers from "./util/ioHelpers";
 import JSONC from "./util/JSONC";
+import Log from "../shared/log";
 import posixPath from "./util/posixPath";
 
 const LOG_PREFIX = "[BlockchainIdentifier]";
@@ -39,7 +40,7 @@ export default class BlockchainIdentifier {
         ?.map((_: any) => parseInt(_["rpc-port"]))
         .filter((_: any) => !!_);
       if (!nodePorts.length) {
-        console.log(LOG_PREFIX, "No RPC ports found", configPath);
+        Log.log(LOG_PREFIX, "No RPC ports found", configPath);
         return undefined;
       }
       return new BlockchainIdentifier(
@@ -52,7 +53,7 @@ export default class BlockchainIdentifier {
         configPath
       );
     } catch (e) {
-      console.log(
+      Log.log(
         LOG_PREFIX,
         "Error parsing neo-express config",
         configPath,
@@ -127,7 +128,7 @@ export default class BlockchainIdentifier {
         }
       }
     } catch (e) {
-      console.log(
+      Log.log(
         LOG_PREFIX,
         "Error parsing neo-express wallets",
         this.configPath,

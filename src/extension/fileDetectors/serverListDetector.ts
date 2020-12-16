@@ -6,6 +6,7 @@ import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
+import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[ServerListDetector]";
@@ -114,7 +115,7 @@ export default class ServerListDetector extends DetectorBase {
               if (parsedUrl.scheme === "http" || parsedUrl.scheme === "https") {
                 rpcUrls[url] = true;
               } else {
-                console.log(
+                Log.log(
                   LOG_PREFIX,
                   "Ignoring malformed URL (bad scheme)",
                   url,
@@ -122,7 +123,7 @@ export default class ServerListDetector extends DetectorBase {
                 );
               }
             } catch (e) {
-              console.log(
+              Log.log(
                 LOG_PREFIX,
                 "Ignoring malformed URL (parse error)",
                 url,
@@ -132,7 +133,7 @@ export default class ServerListDetector extends DetectorBase {
           }
         }
       } catch (e) {
-        console.log(
+        Log.log(
           LOG_PREFIX,
           "Error parsing Neo Express config",
           file,
@@ -173,7 +174,7 @@ export default class ServerListDetector extends DetectorBase {
       const genesisBlock = await rpcClient.getBlock(0, true);
       return genesisBlock.hash;
     } catch (e) {
-      console.log(
+      Log.log(
         LOG_PREFIX,
         "Could not get genesis blockhash from",
         rpcUrl,

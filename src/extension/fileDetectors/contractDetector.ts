@@ -4,6 +4,7 @@ import fs from "fs";
 import ActiveConnection from "../activeConnection";
 import DetectorBase from "./detectorBase";
 import JSONC from "../util/JSONC";
+import Log from "../../shared/log";
 
 const LOG_PREFIX = "[ContractDetector]";
 // Contract deployments can happen independently of the extension, so polling is required:
@@ -58,7 +59,7 @@ export default class ContractDetector extends DetectorBase {
               deploymentRequired = true;
             }
           } catch (e) {
-            console.warn(
+            Log.warn(
               LOG_PREFIX,
               "Could not query for contract",
               contractName,
@@ -98,7 +99,7 @@ export default class ContractDetector extends DetectorBase {
         fs.readFileSync(fullPathToManifest).toString()
       ) as Partial<ContractManifestJson>;
     } catch (e) {
-      console.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e.message);
+      Log.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e.message);
       return undefined;
     }
   }

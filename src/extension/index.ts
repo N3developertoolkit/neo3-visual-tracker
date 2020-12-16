@@ -7,6 +7,7 @@ import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import ContractDetector from "./fileDetectors/contractDetector";
+import Log from "../shared/log";
 import NeoCommands from "./commands/neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./commands/neoExpressCommands";
@@ -17,6 +18,8 @@ import QuickStartViewProvider from "./vscodeProviders/quickStartViewProvider";
 import ServerListDetector from "./fileDetectors/serverListDetector";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
+
+const LOG_PREFIX = "[index]";
 
 function registerBlockchainInstanceCommand(
   context: vscode.ExtensionContext,
@@ -42,6 +45,7 @@ function registerBlockchainInstanceCommand(
 }
 
 export async function activate(context: vscode.ExtensionContext) {
+  Log.log(LOG_PREFIX, "Activating extension...");
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
@@ -245,4 +249,6 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 }
 
-export function deactivate() {}
+export function deactivate() {
+  Log.log(LOG_PREFIX, "Deactivating extension...");
+}

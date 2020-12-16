@@ -5,6 +5,7 @@ import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
 import AddressInfo from "../../shared/addressInfo";
+import Log from "../../shared/log";
 
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
@@ -107,10 +108,7 @@ export default class BlockchainMonitor {
   ): Promise<AddressInfo | null> {
     let retry = 0;
     do {
-      console.log(
-        LOG_PREFIX,
-        `Retrieving address ${address} (attempt ${retry++})`
-      );
+      Log.log(LOG_PREFIX, `Retrieving address ${address} (attempt ${retry++})`);
       try {
         return {
           address,
@@ -118,7 +116,7 @@ export default class BlockchainMonitor {
           gasBalance: await this.getBalance(address, SCRIPTHASH_GAS),
         };
       } catch (e) {
-        console.warn(
+        Log.warn(
           LOG_PREFIX,
           `Error retrieving address ${address} (${
             e.message || "Unknown error"
@@ -146,7 +144,7 @@ export default class BlockchainMonitor {
     }
     let retry = 0;
     do {
-      console.log(
+      Log.log(
         LOG_PREFIX,
         `Retrieving block ${indexOrHash} (attempt ${retry++})`
       );
@@ -161,7 +159,7 @@ export default class BlockchainMonitor {
         }
         return block;
       } catch (e) {
-        console.warn(
+        Log.warn(
           LOG_PREFIX,
           `Error retrieving block ${indexOrHash}: ${
             e.message || "Unknown error"
@@ -189,7 +187,7 @@ export default class BlockchainMonitor {
     }
     let retry = 0;
     do {
-      console.log(LOG_PREFIX, `Retrieving tx ${hash} (attempt ${retry++})`);
+      Log.log(LOG_PREFIX, `Retrieving tx ${hash} (attempt ${retry++})`);
       try {
         const transaction = await this.rpcClient.getRawTransaction(hash, true);
         if (this.state.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
@@ -198,7 +196,7 @@ export default class BlockchainMonitor {
         this.state.cachedTransactions.push(transaction);
         return transaction;
       } catch (e) {
-        console.warn(
+        Log.warn(
           LOG_PREFIX,
           `Error retrieving tx ${hash}: ${e.message || "Unknown error"}`
         );
@@ -230,11 +228,11 @@ export default class BlockchainMonitor {
     try {
       await this.updateState();
     } catch (e) {
-      console.error(LOG_PREFIX, "Unexpected error", e.message);
+      Log.error(LOG_PREFIX, "Unexpected error", e.message);
     } finally {
       const refreshInterval = this.state.currentRefreshInterval();
       setTimeout(() => this.refreshLoop(), refreshInterval);
-      console.log(
+      Log.log(
         LOG_PREFIX,
         `Monitoring ${this.rpcUrl}`,
         `Interval: ${refreshInterval}ms`
@@ -270,7 +268,7 @@ export default class BlockchainMonitor {
             fireChangeEvent = true;
           }
           if (result.cacheId !== this.state.lastKnownCacheId) {
-            console.log(LOG_PREFIX, "Clearing cache");
+            Log.log(LOG_PREFIX, "Clearing cache");
             this.state = new BlockchainState(result.cacheId);
             fireChangeEvent = true;
           }

@@ -2,6 +2,7 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 
 import ControllerRequest from "../../shared/messages/controllerRequest";
+import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
@@ -89,7 +90,7 @@ export default abstract class PanelControllerBase<
     if (JSON.stringify(mergedViewState) === JSON.stringify(this.viewState)) {
       return;
     }
-    console.log(
+    Log.log(
       LOG_PREFIX,
       "Update:",
       this.viewState.panelTitle,
@@ -103,7 +104,7 @@ export default abstract class PanelControllerBase<
   }
 
   private recieveRequest(request: ViewRequest) {
-    console.log(
+    Log.log(
       LOG_PREFIX,
       "Received:",
       this.viewState.panelTitle,
@@ -118,7 +119,7 @@ export default abstract class PanelControllerBase<
   }
 
   private sendRequest(request: ControllerRequest) {
-    console.log(
+    Log.log(
       LOG_PREFIX,
       "Sent:",
       this.viewState.panelTitle,

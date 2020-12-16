@@ -2,6 +2,7 @@ import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import JSONC from "../util/JSONC";
+import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressIo]";
@@ -49,7 +50,7 @@ export default class NeoExpressIo {
       "--json"
     );
     if (output.isError) {
-      console.error(LOG_PREFIX, "List contract invoke error", output.message);
+      Log.error(LOG_PREFIX, "List contract invoke error", output.message);
       return {};
     }
     try {
@@ -61,7 +62,7 @@ export default class NeoExpressIo {
         const hash = contractSummary.hash;
         const manifest = await this.contractGet(neoExpress, identifer, hash);
         if (!manifest) {
-          console.error(
+          Log.error(
             LOG_PREFIX,
             "Could not get manifest from neo-express",
             hash

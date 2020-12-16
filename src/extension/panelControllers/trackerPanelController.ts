@@ -7,6 +7,7 @@ import AddressInfo from "../../shared/addressInfo";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitor from "../blockchainMonitor/blockchainMonitor";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
+import Log from "../../shared/log";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -228,7 +229,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         });
       }
     } catch (e) {
-      console.error(
+      Log.error(
         LOG_PREFIX,
         "Unexpected error processing blockchain update",
         blockHeight,

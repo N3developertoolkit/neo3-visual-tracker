@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainType from "../blockchainType";
 import IoHelpers from "../util/ioHelpers";
+import Log from "../../shared/log";
 import NeoExpressDetector from "../fileDetectors/neoExpressDetector";
 import ServerListDetector from "../fileDetectors/serverListDetector";
 
@@ -51,7 +52,7 @@ export default class BlockchainsTreeDataProvider
   }
 
   async refresh() {
-    console.log(LOG_PREFIX, "Refreshing tree view...");
+    Log.log(LOG_PREFIX, "Refreshing tree view...");
     this.rootElements = [
       ...this.serverListDetector.blockchains,
       ...this.neoExpressDetector.blockchains,

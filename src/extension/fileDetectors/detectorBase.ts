@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "[DetectorBase]";
@@ -44,7 +45,7 @@ export default abstract class DetectorBase {
   protected async processFiles(): Promise<boolean | void> {}
 
   async refresh() {
-    console.log(LOG_PREFIX, "Refreshing file list...", this.searchPattern);
+    Log.log(LOG_PREFIX, "Refreshing file list...", this.searchPattern);
     this.allFiles = (
       await vscode.workspace.findFiles(this.searchPattern)
     ).map((_) => posixPath(_.fsPath));

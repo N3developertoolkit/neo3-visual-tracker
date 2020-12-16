@@ -8,6 +8,7 @@ import AutoCompleteData from "../shared/autoCompleteData";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./fileDetectors/contractDetector";
 import dedupeAndSort from "./util/dedupeAndSort";
+import Log from "../shared/log";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
@@ -78,7 +79,7 @@ export default class AutoComplete {
         tempFile.path
       );
       if (!identifier || result.isError) {
-        console.error(
+        Log.error(
           LOG_PREFIX,
           "Could not create temporary neo-express instance, built-in contract manifests will be unavailable",
           identifier,
@@ -97,7 +98,7 @@ export default class AutoComplete {
         }
       }
     } catch (e) {
-      console.error(
+      Log.error(
         LOG_PREFIX,
         "Unexpected error when retrieving manifests for built-in contracts",
         e.message
@@ -110,7 +111,7 @@ export default class AutoComplete {
   }
 
   private async update() {
-    console.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
+    Log.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
 
     const newData: AutoCompleteData = {
       contractManifests: { ...this.wellKnownManifests },
@@ -176,7 +177,7 @@ export default class AutoComplete {
           newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
-        console.warn(
+        Log.warn(
           LOG_PREFIX,
           "Could not list neo-express contracts",
           connection.blockchainIdentifier.configPath,

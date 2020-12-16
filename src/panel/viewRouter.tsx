@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ControllerRequest from "../shared/messages/controllerRequest";
 import InvokeFile from "./components/views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
+import Log from "../shared/log";
 import QuickStart from "./components/views/QuickStart";
 import QuickStartViewState from "../shared/viewState/quickStartViewState";
 import Tracker from "./components/views/Tracker";
@@ -16,11 +17,11 @@ const vscode = acquireVsCodeApi();
 
 export default function ViewRouter() {
   const postMessage = (request: ViewRequest) => {
-    console.log("📤", request);
+    Log.log("📤", request);
     vscode.postMessage(request);
   };
   const receiveMessage = (request: ControllerRequest) => {
-    console.log("📬", request);
+    Log.log("📬", request);
     if (request.viewState.view !== view) {
       // Replace viewstate:
       setView(request.viewState.view);

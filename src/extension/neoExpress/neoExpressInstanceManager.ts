@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import IoHelpers from "../util/ioHelpers";
+import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "[NeoExpressInstanceManager]";
@@ -115,13 +116,13 @@ export default class NeoExpressInstanceManager {
         if (!terminal.exitStatus) {
           terminal.dispose();
           while (!terminal.exitStatus) {
-            console.log("Waiting for terminal to close...");
+            Log.log("Waiting for terminal to close...");
             await new Promise((resolve) => setTimeout(resolve, 500));
           }
         }
       }
     } catch (e) {
-      console.warn(
+      Log.warn(
         LOG_PREFIX,
         "Could not stop",
         this.running?.name || "unknown",
