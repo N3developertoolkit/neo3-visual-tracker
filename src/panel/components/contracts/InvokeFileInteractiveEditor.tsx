@@ -62,15 +62,20 @@ export default function InvokeFileInteractiveEditor({
       <datalist id={argumentSuggestionListId}>
         {Object.keys(viewState.autoCompleteData.wellKnownAddresses).map(
           (addressName) => (
-            <option key={`name_${addressName}`} value={`@${addressName}`} />
+            <option key={`aname_${addressName}`} value={`@${addressName}`} />
           )
         )}
         {Object.keys(viewState.autoCompleteData.addressNames).map((address) => (
           <option key={`adr_${address}`} value={`@${address}`} />
         ))}
+        {Object.values(viewState.autoCompleteData.contractNames).map(
+          (contractName) => (
+            <option key={`cname_${contractName}`} value={`#${contractName}`} />
+          )
+        )}
         {Object.keys(viewState.autoCompleteData.contractNames).map(
-          (contract) => (
-            <option key={`${contract}`} value={contract} />
+          (contractHash) => (
+            <option key={`hash_${contractHash}`} value={`${contractHash}`} />
           )
         )}
       </datalist>
