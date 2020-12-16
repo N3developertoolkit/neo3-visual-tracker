@@ -63,50 +63,74 @@ export default class AutoComplete {
   }
 
   private async initializeWellKnownManifests() {
+    Log.log(LOG_PREFIX, "Initializing well-known manifests...");
     const tempFile = temp.openSync();
+    let wellKnownContracts: {
+      [name: string]: { hash: string; manifest: ContractManifestJson };
+    } = {};
     try {
-      fs.closeSync(tempFile.fd);
-      fs.unlinkSync(tempFile.path);
-      const result = this.neoExpress.runSync(
-        "create",
-        "-f",
-        "-c",
-        "1",
-        tempFile.path
-      );
-      const identifier = BlockchainIdentifier.fromNeoExpressConfig(
-        this.context.extensionPath,
-        tempFile.path
-      );
-      if (!identifier || result.isError) {
-        Log.error(
-          LOG_PREFIX,
-          "Could not create temporary neo-express instance, built-in contract manifests will be unavailable",
-          identifier,
-          result.message
-        );
+      const versionResult = this.neoExpress.runSync("-v");
+      let cacheKey = "";
+      if (versionResult.isError) {
+        Log.error(LOG_PREFIX, "Could not determine neo-express version");
       } else {
-        const wellKnownContracts = await NeoExpressIo.contractList(
-          this.neoExpress,
-          identifier
+        const version = versionResult.message.trim().substring(256);
+        cacheKey = `wellKnown_${version}`;
+        wellKnownContracts = this.context.globalState.get<
+          typeof wellKnownContracts
+        >(cacheKey, wellKnownContracts);
+      }
+      if (Object.keys(wellKnownContracts).length) {
+        Log.log(LOG_PREFIX, "Using cache");
+      } else {
+        Log.log(LOG_PREFIX, "Creating temporary instance");
+        fs.closeSync(tempFile.fd);
+        fs.unlinkSync(tempFile.path);
+        const result = this.neoExpress.runSync(
+          "create",
+          "-f",
+          "-c",
+          "1",
+          tempFile.path
         );
-        for (const wellKnownContractName of Object.keys(wellKnownContracts)) {
-          const wellKnownContract = wellKnownContracts[wellKnownContractName];
-          this.wellKnownNames[wellKnownContract.hash] = wellKnownContractName;
-          this.wellKnownManifests[wellKnownContract.hash] =
-            wellKnownContract.manifest;
+        const identifier = BlockchainIdentifier.fromNeoExpressConfig(
+          this.context.extensionPath,
+          tempFile.path
+        );
+        if (!identifier || result.isError) {
+          Log.error(
+            LOG_PREFIX,
+            "Could not create temporary neo-express instance, built-in contract manifests will be unavailable",
+            identifier,
+            result.message
+          );
+        } else {
+          wellKnownContracts = await NeoExpressIo.contractList(
+            this.neoExpress,
+            identifier
+          );
+          if (cacheKey) {
+            await this.context.globalState.update(cacheKey, wellKnownContracts);
+          }
         }
+      }
+      for (const wellKnownContractName of Object.keys(wellKnownContracts)) {
+        const wellKnownContract = wellKnownContracts[wellKnownContractName];
+        this.wellKnownNames[wellKnownContract.hash] = wellKnownContractName;
+        this.wellKnownManifests[wellKnownContract.hash] =
+          wellKnownContract.manifest;
       }
     } catch (e) {
       Log.error(
         LOG_PREFIX,
-        "Unexpected error when retrieving manifests for built-in contracts",
+        "Error initializing well-known manifests...",
         e.message
       );
     } finally {
       if (fs.existsSync(tempFile.path)) {
         fs.unlinkSync(tempFile.path);
       }
+      Log.log(LOG_PREFIX, "Finished initializing well-known manifests...");
     }
   }
 

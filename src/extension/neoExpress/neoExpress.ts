@@ -13,7 +13,8 @@ type Command =
   | "run"
   | "show"
   | "transfer"
-  | "wallet";
+  | "wallet"
+  | "-v";
 
 const LOG_PREFIX = "[NeoExpress]";
 

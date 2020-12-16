@@ -1,12 +1,11 @@
 const startTimeMs = new Date().getTime();
 
 function secondsSinceStart() {
-  let result = `${
-    Math.round((new Date().getTime() - startTimeMs) / 100) / 10
-  }s`;
+  let result = `${Math.round((new Date().getTime() - startTimeMs) / 100) / 10}`;
   if (result.indexOf(".") === -1) {
     result += ".0";
   }
+  result += "s";
   return result;
 }
 
