@@ -62,9 +62,12 @@ class BlockchainState {
   }
 }
 
+let id = 0;
+
 export default class BlockchainMonitor {
   onChange: vscode.Event<number>;
 
+  public readonly id: number;
   private readonly onChangeEmitter: vscode.EventEmitter<number>;
   private readonly rpcClient: neonCore.rpc.RPCClient;
 
@@ -85,6 +88,7 @@ export default class BlockchainMonitor {
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
+    this.id = id++;
     this.rpcId = 0;
     this.state = new BlockchainState();
     this.tryGetPopulatedBlocks = true;
@@ -234,6 +238,7 @@ export default class BlockchainMonitor {
       setTimeout(() => this.refreshLoop(), refreshInterval);
       Log.log(
         LOG_PREFIX,
+        `#${this.id}`,
         `Monitoring ${this.rpcUrl}`,
         `Interval: ${refreshInterval}ms`
       );

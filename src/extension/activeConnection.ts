@@ -2,17 +2,21 @@ import * as neonCore from "@cityofzion/neon-core";
 import * as vscode from "vscode";
 
 import BlockchainIdentifier from "./blockchainIdentifier";
+import BlockchainMonitor from "./blockchainMonitor/blockchainMonitor";
+import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./util/ioHelpers";
 import Log from "../shared/log";
 
 const LOG_PREFIX = "[ActiveConnection]";
 const PREFIX = "NEO:";
+// TODO: Use blockchain monitor instead of polling:
 const REFRESH_INTERVAL_MS = 1000 * 2;
 
 export default class ActiveConnection {
   connection: {
     blockchainIdentifier: BlockchainIdentifier;
+    blockchainMonitor: BlockchainMonitor;
     rpcClient: neonCore.rpc.RPCClient;
     healthy: boolean;
   } | null;
@@ -26,7 +30,8 @@ export default class ActiveConnection {
   private visible = false;
 
   constructor(
-    private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider
+    private readonly blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    private readonly blockchainMonitorPool: BlockchainMonitorPool
   ) {
     this.connection = null;
     this.onChangeEmitter = new vscode.EventEmitter<BlockchainIdentifier | null>();
@@ -54,11 +59,13 @@ export default class ActiveConnection {
     }
     if (blockchainIdentifier && rpcUrl) {
       this.connection = {
+        blockchainMonitor: this.blockchainMonitorPool.getMonitor(rpcUrl),
         blockchainIdentifier,
         rpcClient: new neonCore.rpc.RPCClient(rpcUrl),
         healthy: false,
       };
     } else {
+      this.connection?.blockchainMonitor.dispose();
       this.connection = null;
     }
     await this.updateConnectionState();
@@ -72,6 +79,7 @@ export default class ActiveConnection {
           `Disconnect from ${this.connection.blockchainIdentifier.friendlyName}?`
         ))
       ) {
+        this.connection.blockchainMonitor.dispose();
         this.connection = null;
         await this.updateConnectionState();
         Log.log(LOG_PREFIX, "Firing change event (disconnection)");

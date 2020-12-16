@@ -7,9 +7,6 @@ import JSONC from "../util/JSONC";
 import Log from "../../shared/log";
 
 const LOG_PREFIX = "[ContractDetector]";
-// Contract deployments can happen independently of the extension, so polling is required:
-// TODO: Use a BlockchainMonitor on the active connection to be faster at detecting deployment
-const REFRESH_INTERVAL_MS = 1000 * 15;
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
@@ -26,12 +23,19 @@ export default class ContractDetector extends DetectorBase {
 
   constructor(private readonly activeConnection: ActiveConnection) {
     super(SEARCH_PATTERN);
-    activeConnection.onChange(async () => {
-      if (await this.processFiles()) {
-        this.onChangeEmitter.fire();
-      }
+
+    activeConnection.connection?.blockchainMonitor.onChange(async () => {
+      await this.run();
     });
-    this.refreshLoop();
+
+    activeConnection.onChange(async () => {
+      await this.run();
+      activeConnection.connection?.blockchainMonitor.onChange(async () =>
+        this.run()
+      );
+    });
+
+    this.run();
   }
 
   async processFiles() {
@@ -104,16 +108,13 @@ export default class ContractDetector extends DetectorBase {
     }
   }
 
-  private async refreshLoop() {
-    if (this.isDisposed) {
-      return;
-    }
+  private async run() {
     try {
       if (await this.processFiles()) {
         this.onChangeEmitter.fire();
       }
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
+    } catch (e) {
+      Log.error(LOG_PREFIX, "Unexpected error", e.message);
     }
   }
 }

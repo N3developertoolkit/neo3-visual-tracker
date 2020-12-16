@@ -55,7 +55,10 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpressDetector,
     serverListDetector
   );
-  const activeConnection = new ActiveConnection(blockchainsTreeDataProvider);
+  const activeConnection = new ActiveConnection(
+    blockchainsTreeDataProvider,
+    blockchainMonitorPool
+  );
   const contractDetector = new ContractDetector(activeConnection);
   const neoExpressInstanceManager = new NeoExpressInstanceManager(
     neoExpress,
