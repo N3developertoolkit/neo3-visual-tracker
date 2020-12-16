@@ -90,9 +90,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         )
       );
     }
+
     if (request.close) {
       this.panel.dispose();
     }
+
     if (request.deleteStep) {
       await this.applyEdit(
         JSONC.editJsonString(
@@ -102,6 +104,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         )
       );
     }
+
     if (request.moveStep) {
       let { from, to } = request.moveStep;
       const fromStep = this.viewState.fileContents[from];
@@ -114,36 +117,47 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         )
       );
     }
+
     if (request.runAll) {
       await this.runFile(this.document.uri.fsPath);
     }
+
     if (request.runStep) {
       await this.runFragment(this.viewState.fileContents[request.runStep.i]);
     }
+
     if (request.debugStep) {
       await this.runFragmentInDebugger(
         this.viewState.fileContents[request.debugStep.i]
       );
     }
+
     if (request.selectTransaction) {
       this.updateViewState({
         selectedTransactionId: request.selectTransaction.txid,
       });
     }
+
     if (request.toggleTransactions) {
       this.updateViewState({
         collapseTransactions: !this.viewState.collapseTransactions,
       });
     }
+
     if (request.toggleJsonMode) {
       this.updateViewState({
         jsonMode: !this.viewState.jsonMode,
       });
     }
+
     if (request.update !== undefined) {
+      let fileContentsJson = this.viewState.fileContentsJson;
+      if (!Array.isArray(JSONC.parse(fileContentsJson))) {
+        fileContentsJson = `[\n${fileContentsJson.trim()}\n]`;
+      }
       let updatedJson = JSONC.editJsonString(
         JSONC.editJsonString(
-          this.viewState.fileContentsJson,
+          fileContentsJson,
           [request.update.i, "contract"],
           request.update.contract
         ),
