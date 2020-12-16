@@ -95,6 +95,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       this.panel.dispose();
     }
 
+    if (request.debugStep) {
+      await this.runFragmentInDebugger(
+        this.viewState.fileContents[request.debugStep.i]
+      );
+    }
+
     if (request.deleteStep) {
       await this.applyEdit(
         JSONC.editJsonString(
@@ -126,27 +132,21 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       await this.runFragment(this.viewState.fileContents[request.runStep.i]);
     }
 
-    if (request.debugStep) {
-      await this.runFragmentInDebugger(
-        this.viewState.fileContents[request.debugStep.i]
-      );
-    }
-
     if (request.selectTransaction) {
       this.updateViewState({
         selectedTransactionId: request.selectTransaction.txid,
       });
     }
 
-    if (request.toggleTransactions) {
-      this.updateViewState({
-        collapseTransactions: !this.viewState.collapseTransactions,
-      });
-    }
-
     if (request.toggleJsonMode) {
       this.updateViewState({
         jsonMode: !this.viewState.jsonMode,
+      });
+    }
+
+    if (request.toggleTransactions) {
+      this.updateViewState({
+        collapseTransactions: !this.viewState.collapseTransactions,
       });
     }
 
@@ -191,6 +191,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
       await this.applyEdit(updatedJson);
     }
+
     if (request.updateJson !== undefined) {
       await this.applyEdit(request.updateJson);
     }
