@@ -27,14 +27,17 @@ class BlockchainState {
   public readonly cachedTransactions: TransactionJson[];
   public readonly populatedBlocks: bitset.BitSet;
 
+  public isHealthy: boolean;
   public lastKnownBlockHeight: number;
 
   constructor(public readonly lastKnownCacheId: string = "") {
     this.blockTimes = [now()];
     this.cachedBlocks = [];
     this.cachedTransactions = [];
-    this.lastKnownBlockHeight = 0;
     this.populatedBlocks = new bitset.default();
+    this.isHealthy = false;
+    this.lastKnownBlockHeight = 0;
+
     // Always consider the genesis block as "populated" (even though technically
     // it has zero transactions, it is an significant part of the chain history):
     this.populatedBlocks.set(0);
@@ -97,7 +100,12 @@ export default class BlockchainMonitor {
     this.refreshLoop();
   }
 
+  get healthy() {
+    return this.state.isHealthy;
+  }
+
   dispose(fromPool: boolean = false) {
+    // TODO: Re-do pool mechanics so that onChangeEmitter events don't fire for disposed monitors
     if (fromPool) {
       this.disposed = true;
       this.onChangeEmitter.dispose();
@@ -250,8 +258,18 @@ export default class BlockchainMonitor {
   }
 
   private async updateState() {
-    const blockHeight = await this.rpcClient.getBlockCount();
-    let fireChangeEvent = blockHeight !== this.state.lastKnownBlockHeight;
+    const wasHealthy = this.healthy;
+    let blockHeight = this.state.lastKnownBlockHeight;
+    try {
+      blockHeight = await this.rpcClient.getBlockCount();
+      this.state.isHealthy = true;
+    } catch (e) {
+      this.state.isHealthy = false;
+    }
+
+    let fireChangeEvent =
+      blockHeight !== this.state.lastKnownBlockHeight ||
+      this.state.isHealthy !== wasHealthy;
 
     if (this.tryGetPopulatedBlocks) {
       try {

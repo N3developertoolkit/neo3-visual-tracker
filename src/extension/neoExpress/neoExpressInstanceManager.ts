@@ -103,7 +103,7 @@ export default class NeoExpressInstanceManager {
 
     this.running = identifer;
 
-    if (!this.activeConnection.connection?.healthy) {
+    if (!this.activeConnection.connection?.blockchainMonitor.healthy) {
       await this.activeConnection.connect(identifer);
     }
 

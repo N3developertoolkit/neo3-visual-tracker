@@ -51,7 +51,12 @@ export default class AutoComplete {
     this.onChange = this.onChangeEmitter.event;
     this.wellKnownNames = {};
     this.initializeWellKnownManifests();
-    activeConnection.onChange(async () => await this.update());
+    activeConnection.onChange(async () => {
+      await this.update();
+      activeConnection.connection?.blockchainMonitor.onChange(async () =>
+        this.update()
+      );
+    });
     contractDetector.onChange(async () => await this.update());
     walletDetector.onChange(async () => await this.update());
     neoExpressDetector.onChange(async () => await this.update());
