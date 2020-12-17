@@ -52,7 +52,6 @@ export default class AutoComplete {
     this.wellKnownNames = {};
     this.initializeWellKnownManifests();
     activeConnection.onChange(async () => {
-      await this.update();
       activeConnection.connection?.blockchainMonitor.onChange(async () =>
         this.update()
       );
