@@ -1,4 +1,4 @@
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import JSONC from "../util/JSONC";
@@ -12,7 +12,7 @@ export default class NeoExpressIo {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier,
     hashOrNefPath: string
-  ): Promise<ContractManifestJson | null> {
+  ): Promise<neonSc.ContractManifestJson | null> {
     if (identifer.blockchainType !== "express") {
       return null;
     }
@@ -27,7 +27,7 @@ export default class NeoExpressIo {
       return null;
     }
     try {
-      return JSONC.parse(output.message) as ContractManifestJson;
+      return JSONC.parse(output.message) as neonSc.ContractManifestJson;
     } catch (e) {
       throw Error(`Get contract error: ${e.message}`);
     }
@@ -37,7 +37,7 @@ export default class NeoExpressIo {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ): Promise<{
-    [name: string]: { hash: string; manifest: ContractManifestJson };
+    [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
   }> {
     if (identifer.blockchainType !== "express") {
       return {};
@@ -55,7 +55,7 @@ export default class NeoExpressIo {
     }
     try {
       let result: {
-        [name: string]: { hash: string; manifest: ContractManifestJson };
+        [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
       } = {};
       let contractSummaries = JSONC.parse(output.message);
       for (const contractSummary of contractSummaries) {

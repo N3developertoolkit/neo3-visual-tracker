@@ -1,9 +1,9 @@
 import React from "react";
 
-import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 type Props = {
-  operation: ContractMethodDefinitionJson;
+  operation: neonSc.ContractMethodDefinitionJson;
   onMouseDown?: (newValue: string) => void;
 };
 

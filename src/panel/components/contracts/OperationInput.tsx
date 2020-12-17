@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
+
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import OperationTile from "./OperationTile";
 
 type Props = {
   isReadOnly: boolean;
   operation?: string;
-  operations: ContractMethodDefinitionJson[];
+  operations: neonSc.ContractMethodDefinitionJson[];
   style?: React.CSSProperties;
   setOperation: (newValue: string) => void;
 };

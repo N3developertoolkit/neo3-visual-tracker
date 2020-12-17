@@ -1,15 +1,16 @@
 import React from "react";
-import { BlockJson } from "@cityofzion/neon-core/lib/types";
+
+import * as neonTypes from "@cityofzion/neon-core/lib/types";
 
 import Hash from "../Hash";
 import Table from "../Table";
 import Time from "../Time";
 
 type Props = {
-  blocks: (BlockJson | null)[];
+  blocks: (neonTypes.BlockJson | null)[];
   populatedBlocksFilterEnabled: boolean;
   populatedBlocksFilterSupported: boolean;
-  selectedBlock: BlockJson | null;
+  selectedBlock: neonTypes.BlockJson | null;
   selectBlock: (hash: string) => void;
   togglePopulatedBlocksFilter: (enabled: boolean) => void;
 };

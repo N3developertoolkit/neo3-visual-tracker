@@ -1,5 +1,5 @@
-import { BlockJson } from "@cityofzion/neon-core/lib/types";
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
+import * as neonTypes from "@cityofzion/neon-core/lib/types";
+import * as neonTx from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../addressInfo";
 import AutoCompleteData from "../autoCompleteData";
@@ -9,14 +9,14 @@ type TrackerViewState = {
   panelTitle: string;
   autoCompleteData: AutoCompleteData;
   blockHeight: number;
-  blocks: (BlockJson | null)[];
+  blocks: (neonTypes.BlockJson | null)[];
   paginationDistance: number;
   populatedBlocksFilterEnabled: boolean;
   populatedBlocksFilterSupported: boolean;
   searchHistory: string[];
   selectedAddress: AddressInfo | null;
-  selectedBlock: BlockJson | null;
-  selectedTransaction: TransactionJson | null;
+  selectedBlock: neonTypes.BlockJson | null;
+  selectedTransaction: neonTx.TransactionJson | null;
   startAtBlock: number;
 };
 

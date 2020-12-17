@@ -1,5 +1,6 @@
 import React from "react";
-import { ContractMethodDefinitionJson } from "@cityofzion/neon-core/lib/sc";
+
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import ArgumentsInput from "./ArgumentsInput";
 import AutoCompleteData from "../../../shared/autoCompleteData";
@@ -46,7 +47,7 @@ export default function InvocationStep({
   onDragEnd,
   onUpdate,
 }: Props) {
-  let operations: ContractMethodDefinitionJson[] = [];
+  let operations: neonSc.ContractMethodDefinitionJson[] = [];
   let canRun = false;
   let canDebug = false;
   if (contract) {

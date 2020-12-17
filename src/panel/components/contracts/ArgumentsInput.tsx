@@ -1,5 +1,6 @@
 import React from "react";
-import { ContractParameterDefinitionJson } from "@cityofzion/neon-core/lib/sc";
+
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import ArgumentInput from "./ArgumentInput";
 
@@ -7,7 +8,7 @@ type Props = {
   args: (string | number)[];
   autoSuggestListId: string;
   isReadOnly: boolean;
-  parameterDefinitions?: ContractParameterDefinitionJson[];
+  parameterDefinitions?: neonSc.ContractParameterDefinitionJson[];
   style?: React.CSSProperties;
   setArguments: (newArguments: (string | number)[]) => void;
 };

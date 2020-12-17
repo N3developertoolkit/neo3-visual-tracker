@@ -1,7 +1,7 @@
 import * as neonCore from "@cityofzion/neon-core";
+import * as neonTypes from "@cityofzion/neon-core/lib/types";
+import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
-import { BlockJson } from "@cityofzion/neon-core/lib/types";
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
 
 import AddressInfo from "../../shared/addressInfo";
 import AutoComplete from "../autoComplete";
@@ -54,7 +54,7 @@ export default class TrackerPanelController extends PanelControllerBase<
     this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.blockchainMonitor = blockchainMonitorPool.getMonitor(rpcUrl);
     this.blockchainId = new Promise(async (resolve) => {
-      let genesisBlock: BlockJson | null = null;
+      let genesisBlock: neonTypes.BlockJson | null = null;
       while (!genesisBlock) {
         genesisBlock = await this.blockchainMonitor.getBlock(0);
       }
@@ -172,7 +172,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   }
 
   private async getBlocks(startAtBlock: number, blockHeight: number) {
-    let newBlocks: Promise<BlockJson | null>[] = [];
+    let newBlocks: Promise<neonTypes.BlockJson | null>[] = [];
     let blockNumber =
       startAtBlock < 0 || startAtBlock >= blockHeight
         ? blockHeight - 1
@@ -197,7 +197,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private async getTransaction(
     hash: string,
     retryOnFailure: boolean = true
-  ): Promise<TransactionJson | null> {
+  ): Promise<neonTx.TransactionJson | null> {
     const tx = await this.blockchainMonitor.getTransaction(
       hash,
       retryOnFailure

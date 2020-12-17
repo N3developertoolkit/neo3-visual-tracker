@@ -1,6 +1,7 @@
 import React from "react";
-import { BlockJson } from "@cityofzion/neon-core/lib/types";
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
+
+import * as neonTypes from "@cityofzion/neon-core/lib/types";
+import * as neonTx from "@cityofzion/neon-core/lib/tx";
 
 import Address from "../Address";
 import AutoCompleteData from "../../../shared/autoCompleteData";
@@ -12,7 +13,7 @@ import Time from "../Time";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
-  block: Partial<BlockJson>;
+  block: Partial<neonTypes.BlockJson>;
   selectedTransactionHash?: string;
   selectAddress: (address: string) => void;
   selectTransaction: (txid: string) => void;
@@ -97,7 +98,7 @@ export default function BlockDetails({
               { content: <>Sender</> },
               { content: <>Size</> },
             ]}
-            rows={block.tx.map((tx: Partial<TransactionJson>) => ({
+            rows={block.tx.map((tx: Partial<neonTx.TransactionJson>) => ({
               onClick:
                 selectedTransactionHash === tx.hash
                   ? () => selectTransaction("")

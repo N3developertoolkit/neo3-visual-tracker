@@ -1,5 +1,5 @@
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import fs from "fs";
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import ActiveConnection from "../activeConnection";
 import DetectorBase from "./detectorBase";
@@ -11,7 +11,7 @@ const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
   [contractHash: string]: {
-    manifest: Partial<ContractManifestJson>;
+    manifest: Partial<neonSc.ContractManifestJson>;
     absolutePathToNef: string;
     deploymentRequired: boolean;
     deployed: boolean;
@@ -102,7 +102,7 @@ export default class ContractDetector extends DetectorBase {
       );
       return JSONC.parse(
         fs.readFileSync(fullPathToManifest).toString()
-      ) as Partial<ContractManifestJson>;
+      ) as Partial<neonSc.ContractManifestJson>;
     } catch (e) {
       Log.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e.message);
       return undefined;

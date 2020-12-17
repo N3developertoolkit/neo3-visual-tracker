@@ -1,5 +1,5 @@
-import { ContractManifestJson } from "@cityofzion/neon-core/lib/sc";
 import * as fs from "fs";
+import * as neonSc from "@cityofzion/neon-core/lib/sc";
 import * as temp from "temp";
 import * as vscode from "vscode";
 
@@ -25,7 +25,7 @@ export default class AutoComplete {
   private latestData: AutoCompleteData;
 
   private readonly wellKnownManifests: {
-    [contractHash: string]: Partial<ContractManifestJson>;
+    [contractHash: string]: Partial<neonSc.ContractManifestJson>;
   } = {};
 
   get data() {
@@ -71,7 +71,7 @@ export default class AutoComplete {
     Log.log(LOG_PREFIX, "Initializing well-known manifests...");
     const tempFile = temp.openSync();
     let wellKnownContracts: {
-      [name: string]: { hash: string; manifest: ContractManifestJson };
+      [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
     } = {};
     try {
       const versionResult = this.neoExpress.runSync("-v");
