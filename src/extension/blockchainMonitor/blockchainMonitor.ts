@@ -1,18 +1,16 @@
-import * as bitset from "bitset";
-import { BlockJson } from "@cityofzion/neon-core/lib/types";
 import * as neonCore from "@cityofzion/neon-core";
-import { TransactionJson } from "@cityofzion/neon-core/lib/tx";
+import * as neonTypes from "@cityofzion/neon-core/lib/types";
+import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
 import AddressInfo from "../../shared/addressInfo";
+import BlockchainState from "./blockchainState";
 import Log from "../../shared/log";
 
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
 const LOG_PREFIX = "[BlockchainMonitor]";
-const MAX_REFRESH_INTERVAL_MS = 1000; // initially check every 1s but adapt according to observed block times
 const MAX_RETRIES = 3;
-const MIN_REFRESH_INTERVAL_MS = 1000 * 30;
 const SCRIPTHASH_GAS = "0xa6a6c15dcdc9b997dac448b6926522d22efeedfb";
 const SCRIPTHASH_NEO = "0x0a46e2e37c9987f570b4af253fb77e7eef0f72b6";
 const SLEEP_ON_ERROR_MS = 500;
@@ -20,50 +18,6 @@ const SPEED_DETECTION_WINDOW = 10; // Analyze previous 10 block times to calcula
 const TRANSACTION_CACHE_SIZE = 1024;
 
 const now = () => new Date().getTime();
-
-class BlockchainState {
-  public readonly blockTimes: number[];
-  public readonly cachedBlocks: BlockJson[];
-  public readonly cachedTransactions: TransactionJson[];
-  public readonly populatedBlocks: bitset.BitSet;
-
-  public isHealthy: boolean;
-  public lastKnownBlockHeight: number;
-
-  constructor(public readonly lastKnownCacheId: string = "") {
-    this.blockTimes = [now()];
-    this.cachedBlocks = [];
-    this.cachedTransactions = [];
-    this.populatedBlocks = new bitset.default();
-    this.isHealthy = false;
-    this.lastKnownBlockHeight = 0;
-
-    // Always consider the genesis block as "populated" (even though technically
-    // it has zero transactions, it is an significant part of the chain history):
-    this.populatedBlocks.set(0);
-  }
-
-  currentRefreshInterval() {
-    let differencesSum: number = 0;
-    let differencesCount: number = 0;
-    let previous = now();
-    for (const timestamp of this.blockTimes) {
-      differencesSum += previous - timestamp;
-      differencesCount++;
-      previous = timestamp;
-    }
-    if (differencesCount === 0) {
-      return MAX_REFRESH_INTERVAL_MS;
-    }
-    return Math.min(
-      MIN_REFRESH_INTERVAL_MS,
-      Math.max(
-        Math.round((1.0 / 3.0) * (differencesSum / differencesCount)),
-        MAX_REFRESH_INTERVAL_MS
-      )
-    );
-  }
-}
 
 let id = 0;
 
@@ -147,7 +101,7 @@ export default class BlockchainMonitor {
   async getBlock(
     indexOrHash: string | number,
     retryonFailure: boolean = true
-  ): Promise<BlockJson | null> {
+  ): Promise<neonTypes.BlockJson | null> {
     const cachedBlock = this.state.cachedBlocks.find(
       (_) => _.index === indexOrHash || _.hash === indexOrHash
     );
@@ -190,7 +144,7 @@ export default class BlockchainMonitor {
   async getTransaction(
     hash: string,
     retryonFailure: boolean = true
-  ): Promise<TransactionJson | null> {
+  ): Promise<neonTx.TransactionJson | null> {
     const cachedTransaction = this.state.cachedTransactions.find(
       (_) => _.hash === hash
     );
