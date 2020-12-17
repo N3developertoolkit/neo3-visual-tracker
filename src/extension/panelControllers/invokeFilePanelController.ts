@@ -17,8 +17,6 @@ import TransactionStatus from "../../shared/transactionStatus";
 
 const LOG_PREFIX = "[InvokeFilePanelController]";
 const MAX_RECENT_TXS = 10;
-// TODO: Consume a BlockchainMonitor in the constructor and remove polling
-const REFRESH_INTERVAL_MS = 1000 * 5;
 
 export default class InvokeFilePanelController extends PanelControllerBase<
   InvokeFileViewState,
@@ -68,7 +66,12 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         ),
       });
     });
-    this.refreshLoop();
+    this.activeConnection.onChange(async () => {
+      this.updateTransactionList();
+      this.activeConnection.connection?.blockchainMonitor.onChange(() =>
+        this.updateTransactionList()
+      );
+    });
   }
 
   onClose() {
@@ -269,59 +272,11 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
   }
 
-  private async periodicViewStateUpdate() {
-    const connection = this.activeConnection.connection;
-
-    const recentTransactions = await Promise.all(
-      this.viewState.recentTransactions.map(async (_) => {
-        if (_.tx && (_.tx as any).confirmations) {
-          return _;
-        } else {
-          try {
-            const tx = await connection?.rpcClient.getRawTransaction(
-              _.txid,
-              true
-            );
-            const vmstate = (tx as any).vmstate;
-            return {
-              txid: _.txid,
-              blockchain: _.blockchain,
-              tx,
-              state: (vmstate === "FAULT"
-                ? "error"
-                : vmstate
-                ? "ok"
-                : "pending") as TransactionStatus,
-            };
-          } catch (e) {
-            return _;
-          }
-        }
-      })
-    );
-
-    this.updateViewState({
-      recentTransactions,
-      isPartOfDiffView: this.isPartOfDiffView,
-    });
-  }
-
-  private async refreshLoop() {
-    if (this.isClosed) {
-      return;
-    }
-    try {
-      await this.periodicViewStateUpdate();
-    } finally {
-      setTimeout(() => this.refreshLoop(), REFRESH_INTERVAL_MS);
-    }
-  }
-
   private async runFile(path: string) {
     let connection = this.activeConnection.connection;
     if (!connection) {
       await this.activeConnection.connect();
-      await this.periodicViewStateUpdate();
+      await this.updateTransactionList();
       connection = this.activeConnection.connection;
     }
     if (
@@ -449,5 +404,42 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         "There was a problem launching the debugger."
       );
     }
+  }
+
+  private async updateTransactionList() {
+    const connection = this.activeConnection.connection;
+
+    const recentTransactions = await Promise.all(
+      this.viewState.recentTransactions.map(async (_) => {
+        if (_.tx && (_.tx as any).confirmations) {
+          return _;
+        } else {
+          try {
+            const tx = await connection?.rpcClient.getRawTransaction(
+              _.txid,
+              true
+            );
+            const vmstate = (tx as any).vmstate;
+            return {
+              txid: _.txid,
+              blockchain: _.blockchain,
+              tx,
+              state: (vmstate === "FAULT"
+                ? "error"
+                : vmstate
+                ? "ok"
+                : "pending") as TransactionStatus,
+            };
+          } catch (e) {
+            return _;
+          }
+        }
+      })
+    );
+
+    this.updateViewState({
+      recentTransactions,
+      isPartOfDiffView: this.isPartOfDiffView,
+    });
   }
 }
