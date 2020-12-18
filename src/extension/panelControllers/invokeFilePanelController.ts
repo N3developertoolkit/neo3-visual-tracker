@@ -291,7 +291,6 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       );
       const account = await IoHelpers.multipleChoice(
         "Select an account...",
-        "genesis",
         ...walletNames
       );
       if (!account) {
