@@ -40,9 +40,6 @@ export default function ContractTile({
     }
   }
   const methods = manifest?.abi?.methods?.map((_) => _.name) || [];
-  if (!contractHashOrName.startsWith("0x")) {
-    contractHashOrName = `#${contractHashOrName}`;
-  }
   return (
     <div
       style={style}

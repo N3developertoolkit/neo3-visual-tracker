@@ -1,6 +1,6 @@
 [
   {
-    "contract": "#DevHawk.Registrar",
+    "contract": "DevHawk.Registrar",
     "operation": "register",
     "args": ["alice.domain", "@registrant1"]
   }

@@ -76,10 +76,7 @@ export default function ContractInput({
     contractHashOrName = contractHashOrName.substring(1);
   }
 
-  let aka = autoCompleteData.contractNames[contractHashOrName];
-  if (aka) {
-    aka = `#${aka}`;
-  }
+  let aka = autoCompleteData.contractNames[contractHashOrName] || "";
 
   return (
     <div style={{ ...style, position: "relative" }}>
