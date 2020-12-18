@@ -1,0 +1,42 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "registrar/1.0.0": {
+        "dependencies": {
+          "Neo.SmartContract.Framework": "3.0.0-mono-preview4-00286"
+        },
+        "runtime": {
+          "registrar.dll": {}
+        }
+      },
+      "Neo.SmartContract.Framework/3.0.0-mono-preview4-00286": {
+        "runtime": {
+          "lib/netstandard2.1/Neo.SmartContract.Framework.dll": {
+            "assemblyVersion": "3.0.0.0",
+            "fileVersion": "3.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "registrar/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Neo.SmartContract.Framework/3.0.0-mono-preview4-00286": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Gp6/yb8djvGb3AAPE5a7cQS4lsI+5N96AF2ospyTcKSuR1dFCl8UZ7EzAiRIlrNp1/tfpelFqLgOwh2E+V0TfA==",
+      "path": "neo.smartcontract.framework/3.0.0-mono-preview4-00286",
+      "hashPath": "neo.smartcontract.framework.3.0.0-mono-preview4-00286.nupkg.sha512"
+    }
+  }
+}

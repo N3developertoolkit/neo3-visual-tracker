@@ -1,0 +1,39 @@
+{
+  "methods": [
+    {
+      "name": "delete",
+      "offset": "0",
+      "safe": false,
+      "parameters": [{ "name": "domain", "type": "String" }],
+      "returntype": "Boolean"
+    },
+    {
+      "name": "query",
+      "offset": "77",
+      "safe": false,
+      "parameters": [{ "name": "domain", "type": "String" }],
+      "returntype": "Hash160"
+    },
+    {
+      "name": "register",
+      "offset": "147",
+      "safe": false,
+      "parameters": [
+        { "name": "domain", "type": "String" },
+        { "name": "owner", "type": "Hash160" }
+      ],
+      "returntype": "Boolean"
+    },
+    {
+      "name": "transfer",
+      "offset": "227",
+      "safe": false,
+      "parameters": [
+        { "name": "domain", "type": "String" },
+        { "name": "to", "type": "Hash160" }
+      ],
+      "returntype": "Boolean"
+    }
+  ],
+  "events": []
+}

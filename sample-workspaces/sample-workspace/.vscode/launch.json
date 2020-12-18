@@ -5,12 +5,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Neo Contract",
+      "name": "register",
       "type": "neo-contract",
       "request": "launch",
-      "program": "${workspaceFolder}/contract/bin/Debug/netstandard2.1/safe-purchase.nef",
-      "invocation": { "operation": "BuyerDeposit", "args": ["0xbaadf00d"] },
-      "storage": []
+      "program": "${workspaceFolder}/src/bin/Debug/netstandard2.1/registrar.nef",
+      "invocation": {
+        "operation": "register",
+        "args": ["sample.domain", "@NhGxW6BtLRhFLqh2oWqeRpNj8aNzKybRoV"]
+      }
+    },
+    {
+      "name": "delete",
+      "type": "neo-contract",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/bin/Debug/netstandard2.1/registrar.nef",
+      "invocation": {
+        "operation": "delete",
+        "args": ["sample.domain"]
+      },
+      "runtime": {
+        "check-witness": true
+      }
     }
   ]
 }
