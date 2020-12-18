@@ -45,7 +45,7 @@ export default class ActiveConnection {
     blockchainIdentifier =
       blockchainIdentifier || (await this.blockchainsTreeDataProvider.select());
     let rpcUrl = blockchainIdentifier?.rpcUrls[0];
-    if (blockchainIdentifier?.rpcUrls.length) {
+    if (blockchainIdentifier && blockchainIdentifier.rpcUrls.length > 1) {
       rpcUrl = await IoHelpers.multipleChoice(
         "Select an RPC server to connect to",
         ...blockchainIdentifier.rpcUrls
