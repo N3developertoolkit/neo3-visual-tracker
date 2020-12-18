@@ -52,13 +52,17 @@ export default class AutoComplete {
     this.wellKnownNames = {};
     this.initializeWellKnownManifests();
     activeConnection.onChange(async () => {
-      activeConnection.connection?.blockchainMonitor.onChange(async () =>
+      activeConnection.connection?.blockchainMonitor.onChange(() =>
         this.update()
       );
+      await this.update();
     });
-    contractDetector.onChange(async () => await this.update());
-    walletDetector.onChange(async () => await this.update());
-    neoExpressDetector.onChange(async () => await this.update());
+    activeConnection.connection?.blockchainMonitor.onChange(() =>
+      this.update()
+    );
+    contractDetector.onChange(() => this.update());
+    walletDetector.onChange(() => this.update());
+    neoExpressDetector.onChange(() => this.update());
     this.update();
   }
 

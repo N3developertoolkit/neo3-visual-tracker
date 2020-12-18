@@ -24,15 +24,13 @@ export default class ContractDetector extends DetectorBase {
   constructor(private readonly activeConnection: ActiveConnection) {
     super(SEARCH_PATTERN);
 
-    activeConnection.connection?.blockchainMonitor.onChange(async () => {
+    activeConnection.onChange(async () => {
+      activeConnection.connection?.blockchainMonitor.onChange(() => this.run());
       await this.run();
     });
 
-    activeConnection.onChange(async () => {
-      await this.run();
-      activeConnection.connection?.blockchainMonitor.onChange(async () =>
-        this.run()
-      );
+    activeConnection.connection?.blockchainMonitor.onChange(() => {
+      this.run();
     });
 
     this.run();

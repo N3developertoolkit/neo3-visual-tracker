@@ -54,14 +54,17 @@ export default class ActiveConnection {
     if (blockchainIdentifier && rpcUrl) {
       const blockchainMonitor = this.blockchainMonitorPool.getMonitor(rpcUrl);
       blockchainMonitor.onChange(() => this.updateConnectionState());
-      this.connection = {
+      const connection = {
         blockchainMonitor,
         blockchainIdentifier,
         rpcClient: new neonCore.rpc.RPCClient(rpcUrl),
       };
+      this.connection = connection;
+      await this.onChangeEmitter.fire(connection.blockchainIdentifier);
     } else {
       this.connection?.blockchainMonitor.dispose();
       this.connection = null;
+      await this.onChangeEmitter.fire(null);
     }
     await this.updateConnectionState();
   }

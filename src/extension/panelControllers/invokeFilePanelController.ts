@@ -67,11 +67,14 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       });
     });
     this.activeConnection.onChange(async () => {
-      this.updateTransactionList();
       this.activeConnection.connection?.blockchainMonitor.onChange(() =>
         this.updateTransactionList()
       );
+      await this.updateTransactionList();
     });
+    this.activeConnection.connection?.blockchainMonitor.onChange(() =>
+      this.updateTransactionList()
+    );
   }
 
   onClose() {
