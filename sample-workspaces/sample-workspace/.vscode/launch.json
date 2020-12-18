@@ -11,7 +11,7 @@
       "program": "${workspaceFolder}/src/bin/Debug/netstandard2.1/registrar.nef",
       "invocation": {
         "operation": "register",
-        "args": ["sample.domain", "@NhGxW6BtLRhFLqh2oWqeRpNj8aNzKybRoV"]
+        "args": ["sample.domain", "@NSWmpUp8hvqPJnEFAxcVPYzntXs3mkmQJg"]
       }
     },
     {
