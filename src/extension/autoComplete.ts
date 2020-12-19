@@ -53,7 +53,7 @@ export default class AutoComplete {
     this.initializeWellKnownManifests();
     activeConnection.onChange(async () => {
       activeConnection.connection?.blockchainMonitor.onChange(() =>
-        this.update("blockchain change detected (new connection)")
+        this.update("blockchain change detected")
       );
       await this.update("blockchain connection changed");
     });
