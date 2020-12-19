@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import InputNonDraggable from "../InputNonDraggable";
 import NeoType from "./NeoType";
 
 type Props = {
@@ -50,7 +51,7 @@ export default function ArgumentInput({
           </em>
         </small>
       </div>
-      <input
+      <InputNonDraggable
         disabled={isReadOnly}
         list={autoSuggestListId}
         style={inputStyle}

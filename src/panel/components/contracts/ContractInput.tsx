@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ContractTile from "./ContractTile";
 import dedupeAndSort from "../../../extension/util/dedupeAndSort";
+import InputNonDraggable from "../InputNonDraggable";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
@@ -80,12 +81,12 @@ export default function ContractInput({
 
   return (
     <div style={{ ...style, position: "relative" }}>
-      <input
+      <InputNonDraggable
+        disabled={isReadOnly}
         ref={inputRef}
         style={inputStyle}
         type="text"
         value={contract}
-        disabled={isReadOnly}
         onChange={(e) => setContract(e.target.value)}
         onFocus={() => setHasFocus(true)}
         onBlur={() => setHasFocus(false)}

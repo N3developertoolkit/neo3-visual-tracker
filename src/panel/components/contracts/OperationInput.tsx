@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
+import InputNonDraggable from "../InputNonDraggable";
 import OperationTile from "./OperationTile";
 
 type Props = {
@@ -49,7 +50,7 @@ export default function OperationInput({
       <div>
         <strong>Operation:</strong>
       </div>
-      <input
+      <InputNonDraggable
         disabled={isReadOnly}
         style={inputStyle}
         type="text"
