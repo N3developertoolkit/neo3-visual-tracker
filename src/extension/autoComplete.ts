@@ -53,17 +53,19 @@ export default class AutoComplete {
     this.initializeWellKnownManifests();
     activeConnection.onChange(async () => {
       activeConnection.connection?.blockchainMonitor.onChange(() =>
-        this.update()
+        this.update("blockchain change detected (new connection)")
       );
-      await this.update();
+      await this.update("blockchain connection changed");
     });
     activeConnection.connection?.blockchainMonitor.onChange(() =>
-      this.update()
+      this.update("blockchain change detected (initial connection)")
     );
-    contractDetector.onChange(() => this.update());
-    walletDetector.onChange(() => this.update());
-    neoExpressDetector.onChange(() => this.update());
-    this.update();
+    contractDetector.onChange(() => this.update("contracts changed"));
+    walletDetector.onChange(() => this.update("wallets changed"));
+    neoExpressDetector.onChange(() =>
+      this.update("neo-express instances changed")
+    );
+    this.update("initial population required");
   }
 
   dispose() {
@@ -142,8 +144,8 @@ export default class AutoComplete {
     }
   }
 
-  private async update() {
-    Log.log(LOG_PREFIX, "Computing updated AutoCompleteData...");
+  private async update(reason: string) {
+    Log.log(LOG_PREFIX, `Computing updated AutoCompleteData because ${reason}`);
 
     const newData: AutoCompleteData = {
       contractManifests: { ...this.wellKnownManifests },
