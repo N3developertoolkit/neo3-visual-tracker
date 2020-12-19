@@ -23,7 +23,7 @@ export default class Wallet {
       await result.tryUnlockWithoutPassword();
       return result;
     } catch (e) {
-      Log.log(LOG_PREFIX, "Not a wallet", e.message, path);
+      Log.debug(LOG_PREFIX, "Not a wallet", e.message, path);
       return undefined;
     }
   }
@@ -56,15 +56,23 @@ export default class Wallet {
           );
         }
       } catch (e) {
-        // TODO: Current version of neonCore package will not decrypt
-        //       Neo 2 wallets. Surface a more useful error in this case.
-        Log.log(
-          LOG_PREFIX,
-          this.wallet.name,
-          "Unexpected error decrypting account",
-          this.wallet.accounts[i].label,
-          e.message
-        );
+        if (`${e.message}`.toLowerCase().indexOf("wrong password") !== -1) {
+          Log.log(
+            LOG_PREFIX,
+            this.wallet.name,
+            "Account is password protected:",
+            this.wallet.accounts[i].label,
+            e.message
+          );
+        } else {
+          Log.warn(
+            LOG_PREFIX,
+            this.wallet.name,
+            "Unexpected error decrypting account",
+            this.wallet.accounts[i].label,
+            e.message
+          );
+        }
       }
     }
   }
