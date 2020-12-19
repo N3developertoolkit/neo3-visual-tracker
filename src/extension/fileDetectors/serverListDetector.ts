@@ -9,7 +9,7 @@ import JSONC from "../util/JSONC";
 import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 
-const LOG_PREFIX = "[ServerListDetector]";
+const LOG_PREFIX = "ServerListDetector";
 
 const SEARCH_PATTERN = "**/neo-servers.json";
 

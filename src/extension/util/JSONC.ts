@@ -1,6 +1,6 @@
 import * as jsoncParser from "jsonc-parser";
 
-const LOG_PREFIX = "[JSONC]";
+const LOG_PREFIX = "JSONC";
 const PARSE_OPTIONS = {
   allowEmptyContent: true,
   allowTrailingComma: true,

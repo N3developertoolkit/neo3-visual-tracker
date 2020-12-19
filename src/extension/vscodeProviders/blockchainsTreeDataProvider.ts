@@ -7,7 +7,7 @@ import Log from "../../shared/log";
 import NeoExpressDetector from "../fileDetectors/neoExpressDetector";
 import ServerListDetector from "../fileDetectors/serverListDetector";
 
-const LOG_PREFIX = "[BlockchainsTreeDataProvider]";
+const LOG_PREFIX = "BlockchainsTreeDataProvider";
 
 export default class BlockchainsTreeDataProvider
   implements vscode.TreeDataProvider<BlockchainIdentifier> {

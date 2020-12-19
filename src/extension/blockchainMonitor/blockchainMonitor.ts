@@ -9,7 +9,7 @@ import Log from "../../shared/log";
 
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
-const LOG_PREFIX = "[BlockchainMonitor]";
+const LOG_PREFIX = "BlockchainMonitor";
 const MAX_RETRIES = 3;
 const SCRIPTHASH_GAS = "0xa6a6c15dcdc9b997dac448b6926522d22efeedfb";
 const SCRIPTHASH_NEO = "0x0a46e2e37c9987f570b4af253fb77e7eef0f72b6";

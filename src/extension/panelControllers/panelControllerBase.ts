@@ -7,7 +7,7 @@ import posixPath from "../util/posixPath";
 import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
 
-const LOG_PREFIX = "[PanelControllerBase]";
+const LOG_PREFIX = "PanelControllerBase";
 
 export default abstract class PanelControllerBase<
   TViewState extends ViewStateBase,

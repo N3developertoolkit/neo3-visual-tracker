@@ -14,7 +14,7 @@ import TrackerViewState from "../../shared/viewState/trackerViewState";
 
 const BLOCKS_PER_PAGE = 50;
 const HISTORY_SIZE = 50;
-const LOG_PREFIX = "[TrackerPanelController]";
+const LOG_PREFIX = "TrackerPanelController";
 const PAGINATION_DISTANCE = 5;
 
 export default class TrackerPanelController extends PanelControllerBase<

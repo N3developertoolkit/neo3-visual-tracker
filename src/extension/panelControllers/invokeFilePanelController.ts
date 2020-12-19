@@ -15,7 +15,7 @@ import PanelControllerBase from "./panelControllerBase";
 import posixPath from "../util/posixPath";
 import TransactionStatus from "../../shared/transactionStatus";
 
-const LOG_PREFIX = "[InvokeFilePanelController]";
+const LOG_PREFIX = "InvokeFilePanelController";
 const MAX_RECENT_TXS = 10;
 
 export default class InvokeFilePanelController extends PanelControllerBase<

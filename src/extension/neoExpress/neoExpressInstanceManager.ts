@@ -6,7 +6,7 @@ import IoHelpers from "../util/ioHelpers";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 
-const LOG_PREFIX = "[NeoExpressInstanceManager]";
+const LOG_PREFIX = "NeoExpressInstanceManager";
 // VS Code does not offer an event-driven mechanism for detecting when a user closes a terminal, so polling is required:
 const REFRESH_INTERVAL_MS = 1000 * 2;
 

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 
-const LOG_PREFIX = "[DetectorBase]";
+const LOG_PREFIX = "DetectorBase";
 
 export default abstract class DetectorBase {
   private readonly fileSystemWatcher: vscode.FileSystemWatcher;

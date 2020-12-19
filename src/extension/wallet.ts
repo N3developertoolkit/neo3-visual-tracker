@@ -4,7 +4,7 @@ import * as neonCore from "@cityofzion/neon-core";
 import JSONC from "./util/JSONC";
 import Log from "../shared/log";
 
-const LOG_PREFIX = "[Wallet]";
+const LOG_PREFIX = "Wallet";
 
 export default class Wallet {
   static async fromJsonFile(path: string): Promise<Wallet | undefined> {

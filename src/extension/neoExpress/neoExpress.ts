@@ -16,7 +16,7 @@ type Command =
   | "wallet"
   | "-v";
 
-const LOG_PREFIX = "[NeoExpress]";
+const LOG_PREFIX = "NeoExpress";
 
 export default class NeoExpress {
   private readonly binaryPath: string;

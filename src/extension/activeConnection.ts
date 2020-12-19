@@ -8,7 +8,7 @@ import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataPr
 import IoHelpers from "./util/ioHelpers";
 import Log from "../shared/log";
 
-const LOG_PREFIX = "[ActiveConnection]";
+const LOG_PREFIX = "ActiveConnection";
 const STATUS_PREFIX = "Neo:";
 
 export default class ActiveConnection {

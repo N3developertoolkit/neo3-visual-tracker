@@ -8,7 +8,7 @@ import JSONC from "./util/JSONC";
 import Log from "../shared/log";
 import posixPath from "./util/posixPath";
 
-const LOG_PREFIX = "[BlockchainIdentifier]";
+const LOG_PREFIX = "BlockchainIdentifier";
 
 export default class BlockchainIdentifier {
   static fromNameAndUrls(

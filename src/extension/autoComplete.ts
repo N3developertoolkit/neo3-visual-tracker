@@ -14,7 +14,7 @@ import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
 import WalletDetector from "./fileDetectors/walletDetector";
 
-const LOG_PREFIX = "[AutoComplete]";
+const LOG_PREFIX = "AutoComplete";
 
 export default class AutoComplete {
   onChange: vscode.Event<AutoCompleteData>;

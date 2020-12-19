@@ -9,7 +9,7 @@ import QuickStartViewRequest from "../../shared/messages/quickStartFileViewReque
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
 import WalletDetector from "../fileDetectors/walletDetector";
 
-const LOG_PREFIX = "[QuickStartPanelController]";
+const LOG_PREFIX = "QuickStartPanelController";
 
 export default class QuickStartPanelController extends PanelControllerBase<
   QuickStartViewState,

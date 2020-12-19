@@ -19,7 +19,7 @@ import ServerListDetector from "./fileDetectors/serverListDetector";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 
-const LOG_PREFIX = "[index]";
+const LOG_PREFIX = "index";
 
 function registerBlockchainInstanceCommand(
   context: vscode.ExtensionContext,

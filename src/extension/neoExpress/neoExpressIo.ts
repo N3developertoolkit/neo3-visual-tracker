@@ -5,7 +5,7 @@ import JSONC from "../util/JSONC";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 
-const LOG_PREFIX = "[NeoExpressIo]";
+const LOG_PREFIX = "NeoExpressIo";
 
 export default class NeoExpressIo {
   static async contractGet(

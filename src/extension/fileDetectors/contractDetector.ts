@@ -6,7 +6,7 @@ import DetectorBase from "./detectorBase";
 import JSONC from "../util/JSONC";
 import Log from "../../shared/log";
 
-const LOG_PREFIX = "[ContractDetector]";
+const LOG_PREFIX = "ContractDetector";
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
