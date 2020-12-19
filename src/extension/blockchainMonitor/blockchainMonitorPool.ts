@@ -1,8 +1,11 @@
 import BlockchainMonitor from "./blockchainMonitor";
+import BlockchainMonitorInternal from "./blockchainMonitorInternal";
 
 export default class BlockchainMonitorPool {
   private readonly monitors: {
-    [rpcUrl: string]: { refCount: number; ref: BlockchainMonitor } | undefined;
+    [rpcUrl: string]:
+      | { refCount: number; ref: BlockchainMonitorInternal }
+      | undefined;
   };
 
   constructor() {
@@ -12,7 +15,7 @@ export default class BlockchainMonitorPool {
   getMonitor(rpcUrl: string) {
     let monitorRef = this.monitors[rpcUrl] || {
       refCount: 0,
-      ref: BlockchainMonitor.createForPool(rpcUrl, () => {
+      ref: BlockchainMonitorInternal.createForPool(rpcUrl, () => {
         monitorRef.refCount--;
         if (monitorRef.refCount <= 0) {
           this.monitors[rpcUrl] = undefined;
@@ -22,6 +25,6 @@ export default class BlockchainMonitorPool {
     };
     monitorRef.refCount++;
     this.monitors[rpcUrl] = monitorRef;
-    return monitorRef.ref;
+    return new BlockchainMonitor(monitorRef.ref);
   }
 }
