@@ -67,13 +67,17 @@ export default function BlockList({
                 cells: [
                   {
                     content: (
-                      <>{block?.index === undefined ? "..." : block.index}</>
+                      <>
+                        {block?.index === undefined
+                          ? "..."
+                          : block.index.toLocaleString()}
+                      </>
                     ),
                   },
                   { content: block ? <Time ts={block.time} /> : <>...</> },
-                  { content: <>{block?.tx?.length || 0}</> },
+                  { content: <>{(block?.tx?.length || 0).toLocaleString()}</> },
                   { content: <Hash hash={block?.hash || "..."} /> },
-                  { content: <>{block?.size || 0} bytes</> },
+                  { content: <>{(block?.size || 0).toLocaleString()} bytes</> },
                 ],
                 selected: selectedBlock?.hash === block?.hash,
               }))

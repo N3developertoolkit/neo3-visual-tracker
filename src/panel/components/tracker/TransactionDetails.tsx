@@ -53,7 +53,9 @@ export default function TransactionDetails({
           </MetadataBadge>
         ))}
       {!!transaction.size && (
-        <MetadataBadge title="Size">{transaction.size} bytes</MetadataBadge>
+        <MetadataBadge title="Size">
+          {transaction.size.toLocaleString()} bytes
+        </MetadataBadge>
       )}
       {!!transaction.netfee && (
         <MetadataBadge title="Network fee">{transaction.netfee}</MetadataBadge>

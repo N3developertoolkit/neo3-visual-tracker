@@ -45,7 +45,9 @@ export default function BlockDetails({
           <Hash hash={block.hash} />
         </MetadataBadge>
       )}
-      <MetadataBadge title="Size">{block.size} bytes</MetadataBadge>
+      <MetadataBadge title="Size">
+        {block.size?.toLocaleString()} bytes
+      </MetadataBadge>
       <MetadataBadge title="Version">{block.version}</MetadataBadge>
       {!!block.merkleroot && (
         <MetadataBadge title="Merkle root">
@@ -116,7 +118,7 @@ export default function BlockDetails({
                     <>Unknown sender</>
                   ),
                 },
-                { content: <>{tx.size} bytes</> },
+                { content: <>{(tx.size || 0).toLocaleString()} bytes</> },
               ],
               selected: selectedTransactionHash === tx.hash,
             }))}
