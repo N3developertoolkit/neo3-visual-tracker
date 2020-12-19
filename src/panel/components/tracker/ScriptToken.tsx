@@ -4,6 +4,12 @@ import * as neonCore from "@cityofzion/neon-core";
 import Address from "../Address";
 import AutoCompleteData from "../../../shared/autoCompleteData";
 
+const reverseBytes = (token: string) =>
+  token
+    .match(/[a-f0-9]{2}/g)
+    ?.reverse()
+    .join("") || "";
+
 type Props = {
   autoCompleteData: AutoCompleteData;
   token: string;
@@ -23,12 +29,9 @@ export default function ScriptToken({
   const contractHashes = Object.keys(autoCompleteData.contractNames);
   for (const contractHash of contractHashes) {
     const name = autoCompleteData.contractNames[contractHash] || "contract";
-    const contractHashRaw = contractHash
-      .replace(/^0x/g, "")
-      .toLowerCase()
-      .match(/[a-f0-9]{2}/g)
-      ?.reverse()
-      .join("");
+    const contractHashRaw = reverseBytes(
+      contractHash.replace(/^0x/g, "").toLowerCase()
+    );
     if (token === contractHashRaw) {
       return (
         <span
@@ -49,10 +52,7 @@ export default function ScriptToken({
   if (token.length == 40) {
     try {
       const address = neonCore.wallet.getAddressFromScriptHash(
-        token
-          .match(/[a-f0-9]{2}/g)
-          ?.reverse()
-          .join("") || ""
+        reverseBytes(token)
       );
       if (address.startsWith("N")) {
         return (
@@ -85,7 +85,10 @@ export default function ScriptToken({
       }
       if (printableAscii) {
         return (
-          <span style={style} title={`Text:\n ${token}\n  ${asText}`}>
+          <span
+            style={style}
+            title={`Detected text:\n0x${token} =\n"${asText}"`}
+          >
             <strong>
               {" "}
               {token.length > 8 ? (
@@ -106,9 +109,33 @@ export default function ScriptToken({
     }
   } catch {}
 
-  // TODO: For smaller hex values (maybe below 16 or 32 bit) also show them as
-  //       base 10 (as it is quite likely they may be integer arguments to
-  //       contracts)
+  try {
+    const numericalValue = parseInt(reverseBytes(token), 16);
+    if (
+      !!token.match(/^([a-f0-9][a-f0-9])+$/i) &&
+      !isNaN(numericalValue) &&
+      numericalValue < Math.pow(2, 32)
+    ) {
+      return (
+        <span style={style} title={`0x${token} = ${numericalValue}`}>
+          <strong>
+            {" "}
+            {token.length > 8 ? (
+              <>
+                {token.substring(0, 4)}..
+                {token.substring(token.length - 4)}
+              </>
+            ) : (
+              <>{token}</>
+            )}{" "}
+            (
+          </strong>
+          <i>{numericalValue}</i>
+          <strong>)</strong>
+        </span>
+      );
+    }
+  } catch {}
 
   return <span style={style}>{token}</span>;
 }
