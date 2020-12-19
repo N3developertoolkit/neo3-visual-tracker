@@ -5,6 +5,7 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import AutoCompleteData from "../../shared/autoCompleteData";
+import ContractDetector from "../fileDetectors/contractDetector";
 import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../util/ioHelpers";
@@ -226,11 +227,28 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         .filter((_) => _.contract?.startsWith("0x"))
         .map((_) => _.contract || "")) {
         try {
-          // TODO: Lookup by name instead
           const manifest = (
             await connection.rpcClient.getContractState(contractHash)
           ).toJson();
           result.contractManifests[manifest.abi.hash] = manifest;
+        } catch {}
+      }
+      for (const contractName of this.viewState.fileContents
+        .filter((_) => !_.contract?.startsWith("0x"))
+        .map((_) => _.contract || "")) {
+        try {
+          const manifests = await ContractDetector.getContractStateByName(
+            connection.rpcClient,
+            contractName
+          );
+          if (manifests.length === 1) {
+            result.contractManifests[manifests[0].abi.hash] = manifests[0];
+          } else if (manifests.length > 1) {
+            Log.warn(
+              LOG_PREFIX,
+              `Multiple contracts deployed to ${connection.blockchainIdentifier.friendlyName} with name ${contractName}`
+            );
+          }
         } catch {}
       }
     }
@@ -440,6 +458,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     );
 
     this.updateViewState({
+      autoCompleteData: await this.augmentAutoCompleteData(
+        this.autoComplete.data
+      ),
       recentTransactions,
       isPartOfDiffView: this.isPartOfDiffView,
     });

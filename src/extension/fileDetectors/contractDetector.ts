@@ -1,4 +1,5 @@
 import fs from "fs";
+import * as neonRpc from "@cityofzion/neon-core/lib/rpc";
 import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import ActiveConnection from "../activeConnection";
@@ -36,6 +37,20 @@ export default class ContractDetector extends DetectorBase {
     this.run();
   }
 
+  static async getContractStateByName(
+    rpcClient: neonRpc.RPCClient,
+    contractName: string
+  ) {
+    // TODO: Replace with a call to an RPC method that also exists on TestNet/MainNet
+    //       See: https://github.com/neo-project/neo-modules/issues/426
+    return (await rpcClient.query({
+      method: "expressgetcontractstate",
+      params: [contractName],
+      id: 0,
+      jsonrpc: "2.0",
+    })) as any[];
+  }
+
   async processFiles() {
     let deploymentStatusChanged = false;
     const newSnapshot: ContractMap = {};
@@ -48,14 +63,10 @@ export default class ContractDetector extends DetectorBase {
         const connection = this.activeConnection.connection;
         if (connection) {
           try {
-            // TODO: Replace with a call to an RPC method that also exists on TestNet/MainNet
-            //       See: https://github.com/neo-project/neo-modules/issues/426
-            const result = (await connection.rpcClient.query({
-              method: "expressgetcontractstate",
-              params: [contractName],
-              id: 0,
-              jsonrpc: "2.0",
-            })) as any[];
+            const result = await ContractDetector.getContractStateByName(
+              connection.rpcClient,
+              contractName
+            );
             if (result.length) {
               deployed = true;
             } else {
