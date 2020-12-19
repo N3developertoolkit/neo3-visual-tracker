@@ -6,6 +6,14 @@ using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 using Neo.SmartContract.Framework.Services.System;
 
+//
+// IMPORTANT: This contract may not yet build/deploy/invoke correctly.
+//            See: https://github.com/ngdenterprise/neo3-visual-tracker/issues/17
+//
+// TODO: Update resources/new-contract/$_CLASSNAME_$.cs.template.txt to contain a 
+//       "Hello world" contract that will work with the latest neon compiler.
+//
+
 namespace $_NAMESPACENAME_$
 {
     [ManifestExtra("Author", "Your name")]
