@@ -4,7 +4,7 @@ const PREFIX_COLUMN_WIDTH = 16;
 const startTimeMs = new Date().getTime();
 
 function secondsSinceStart() {
-  return `${((new Date().getTime() - startTimeMs) / 1000).toFixed(3)}s`;
+  return `${((new Date().getTime() - startTimeMs) / 1000).toFixed(2)}s`;
 }
 
 function truncate(logPrefix: string) {
