@@ -18,6 +18,10 @@ export default class BlockchainMonitor {
     blockchainMonitorInternal.onChange((n) => this.onChangeEmitter.fire(n));
   }
 
+  get healthy() {
+    return this.blockchainMonitorInternal.healthy;
+  }
+
   dispose() {
     this.onChangeEmitter.dispose();
     this.blockchainMonitorInternal.dispose();
