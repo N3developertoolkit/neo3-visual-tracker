@@ -1,5 +1,6 @@
 import React from "react";
 
+import ConnectToBlockchain from "../quickStart/ConnectToBlockchain";
 import CreateContract from "../quickStart/CreateContract";
 import CreateNeoExpressInstance from "../quickStart/CreateNeoExpressInstance";
 import CreateOrOpenWorkspace from "../quickStart/CreateOrOpenWorkspace";
@@ -20,9 +21,7 @@ export default function QuickStart({ viewState, postMessage }: Props) {
   const actions: JSX.Element[] = [];
   if (viewState.workspaceIsOpen) {
     if (viewState.hasNeoExpressInstance) {
-      if (viewState.neoExpressIsRunning) {
-        // TODO: Offer to connect if needed
-      } else {
+      if (!viewState.neoExpressIsRunning) {
         actions.push(
           <StartNeoExpress
             key="startNeoExpress"
@@ -89,6 +88,15 @@ export default function QuickStart({ viewState, postMessage }: Props) {
           />
         );
       }
+    } else {
+      actions.push(
+        <ConnectToBlockchain
+          key="connectToBlockchain"
+          onConnect={() =>
+            postMessage({ command: "neo3-visual-devtracker.connect" })
+          }
+        />
+      );
     }
     if (!viewState.hasWallets) {
       actions.push(
