@@ -234,12 +234,8 @@ export default class NeoCommands {
       );
     };
     fs.mkdirSync(contractPath);
-    fs.mkdirSync(posixPath(contractPath, ".config"));
     doCopy("$_CLASSNAME_$.cs");
     doCopy("$_CLASSNAME_$.csproj");
-    doCopy("Directory.Build.targets");
-    doCopy("nuget.config");
-    doCopy(posixPath(".config", "dotnet-tools.json"));
     await vscode.window.showTextDocument(
       await vscode.workspace.openTextDocument(
         posixPath(contractPath, `${contractName}Contract.cs`)
@@ -280,9 +276,6 @@ export default class NeoCommands {
     });
     (tasksJson.tasks as any[]).push(newTask("restore", ["restore"], []));
     (tasksJson.tasks as any[]).push(
-      newTask("toolrestore", ["tool", "restore"], [], "restore")
-    );
-    (tasksJson.tasks as any[]).push(
       newTask(
         "build",
         [
@@ -291,7 +284,7 @@ export default class NeoCommands {
           "/consoleloggerparameters:NoSummary",
         ],
         "$msCompile",
-        "toolrestore"
+        "restore"
       )
     );
     const buildTaskLabel = tasksJson.tasks[tasksJson.tasks.length - 1].label;
