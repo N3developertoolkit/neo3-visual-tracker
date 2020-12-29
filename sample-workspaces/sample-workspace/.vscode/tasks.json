@@ -21,21 +21,6 @@
       "options": {
         "cwd": "${workspaceFolder}/contract"
       },
-      "label": "toolrestore",
-      "command": "dotnet",
-      "type": "shell",
-      "args": ["tool", "restore"],
-      "group": "build",
-      "presentation": {
-        "reveal": "silent"
-      },
-      "problemMatcher": [],
-      "dependsOn": "restore"
-    },
-    {
-      "options": {
-        "cwd": "${workspaceFolder}/contract"
-      },
       "label": "build",
       "command": "dotnet",
       "type": "shell",
@@ -49,7 +34,7 @@
         "reveal": "silent"
       },
       "problemMatcher": "$msCompile",
-      "dependsOn": "toolrestore"
+      "dependsOn": "restore"
     }
   ]
 }
