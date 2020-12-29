@@ -77,7 +77,8 @@ export default function ScriptToken({
       .toString("ascii")
       .replace(/\\n/g, " ")
       .trim();
-    if (asText.length > 0) {
+    // Strings less than two characters in length are probably more useful expressed as numbers
+    if (asText.length > 2) {
       let printableAscii = true;
       for (let i = 0; i < asText.length; i++) {
         const c = asText.charCodeAt(i);
