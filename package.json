@@ -41,6 +41,7 @@
     "onView:neo3-visual-devtracker.views.quickStart",
     "workspaceContains:**/*.nef",
     "workspaceContains:**/*.avm",
+    "workspaceContains:**/*.neo-express",
     "workspaceContains:**/*.neo-invoke.json",
     "workspaceContains:**/*.neo-wallet.json"
   ],
