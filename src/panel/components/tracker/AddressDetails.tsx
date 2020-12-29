@@ -30,13 +30,13 @@ export default function AddressDetails({
         <small>NEO balance:</small>
       </p>
       <p style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
-        {addressInfo.neoBalance} NEO
+        {addressInfo.neoBalance.toLocaleString()} NEO
       </p>
       <p>
         <small>GAS balance:</small>
       </p>
       <p style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
-        {addressInfo.gasBalance} GAS
+        {addressInfo.gasBalance.toLocaleString()} GAS
       </p>
     </div>
   );
