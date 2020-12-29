@@ -178,6 +178,9 @@ export default class NeoExpressCommands {
     const amount = await IoHelpers.enterNumber(
       `How many ${asset} should be transferred?`
     );
+    if (amount === undefined) {
+      return;
+    }
     const walletNames = Object.keys(identifer.getWalletAddresses());
     const sender = await IoHelpers.multipleChoice(
       `Transfer ${amount} ${asset} from which wallet?`,
@@ -198,7 +201,7 @@ export default class NeoExpressCommands {
       "-i",
       identifer.configPath,
       asset,
-      amount + "",
+      `${amount}`,
       sender,
       receiver
     );
