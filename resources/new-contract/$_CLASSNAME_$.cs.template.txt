@@ -16,69 +16,15 @@ using Neo.SmartContract.Framework.Services.System;
 
 namespace $_NAMESPACENAME_$
 {
+    [DisplayName("YourName.$_CLASSNAME_$")]
     [ManifestExtra("Author", "Your name")]
     [ManifestExtra("Email", "your@address.invalid")]
     [ManifestExtra("Description", "Describe your contract...")]
-    [Features(ContractFeatures.HasStorage)]
     public class $_CLASSNAME_$ : SmartContract
     {
-        const string MAP_NAME = "$_CLASSNAME_$";
-
-        //
-        // Before deploying change this to an address that you control the
-        // private key for:
-        //
-        static readonly byte[] Owner = "Ni7FXvNy7WW2UfmctFevHYhvy7x7VvDDwa".ToScriptHash();
-
-        [DisplayName("NumberChanged")]
-        public static event Action<byte[], BigInteger> OnNumberChanged;
-
-        public static bool
-        ChangeNumber(BigInteger positiveNumber)
+        public static bool HelloWorld()
         {
-            if (positiveNumber < 0)
-            {
-                throw new Exception("Only positive numbers are allowed.");
-            }
-            
-            var tx = (Transaction) ExecutionEngine.ScriptContainer;
-            
-            var storageMap = Storage.CurrentContext.CreateMap(MAP_NAME);
-
-            storageMap.Put(tx.Sender, positiveNumber);
-
-            OnNumberChanged(tx.Sender, positiveNumber);
-
             return true;
         }
-
-        public static bool Update(byte[] script, string manifest)
-        {
-            if (!IsOwner())
-            {
-                throw new Exception("No authorization.");
-            }
-
-            if (script.Length == 0 && manifest.Length == 0)
-            {
-                return false;
-            }
-
-            Contract.Update(script, manifest);
-            return true;
-        }
-
-        public static bool Destroy()
-        {
-            if (!IsOwner())
-            {
-                throw new Exception("No authorization.");
-            }
-
-            Contract.Destroy();
-            return true;
-        }
-
-        private static bool IsOwner() => Runtime.CheckWitness(Owner);
     }
 }
