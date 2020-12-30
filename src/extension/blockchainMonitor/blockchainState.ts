@@ -3,6 +3,7 @@ import * as neonTypes from "@cityofzion/neon-core/lib/types";
 import * as neonTx from "@cityofzion/neon-core/lib/tx";
 
 const MAX_REFRESH_INTERVAL_MS = 1000; // initially check every 1s but adapt according to observed block times
+const INITIAL_REFRESH_INTERVAL_MS = 3000;
 const MIN_REFRESH_INTERVAL_MS = 1000 * 30;
 
 const now = () => new Date().getTime();
@@ -17,7 +18,7 @@ export default class BlockchainState {
   public lastKnownBlockHeight: number;
 
   constructor(public readonly lastKnownCacheId: string = "") {
-    this.blockTimes = [now()];
+    this.blockTimes = [];
     this.cachedBlocks = [];
     this.cachedTransactions = [];
     this.populatedBlocks = new bitset.default();
@@ -38,8 +39,8 @@ export default class BlockchainState {
       differencesCount++;
       previous = timestamp;
     }
-    if (differencesCount === 0) {
-      return MAX_REFRESH_INTERVAL_MS;
+    if (differencesCount < 3) {
+      return INITIAL_REFRESH_INTERVAL_MS;
     }
     return Math.min(
       MIN_REFRESH_INTERVAL_MS,
