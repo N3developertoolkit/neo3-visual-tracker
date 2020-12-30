@@ -1,4 +1,3 @@
-import * as neonCore from "@cityofzion/neon-core";
 import * as neonTypes from "@cityofzion/neon-core/lib/types";
 import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
@@ -12,7 +11,7 @@ import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
 
-const BLOCKS_PER_PAGE = 50;
+const BLOCKS_PER_PAGE = 45;
 const HISTORY_SIZE = 50;
 const LOG_PREFIX = "TrackerPanelController";
 const PAGINATION_DISTANCE = 5;
@@ -23,7 +22,6 @@ export default class TrackerPanelController extends PanelControllerBase<
 > {
   private readonly blockchainId: Promise<string>;
   private readonly blockchainMonitor: BlockchainMonitor;
-  private readonly rpcClient: neonCore.rpc.RPCClient;
   private readonly state: vscode.Memento;
 
   constructor(
@@ -51,7 +49,6 @@ export default class TrackerPanelController extends PanelControllerBase<
       context
     );
     this.state = context.workspaceState;
-    this.rpcClient = new neonCore.rpc.RPCClient(rpcUrl);
     this.blockchainMonitor = blockchainMonitorPool.getMonitor(rpcUrl);
     this.blockchainId = new Promise(async (resolve) => {
       let genesisBlock: neonTypes.BlockJson | null = null;
