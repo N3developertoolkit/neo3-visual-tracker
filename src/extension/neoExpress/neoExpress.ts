@@ -50,17 +50,18 @@ export default class NeoExpress {
     return terminal;
   }
 
-  runSync(
+  async runSync(
     command: Command,
     ...options: string[]
-  ): { message: string; isError?: boolean } {
-    return this.runSyncUnsafe(command, ...options);
+  ): Promise<{ message: string; isError?: boolean }> {
+    const result = await this.runSyncUnsafe(command, ...options);
+    return result;
   }
 
-  runSyncUnsafe(
+  async runSyncUnsafe(
     command: string,
     ...options: string[]
-  ): { message: string; isError?: boolean } {
+  ): Promise<{ message: string; isError?: boolean }> {
     if (!this.checkForDotNet()) {
       return { message: "Could not launch Neo Express", isError: true };
     }
@@ -70,11 +71,22 @@ export default class NeoExpress {
       ...options,
     ];
     try {
-      return {
-        message: childProcess
-          .execFileSync(this.dotnetPath, dotNetArguments)
-          .toString(),
-      };
+      return new Promise((resolve) => {
+        const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
+        let message = "";
+        process.stdout.on(
+          "data",
+          (d) => (message = `${message}${d.toString()}`)
+        );
+        process.stderr.on(
+          "data",
+          (d) => (message = `${message}${d.toString()}`)
+        );
+        process.addListener("exit", () => resolve({ message, isError: false }));
+        process.addListener("error", () =>
+          resolve({ message, isError: false })
+        );
+      });
     } catch (e) {
       return {
         isError: true,

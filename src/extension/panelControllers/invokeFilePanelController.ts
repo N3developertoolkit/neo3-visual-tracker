@@ -316,7 +316,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
       await this.document.save();
       await this.updateViewState({ collapseTransactions: false });
-      const result = this.neoExpress.runSync(
+      const result = await this.neoExpress.runSync(
         "contract",
         "invoke",
         "-i",

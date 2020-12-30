@@ -41,7 +41,7 @@ export default class NeoExpressCommands {
     if (!contractFile) {
       return;
     }
-    const output = neoExpress.runSync(
+    const output = await neoExpress.runSync(
       "contract",
       "deploy",
       contractFile,
@@ -77,7 +77,7 @@ export default class NeoExpressCommands {
     if (!configSavePath) {
       return;
     }
-    const output = neoExpress.runSync(
+    const output = await neoExpress.runSync(
       "create",
       "-f",
       "-c",
@@ -117,7 +117,7 @@ export default class NeoExpressCommands {
     if (!command) {
       return;
     }
-    const output = neoExpress.runSyncUnsafe(
+    const output = await neoExpress.runSyncUnsafe(
       command,
       "-i",
       identifer.configPath
@@ -146,7 +146,7 @@ export default class NeoExpressCommands {
       await neoExpressInstanceManager.stop();
     }
     try {
-      const output = neoExpress.runSync(
+      const output = await neoExpress.runSync(
         "reset",
         "-f",
         "-i",
@@ -196,7 +196,7 @@ export default class NeoExpressCommands {
     if (!receiver) {
       return;
     }
-    const output = neoExpress.runSync(
+    const output = await neoExpress.runSync(
       "transfer",
       "-i",
       identifer.configPath,
@@ -219,7 +219,7 @@ export default class NeoExpressCommands {
     if (!walletName) {
       return;
     }
-    const output = neoExpress.runSync(
+    const output = await neoExpress.runSync(
       "wallet",
       "create",
       walletName,
