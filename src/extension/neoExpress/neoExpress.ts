@@ -71,7 +71,7 @@ export default class NeoExpress {
       ...options,
     ];
     try {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
         let message = "";
         process.stdout.on(
@@ -82,10 +82,10 @@ export default class NeoExpress {
           "data",
           (d) => (message = `${message}${d.toString()}`)
         );
-        process.addListener("exit", () => resolve({ message, isError: false }));
-        process.addListener("error", () =>
-          resolve({ message, isError: false })
+        process.on("close", (code) =>
+          resolve({ message, isError: code !== 0 })
         );
+        process.on("error", reject);
       });
     } catch (e) {
       return {

@@ -23,7 +23,7 @@ export default class NeoExpressIo {
       "-i",
       identifer.configPath
     );
-    if (output.isError) {
+    if (output.isError || !output.message) {
       return null;
     }
     try {
