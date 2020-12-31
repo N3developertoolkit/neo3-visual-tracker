@@ -54,7 +54,16 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
+    const startedAt = new Date().getTime();
     const result = await this.runSyncUnsafe(command, ...options);
+    const endedAt = new Date().getTime();
+    const duration = endedAt - startedAt;
+    if (duration > 1000) {
+      Log.log(
+        LOG_PREFIX,
+        `\`nxp3 ${command} ${options.join(" ")}\` took ${duration}ms`
+      );
+    }
     return result;
   }
 
