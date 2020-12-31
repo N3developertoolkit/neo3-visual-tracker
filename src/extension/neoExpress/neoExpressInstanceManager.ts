@@ -103,6 +103,10 @@ export default class NeoExpressInstanceManager {
 
     this.running = identifer;
 
+    // Give the terminal a chance to get a lock on the blockchain before
+    // starting to do any offline commands:
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     if (!this.activeConnection.connection?.blockchainMonitor.healthy) {
       await this.activeConnection.connect(identifer);
     }
