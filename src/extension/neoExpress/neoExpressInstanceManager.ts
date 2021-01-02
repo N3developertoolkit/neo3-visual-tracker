@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
-import IoHelpers from "../util/ioHelpers";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 
@@ -32,21 +31,6 @@ export default class NeoExpressInstanceManager {
     this.terminals = [];
     this.onChangeEmitter = new vscode.EventEmitter<void>();
     this.onChange = this.onChangeEmitter.event;
-    this.activeConnection.onChange(async (blockchainIdentifier) => {
-      if (
-        blockchainIdentifier &&
-        blockchainIdentifier.blockchainType === "express" &&
-        blockchainIdentifier.configPath !== this.running?.configPath
-      ) {
-        if (
-          await IoHelpers.yesNo(
-            `${blockchainIdentifier.friendlyName} is not running. Would you like to start it?`
-          )
-        ) {
-          await this.run(blockchainIdentifier);
-        }
-      }
-    });
     this.refreshLoop();
   }
 
@@ -104,7 +88,8 @@ export default class NeoExpressInstanceManager {
     this.running = identifer;
 
     // Give the terminal a chance to get a lock on the blockchain before
-    // starting to do any offline commands:
+    // starting to do any offline commands.
+    // TODO: Consider using a custom terminal so that this hack can be removed.
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     if (!this.activeConnection.connection?.blockchainMonitor.healthy) {
