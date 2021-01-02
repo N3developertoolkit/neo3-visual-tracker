@@ -15,6 +15,7 @@ import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
 import posixPath from "../util/posixPath";
 import TransactionStatus from "../../shared/transactionStatus";
+import { sign } from "@cityofzion/neon-core/lib/wallet";
 
 const LOG_PREFIX = "InvokeFilePanelController";
 const MAX_RECENT_TXS = 10;
@@ -405,6 +406,20 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       return;
     }
 
+    let signer: string | undefined = undefined;
+    let connection = this.activeConnection.connection;
+    if (connection) {
+      const wallets = connection.blockchainIdentifier.getWalletAddresses();
+      const signerWalletName = await IoHelpers.multipleChoice(
+        "Select an account",
+        "(none)",
+        ...Object.keys(wallets)
+      );
+      if (signerWalletName && signerWalletName !== "(none)") {
+        signer = wallets[signerWalletName] || undefined;
+      }
+    }
+
     const debugConfiguration: vscode.DebugConfiguration = {
       name: `${path.basename(this.document.uri.fsPath)}-${operation}`,
       type: "neo-contract",
@@ -414,6 +429,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         operation,
         args: Array.isArray(fragment.args) ? fragment.args : [],
       },
+      signers: signer ? [signer] : undefined,
       runtime: {
         witnesses: {
           "check-result": true,
