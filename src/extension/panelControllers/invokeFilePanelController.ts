@@ -408,6 +408,16 @@ export default class InvokeFilePanelController extends PanelControllerBase<
 
     let signer: string | undefined = undefined;
     let connection = this.activeConnection.connection;
+    if (
+      !connection &&
+      (await IoHelpers.yesNo(
+        "Would you like to specify a signing account for the transaction?"
+      ))
+    ) {
+      await this.activeConnection.connect();
+      connection = this.activeConnection.connection;
+    }
+
     if (connection) {
       const wallets = connection.blockchainIdentifier.getWalletAddresses();
       const signerWalletName = await IoHelpers.multipleChoice(
