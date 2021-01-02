@@ -410,9 +410,10 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       type: "neo-contract",
       request: "launch",
       program,
-      operation,
-      args: Array.isArray(fragment.args) ? fragment.args : [],
-      storage: [],
+      invocation: {
+        operation,
+        args: Array.isArray(fragment.args) ? fragment.args : [],
+      },
       runtime: {
         witnesses: {
           "check-result": true,
