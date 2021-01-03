@@ -414,7 +414,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         "Would you like to specify a signing account for the transaction?"
       ))
     ) {
-      await this.activeConnection.connect();
+      await this.activeConnection.connect(undefined, "express");
       connection = this.activeConnection.connection;
     }
 

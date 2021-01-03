@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainMonitor from "./blockchainMonitor/blockchainMonitor";
 import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
+import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./util/ioHelpers";
 import Log from "../shared/log";
@@ -41,9 +42,13 @@ export default class ActiveConnection {
     this.disconnect();
   }
 
-  async connect(blockchainIdentifier?: BlockchainIdentifier) {
+  async connect(
+    blockchainIdentifier?: BlockchainIdentifier,
+    blockchainTypeFilter?: BlockchainType
+  ) {
     blockchainIdentifier =
-      blockchainIdentifier || (await this.blockchainsTreeDataProvider.select());
+      blockchainIdentifier ||
+      (await this.blockchainsTreeDataProvider.select(blockchainTypeFilter));
     let rpcUrl = blockchainIdentifier?.rpcUrls[0];
     if (blockchainIdentifier && blockchainIdentifier.rpcUrls.length > 1) {
       rpcUrl = await IoHelpers.multipleChoice(
