@@ -36,7 +36,7 @@ export default function AddressDetails({
         <small>GAS balance:</small>
       </p>
       <p style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
-        {(addressInfo.gasBalance / 1000000000.0).toLocaleString()} GAS
+        {(addressInfo.gasBalance / 100000000.0).toLocaleString()} GAS
       </p>
     </div>
   );
