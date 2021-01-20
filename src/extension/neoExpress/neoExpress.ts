@@ -22,6 +22,8 @@ export default class NeoExpress {
   private readonly binaryPath: string;
   private readonly dotnetPath: string;
 
+  private runLock: boolean;
+
   constructor(private readonly context: vscode.ExtensionContext) {
     this.binaryPath = posixPath(
       this.context.extensionPath,
@@ -33,6 +35,7 @@ export default class NeoExpress {
       "nxp3.dll"
     );
     this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
+    this.runLock = false;
   }
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
@@ -54,17 +57,22 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
-    const startedAt = new Date().getTime();
-    const result = await this.runUnsafe(command, ...options);
-    const endedAt = new Date().getTime();
-    const duration = endedAt - startedAt;
-    if (duration > 1000) {
-      Log.log(
-        LOG_PREFIX,
-        `\`nxp3 ${command} ${options.join(" ")}\` took ${duration}ms`
-      );
+    const releaseLock = await this.getRunLock();
+    try {
+      const startedAt = new Date().getTime();
+      const result = await this.runUnsafe(command, ...options);
+      const endedAt = new Date().getTime();
+      const duration = endedAt - startedAt;
+      if (duration > 1000) {
+        Log.log(
+          LOG_PREFIX,
+          `\`nxp3 ${command} ${options.join(" ")}\` took ${duration}ms`
+        );
+      }
+      return result;
+    } finally {
+      releaseLock();
     }
-    return result;
   }
 
   async runUnsafe(
@@ -132,5 +140,15 @@ export default class NeoExpress {
       }
     }
     return ok;
+  }
+
+  private async getRunLock(): Promise<() => void> {
+    while (this.runLock) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
+    this.runLock = true;
+    return () => {
+      this.runLock = false;
+    };
   }
 }
