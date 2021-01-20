@@ -74,7 +74,11 @@ export default class AutoComplete {
 
   private async initializeWellKnownManifests() {
     Log.log(LOG_PREFIX, "Initializing well-known manifests...");
-    const tempFile = temp.openSync();
+    const tempFile = await new Promise<temp.OpenFile>((resolve, reject) =>
+      temp.open(undefined, (err, result) =>
+        err ? reject(err) : resolve(result)
+      )
+    );
     let wellKnownContracts: {
       [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
     } = {};
@@ -95,7 +99,7 @@ export default class AutoComplete {
       } else {
         Log.log(LOG_PREFIX, "Creating temporary instance");
         fs.closeSync(tempFile.fd);
-        fs.unlinkSync(tempFile.path);
+        await fs.promises.unlink(tempFile.path);
         const result = await this.neoExpress.run(
           "create",
           "-f",
@@ -138,9 +142,10 @@ export default class AutoComplete {
       );
     } finally {
       if (fs.existsSync(tempFile.path)) {
-        fs.unlinkSync(tempFile.path);
+        await fs.promises.unlink(tempFile.path);
       }
       Log.log(LOG_PREFIX, "Finished initializing well-known manifests...");
+      await this.update("finished initializing well-known manifests");
     }
   }
 
