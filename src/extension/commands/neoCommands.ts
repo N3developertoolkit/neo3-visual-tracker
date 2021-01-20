@@ -98,7 +98,7 @@ export default class NeoCommands {
     }
     const walletFilesFolder = posixPath(workspaceFolder, "wallets");
     if (!fs.existsSync(walletFilesFolder)) {
-      fs.mkdirSync(walletFilesFolder);
+      await fs.promises.mkdir(walletFilesFolder);
     }
     const account = new neonCore.wallet.Account(
       neonCore.wallet.generatePrivateKey()
@@ -139,8 +139,11 @@ export default class NeoCommands {
         `${safeWalletName} (${i}).neo-wallet.json`
       );
     }
-    fs.writeFileSync(filename, walletJson);
-    vscode.commands.executeCommand("vscode.open", vscode.Uri.file(filename));
+    await fs.promises.writeFile(filename, walletJson);
+    await vscode.commands.executeCommand(
+      "vscode.open",
+      vscode.Uri.file(filename)
+    );
   }
 
   static async invokeContract(
@@ -161,7 +164,7 @@ export default class NeoCommands {
     }
     const invokeFilesFolder = posixPath(workspaceFolder, "invoke-files");
     if (!fs.existsSync(invokeFilesFolder)) {
-      fs.mkdirSync(invokeFilesFolder);
+      await fs.promises.mkdir(invokeFilesFolder);
     }
     let filename = posixPath(invokeFilesFolder, "Untitled.neo-invoke.json");
     let i = 0;
@@ -172,8 +175,11 @@ export default class NeoCommands {
         `Untitled (${i}).neo-invoke.json`
       );
     }
-    fs.writeFileSync(filename, "[{}]");
-    vscode.commands.executeCommand("vscode.open", vscode.Uri.file(filename));
+    await fs.promises.writeFile(filename, "[{}]");
+    await vscode.commands.executeCommand(
+      "vscode.open",
+      vscode.Uri.file(filename)
+    );
   }
 
   static async newContract(context: vscode.ExtensionContext) {
@@ -216,7 +222,7 @@ export default class NeoCommands {
       return;
     }
     if (!fs.existsSync(dotVsCodeFolderPath)) {
-      fs.mkdirSync(dotVsCodeFolderPath);
+      await fs.promises.mkdir(dotVsCodeFolderPath);
     }
     const doSubstitutions = (text: string) =>
       text
@@ -229,15 +235,15 @@ export default class NeoCommands {
         templatePath,
         `${srcFile}.template.txt`
       );
-      fs.copyFileSync(srcFileAbsolute, dstFileAbsolute);
-      fs.writeFileSync(
+      await fs.promises.copyFile(srcFileAbsolute, dstFileAbsolute);
+      await fs.promises.writeFile(
         dstFileAbsolute,
         doSubstitutions(
           (await fs.promises.readFile(dstFileAbsolute)).toString()
         )
       );
     };
-    fs.mkdirSync(contractPath);
+    await fs.promises.mkdir(contractPath);
     await doCopy("$_CLASSNAME_$.cs");
     await doCopy("$_CLASSNAME_$.csproj");
     await vscode.window.showTextDocument(
@@ -292,7 +298,7 @@ export default class NeoCommands {
       )
     );
     const buildTaskLabel = tasksJson.tasks[tasksJson.tasks.length - 1].label;
-    fs.writeFileSync(tasksJsonPath, JSONC.stringify(tasksJson));
+    await fs.promises.writeFile(tasksJsonPath, JSONC.stringify(tasksJson));
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const tasks = await vscode.tasks.fetchTasks();
     const buildTask = tasks.filter((_) => _.name === buildTaskLabel)[0];
