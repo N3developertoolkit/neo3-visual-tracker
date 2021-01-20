@@ -62,7 +62,7 @@ export default class ContractDetector extends DetectorBase {
     let deploymentStatusChanged = false;
     const newSnapshot: ContractMap = {};
     for (const absolutePathToNef of this.files) {
-      const manifest = ContractDetector.tryGetManifest(absolutePathToNef);
+      const manifest = await ContractDetector.tryGetManifest(absolutePathToNef);
       const contractName: string = (manifest as any)?.name || "";
       if (manifest && contractName) {
         let deploymentRequired = false;
@@ -110,14 +110,14 @@ export default class ContractDetector extends DetectorBase {
     return deploymentStatusChanged;
   }
 
-  static tryGetManifest(fullPathToNef: string) {
+  static async tryGetManifest(fullPathToNef: string) {
     try {
       const fullPathToManifest = fullPathToNef.replace(
         /\.nef$/,
         ".manifest.json"
       );
       return JSONC.parse(
-        fs.readFileSync(fullPathToManifest).toString()
+        (await fs.promises.readFile(fullPathToManifest)).toString()
       ) as Partial<neonSc.ContractManifestJson>;
     } catch (e) {
       Log.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e.message);
