@@ -87,7 +87,7 @@ export default class NeoExpressCommands {
     NeoExpressCommands.showResult(output);
     NeoExpressCommands.showResult(output);
     if (!output.isError) {
-      const identifier = BlockchainIdentifier.fromNeoExpressConfig(
+      const identifier = await BlockchainIdentifier.fromNeoExpressConfig(
         context.extensionPath,
         configSavePath
       );

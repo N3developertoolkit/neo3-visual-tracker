@@ -28,13 +28,13 @@ export default class BlockchainIdentifier {
     );
   }
 
-  static fromNeoExpressConfig(
+  static async fromNeoExpressConfig(
     extensionPath: string,
     configPath: string
-  ): BlockchainIdentifier | undefined {
+  ): Promise<BlockchainIdentifier | undefined> {
     try {
       const neoExpressConfig = JSONC.parse(
-        fs.readFileSync(configPath).toString()
+        (await fs.promises.readFile(configPath)).toString()
       );
       const nodePorts = neoExpressConfig["consensus-nodes"]
         ?.map((_: any) => parseInt(_["rpc-port"]))

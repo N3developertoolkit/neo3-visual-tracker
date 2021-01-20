@@ -103,7 +103,7 @@ export default class AutoComplete {
           "1",
           tempFile.path
         );
-        const identifier = BlockchainIdentifier.fromNeoExpressConfig(
+        const identifier = await BlockchainIdentifier.fromNeoExpressConfig(
           this.context.extensionPath,
           tempFile.path
         );
