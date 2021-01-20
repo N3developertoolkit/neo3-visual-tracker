@@ -96,14 +96,14 @@ export default class BlockchainIdentifier {
     }
   }
 
-  getWalletAddresses(): { [walletName: string]: string } {
+  async getWalletAddresses(): Promise<{ [walletName: string]: string }> {
     if (this.blockchainType !== "express") {
       return {};
     }
     let result: { [walletName: string]: string } = {};
     try {
       const neoExpressConfig = JSONC.parse(
-        fs.readFileSync(this.configPath).toString()
+        (await fs.promises.readFile(this.configPath)).toString()
       );
       for (const wallet of neoExpressConfig["wallets"]) {
         if (

@@ -24,7 +24,7 @@ export default class NeoExpressCommands {
       );
       return;
     }
-    const walletNames = Object.keys(identifer.getWalletAddresses());
+    const walletNames = Object.keys(await identifer.getWalletAddresses());
     const account = await IoHelpers.multipleChoice(
       "Select an account...",
       ...walletNames
@@ -181,7 +181,7 @@ export default class NeoExpressCommands {
     if (amount === undefined) {
       return;
     }
-    const walletNames = Object.keys(identifer.getWalletAddresses());
+    const walletNames = Object.keys(await identifer.getWalletAddresses());
     const sender = await IoHelpers.multipleChoice(
       `Transfer ${amount} ${asset} from which wallet?`,
       ...walletNames

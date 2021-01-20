@@ -306,7 +306,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       connection.blockchainIdentifier.blockchainType === "express"
     ) {
       const walletNames = Object.keys(
-        connection.blockchainIdentifier.getWalletAddresses()
+        await connection.blockchainIdentifier.getWalletAddresses()
       );
       const account = await IoHelpers.multipleChoice(
         "Select an account...",
@@ -419,7 +419,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
 
     if (connection) {
-      const wallets = connection.blockchainIdentifier.getWalletAddresses();
+      const wallets = await connection.blockchainIdentifier.getWalletAddresses();
       const signerWalletName = await IoHelpers.multipleChoice(
         "Select an account",
         "(none)",

@@ -185,7 +185,7 @@ export default class AutoComplete {
     const connection = this.activeConnection.connection;
 
     newData.wellKnownAddresses =
-      connection?.blockchainIdentifier.getWalletAddresses() || {};
+      (await connection?.blockchainIdentifier.getWalletAddresses()) || {};
 
     for (const walletName of Object.keys(newData.wellKnownAddresses)) {
       const walletAddress = newData.wellKnownAddresses[walletName];
