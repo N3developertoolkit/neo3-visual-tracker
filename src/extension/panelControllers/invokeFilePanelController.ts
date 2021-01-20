@@ -15,7 +15,6 @@ import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
 import posixPath from "../util/posixPath";
 import TransactionStatus from "../../shared/transactionStatus";
-import { sign } from "@cityofzion/neon-core/lib/wallet";
 
 const LOG_PREFIX = "InvokeFilePanelController";
 const MAX_RECENT_TXS = 10;
