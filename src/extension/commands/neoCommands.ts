@@ -71,7 +71,9 @@ export default class NeoCommands {
     }
     let script = "";
     try {
-      script = fs.readFileSync(contract.absolutePathToNef).toString("hex");
+      script = (
+        await fs.promises.readFile(contract.absolutePathToNef)
+      ).toString("hex");
     } catch (e) {
       await vscode.window.showErrorMessage(
         `Could not read contract: ${contract.absolutePathToNef}`
@@ -220,7 +222,7 @@ export default class NeoCommands {
       text
         .replace(/\$_CLASSNAME_\$/g, `${contractName}Contract`)
         .replace(/\$_NAMESPACENAME_\$/g, `${contractName}`);
-    const doCopy = (srcFile: string) => {
+    const doCopy = async (srcFile: string) => {
       const dstFile = doSubstitutions(srcFile);
       const dstFileAbsolute = posixPath(contractPath, dstFile);
       const srcFileAbsolute = posixPath(
@@ -230,12 +232,14 @@ export default class NeoCommands {
       fs.copyFileSync(srcFileAbsolute, dstFileAbsolute);
       fs.writeFileSync(
         dstFileAbsolute,
-        doSubstitutions(fs.readFileSync(dstFileAbsolute).toString())
+        doSubstitutions(
+          (await fs.promises.readFile(dstFileAbsolute)).toString()
+        )
       );
     };
     fs.mkdirSync(contractPath);
-    doCopy("$_CLASSNAME_$.cs");
-    doCopy("$_CLASSNAME_$.csproj");
+    await doCopy("$_CLASSNAME_$.cs");
+    await doCopy("$_CLASSNAME_$.csproj");
     await vscode.window.showTextDocument(
       await vscode.workspace.openTextDocument(
         posixPath(contractPath, `${contractName}Contract.cs`)
@@ -248,7 +252,7 @@ export default class NeoCommands {
       tasks: [],
     };
     try {
-      tasksJsonTxt = fs.readFileSync(tasksJsonPath).toString();
+      tasksJsonTxt = (await fs.promises.readFile(tasksJsonPath)).toString();
       tasksJson = JSONC.parse(tasksJsonTxt);
       if (tasksJson.tasks) {
         if (!Array.isArray(tasksJson.tasks)) {
