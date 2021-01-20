@@ -141,9 +141,9 @@ export default class AutoComplete {
         e.message
       );
     } finally {
-      if (fs.existsSync(tempFile.path)) {
+      try {
         await fs.promises.unlink(tempFile.path);
-      }
+      } catch {}
       Log.log(LOG_PREFIX, "Finished initializing well-known manifests...");
       await this.update("finished initializing well-known manifests");
     }

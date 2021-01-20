@@ -97,9 +97,9 @@ export default class NeoCommands {
       return;
     }
     const walletFilesFolder = posixPath(workspaceFolder, "wallets");
-    if (!fs.existsSync(walletFilesFolder)) {
+    try {
       await fs.promises.mkdir(walletFilesFolder);
-    }
+    } catch {}
     const account = new neonCore.wallet.Account(
       neonCore.wallet.generatePrivateKey()
     );
@@ -163,9 +163,9 @@ export default class NeoCommands {
       return;
     }
     const invokeFilesFolder = posixPath(workspaceFolder, "invoke-files");
-    if (!fs.existsSync(invokeFilesFolder)) {
+    try {
       await fs.promises.mkdir(invokeFilesFolder);
-    }
+    } catch {}
     let filename = posixPath(invokeFilesFolder, "Untitled.neo-invoke.json");
     let i = 0;
     while (fs.existsSync(filename)) {
@@ -221,9 +221,9 @@ export default class NeoCommands {
       );
       return;
     }
-    if (!fs.existsSync(dotVsCodeFolderPath)) {
+    try {
       await fs.promises.mkdir(dotVsCodeFolderPath);
-    }
+    } catch {}
     const doSubstitutions = (text: string) =>
       text
         .replace(/\$_CLASSNAME_\$/g, `${contractName}Contract`)
