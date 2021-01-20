@@ -79,7 +79,7 @@ export default class AutoComplete {
       [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
     } = {};
     try {
-      const versionResult = await this.neoExpress.runSync("-v");
+      const versionResult = await this.neoExpress.run("-v");
       let cacheKey = "";
       if (versionResult.isError) {
         Log.error(LOG_PREFIX, "Could not determine neo-express version");
@@ -96,7 +96,7 @@ export default class AutoComplete {
         Log.log(LOG_PREFIX, "Creating temporary instance");
         fs.closeSync(tempFile.fd);
         fs.unlinkSync(tempFile.path);
-        const result = await this.neoExpress.runSync(
+        const result = await this.neoExpress.run(
           "create",
           "-f",
           "-c",

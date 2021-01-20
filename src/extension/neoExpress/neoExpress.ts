@@ -50,12 +50,12 @@ export default class NeoExpress {
     return terminal;
   }
 
-  async runSync(
+  async run(
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
     const startedAt = new Date().getTime();
-    const result = await this.runSyncUnsafe(command, ...options);
+    const result = await this.runUnsafe(command, ...options);
     const endedAt = new Date().getTime();
     const duration = endedAt - startedAt;
     if (duration > 1000) {
@@ -67,7 +67,7 @@ export default class NeoExpress {
     return result;
   }
 
-  async runSyncUnsafe(
+  async runUnsafe(
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
