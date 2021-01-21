@@ -15,7 +15,8 @@ export default class NeoCommands {
   static async contractDeploy(
     identifer: BlockchainIdentifier,
     contractDetector: ContractDetector,
-    walletDetector: WalletDetector
+    walletDetector: WalletDetector,
+    nefPath?: string
   ) {
     const wallets = walletDetector.wallets;
     if (!wallets.length) {
@@ -57,12 +58,14 @@ export default class NeoCommands {
       return;
     }
     const contracts = contractDetector.contracts;
-    const contractFile = await IoHelpers.multipleChoiceFiles(
-      `Deploy contract using ${walletAddress} (from ${path.basename(
-        walletPath
-      )})`,
-      ...Object.values(contracts).map((_) => _.absolutePathToNef)
-    );
+    const contractFile =
+      nefPath ||
+      (await IoHelpers.multipleChoiceFiles(
+        `Deploy contract using ${walletAddress} (from ${path.basename(
+          walletPath
+        )})`,
+        ...Object.values(contracts).map((_) => _.absolutePathToNef)
+      ));
     const contract = Object.values(contracts).find(
       (_) => _.absolutePathToNef === contractFile
     );

@@ -67,7 +67,7 @@
     "commands": [
       {
         "command": "neo3-visual-devtracker.express.contractDeploy",
-        "title": "Deploy contract",
+        "title": "Deploy contract to Neo Express",
         "category": "Neo Express 3"
       },
       {
@@ -155,6 +155,16 @@
       }
     ],
     "menus": {
+      "explorer/context": [
+        {
+          "command": "neo3-visual-devtracker.express.contractDeploy",
+          "when": "isFileSystemResource && resourceExtname == .nef"
+        },
+        {
+          "command": "neo3-visual-devtracker.neo.contractDeploy",
+          "when": "isFileSystemResource && resourceExtname == .nef"
+        }
+      ],
       "view/item/context": [
         {
           "command": "neo3-visual-devtracker.express.contractDeploy",

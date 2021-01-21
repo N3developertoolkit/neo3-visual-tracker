@@ -26,19 +26,27 @@ function registerBlockchainInstanceCommand(
   blockchainType: BlockchainType | undefined,
   blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
   commandId: string,
-  handler: (identifier: BlockchainIdentifier) => Promise<void>
+  handler: (identifier: BlockchainIdentifier, path?: string) => Promise<void>
 ) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       commandId,
-      async (identifier?: BlockchainIdentifier) => {
+      async (context?: BlockchainIdentifier | vscode.Uri) => {
+        let identifier: BlockchainIdentifier | undefined = undefined;
+        let path: string | undefined = undefined;
+        if (context && (context as vscode.Uri).fsPath) {
+          path = (context as vscode.Uri).fsPath;
+        }
+        if (context && (context as BlockchainIdentifier).blockchainType) {
+          identifier = context as BlockchainIdentifier;
+        }
         if (!identifier) {
           identifier = await blockchainsTreeDataProvider.select(blockchainType);
           if (!identifier) {
             return;
           }
         }
-        await handler(identifier);
+        await handler(identifier, path);
       }
     )
   );
@@ -167,11 +175,12 @@ export async function activate(context: vscode.ExtensionContext) {
     "express",
     blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.contractDeploy",
-    (identifier) =>
+    (identifier, nefPath) =>
       NeoExpressCommands.contractDeploy(
         neoExpress,
         identifier,
-        contractDetector
+        contractDetector,
+        nefPath
       )
   );
 
@@ -233,8 +242,13 @@ export async function activate(context: vscode.ExtensionContext) {
     undefined,
     blockchainsTreeDataProvider,
     "neo3-visual-devtracker.neo.contractDeploy",
-    (identifier) =>
-      NeoCommands.contractDeploy(identifier, contractDetector, walletDetector)
+    (identifier, nefPath) =>
+      NeoCommands.contractDeploy(
+        identifier,
+        contractDetector,
+        walletDetector,
+        nefPath
+      )
   );
 
   registerBlockchainInstanceCommand(

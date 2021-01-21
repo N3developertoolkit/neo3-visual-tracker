@@ -13,7 +13,8 @@ export default class NeoExpressCommands {
   static async contractDeploy(
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier,
-    contractDetector: ContractDetector
+    contractDetector: ContractDetector,
+    nefPath?: string
   ) {
     if (identifer.blockchainType !== "express") {
       return;
@@ -32,12 +33,14 @@ export default class NeoExpressCommands {
     if (!account) {
       return;
     }
-    const contractFile = await IoHelpers.multipleChoiceFiles(
-      `Use account "${account}" to deploy...`,
-      ...Object.values(contractDetector.contracts).map(
-        (_) => _.absolutePathToNef
-      )
-    );
+    const contractFile =
+      nefPath ||
+      (await IoHelpers.multipleChoiceFiles(
+        `Use account "${account}" to deploy...`,
+        ...Object.values(contractDetector.contracts).map(
+          (_) => _.absolutePathToNef
+        )
+      ));
     if (!contractFile) {
       return;
     }
