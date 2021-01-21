@@ -26,7 +26,7 @@ export default class NeoCommands {
     }
     if (!Object.keys(contractDetector.contracts).length) {
       vscode.window.showErrorMessage(
-        "No compiled contracts (*.nef files) were found in the current workspace."
+        "No compiled contracts were found in the current workspace. A compiled contract (*.nef file) along with its manifest (*.manifest.json file) is required for deployment."
       );
       return;
     }
