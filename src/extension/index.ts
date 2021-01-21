@@ -208,6 +208,14 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     "express",
     blockchainsTreeDataProvider,
+    "neo3-visual-devtracker.express.runAdvanced",
+    (identifier) => neoExpressInstanceManager.runAdvanced(identifier)
+  );
+
+  registerBlockchainInstanceCommand(
+    context,
+    "express",
+    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.transfer",
     (identifier) => NeoExpressCommands.transfer(neoExpress, identifier)
   );

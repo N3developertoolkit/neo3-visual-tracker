@@ -2,7 +2,7 @@ import * as bitset from "bitset";
 import * as neonTypes from "@cityofzion/neon-core/lib/types";
 import * as neonTx from "@cityofzion/neon-core/lib/tx";
 
-const MAX_REFRESH_INTERVAL_MS = 1000; // initially check every 1s but adapt according to observed block times
+const MAX_REFRESH_INTERVAL_MS = 500;
 const INITIAL_REFRESH_INTERVAL_MS = 3000;
 const MIN_REFRESH_INTERVAL_MS = 1000 * 30;
 

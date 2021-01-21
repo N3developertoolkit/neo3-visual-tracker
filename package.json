@@ -29,6 +29,7 @@
     "onCommand:neo3-visual-devtracker.express.create",
     "onCommand:neo3-visual-devtracker.express.reset",
     "onCommand:neo3-visual-devtracker.express.run",
+    "onCommand:neo3-visual-devtracker.express.runAdvanced",
     "onCommand:neo3-visual-devtracker.express.transfer",
     "onCommand:neo3-visual-devtracker.express.walletCreate",
     "onCommand:neo3-visual-devtracker.neo.contractDeploy",
@@ -92,6 +93,11 @@
           "light": "resources/light/play.svg",
           "dark": "resources/dark/play.svg"
         }
+      },
+      {
+        "command": "neo3-visual-devtracker.express.runAdvanced",
+        "title": "Start blockchain (with custom options)...",
+        "category": "Neo Express 3"
       },
       {
         "command": "neo3-visual-devtracker.express.transfer",
@@ -169,6 +175,10 @@
         },
         {
           "command": "neo3-visual-devtracker.express.run",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.runAdvanced",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {

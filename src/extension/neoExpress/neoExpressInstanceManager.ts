@@ -4,6 +4,7 @@ import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
+import IoHelpers from "../util/ioHelpers";
 
 const LOG_PREFIX = "NeoExpressInstanceManager";
 // VS Code does not offer an event-driven mechanism for detecting when a user closes a terminal, so polling is required:
@@ -38,7 +39,7 @@ export default class NeoExpressInstanceManager {
     this.disposed = true;
   }
 
-  async run(identifer: BlockchainIdentifier) {
+  async run(identifer: BlockchainIdentifier, secondsPerBlock: number = 15) {
     if (identifer.blockchainType !== "express") {
       return;
     }
@@ -63,7 +64,7 @@ export default class NeoExpressInstanceManager {
           "-i",
           child.configPath,
           "-s",
-          "15",
+          `${secondsPerBlock}`,
           `${child.index}`
         );
         if (terminal) {
@@ -77,7 +78,7 @@ export default class NeoExpressInstanceManager {
         "-i",
         identifer.configPath,
         "-s",
-        "15",
+        `${secondsPerBlock}`,
         `${identifer.index}`
       );
       if (terminal) {
@@ -97,6 +98,23 @@ export default class NeoExpressInstanceManager {
     }
 
     this.onChangeEmitter.fire();
+  }
+
+  async runAdvanced(identifer: BlockchainIdentifier) {
+    if (identifer.blockchainType !== "express") {
+      return;
+    }
+
+    const secondsPerBlock = await IoHelpers.enterNumber(
+      "How often (in seconds) should new blocks be produced?",
+      15,
+      (n) =>
+        Math.round(n) === n && n > 0 && n <= 3600
+          ? null
+          : "Enter a whole number between 1 and 3600"
+    );
+
+    await this.run(identifer, secondsPerBlock);
   }
 
   async stop() {

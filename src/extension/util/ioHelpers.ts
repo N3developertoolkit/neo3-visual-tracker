@@ -43,11 +43,18 @@ export default class IoHelpers {
     return await IoHelpers.choosePassword(prompt, acceptEmptyString);
   }
 
-  static async enterNumber(prompt: string): Promise<number | undefined> {
+  static async enterNumber(
+    prompt: string,
+    defaultValue?: number,
+    additionalValidation: (n: number) => string | null = () => null
+  ): Promise<number | undefined> {
     const input = await vscode.window.showInputBox({
       prompt,
       validateInput: (_) =>
-        isNaN(parseFloat(_)) ? "Enter a numeric value" : null,
+        isNaN(parseFloat(_))
+          ? "Enter a numeric value"
+          : additionalValidation(parseFloat(_)),
+      value: defaultValue ? `${defaultValue}` : undefined,
     });
     if (input) {
       return parseFloat(input);
