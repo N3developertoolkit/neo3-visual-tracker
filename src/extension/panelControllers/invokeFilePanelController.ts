@@ -461,15 +461,16 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           return _;
         } else {
           try {
-            const tx = await connection?.rpcClient.getRawTransaction(
+            const tx = await connection?.blockchainMonitor.getTransaction(
               _.txid,
               true
             );
-            const vmstate = (tx as any).vmstate;
+            const vmstate = (tx?.tx as any)?.vmstate;
             return {
               txid: _.txid,
               blockchain: _.blockchain,
-              tx,
+              log: tx?.log,
+              tx: tx?.tx,
               state: (vmstate === "FAULT"
                 ? "error"
                 : vmstate

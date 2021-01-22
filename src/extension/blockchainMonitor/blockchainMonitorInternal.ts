@@ -4,9 +4,11 @@ import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
 import AddressInfo from "../../shared/addressInfo";
+import ApplicationLog from "../../shared/applicationLog";
 import BlockchainState from "./blockchainState";
 import Log from "../../shared/log";
 
+const APP_LOG_CACHE_SIZE = 1024;
 const BLOCK_CACHE_SIZE = 1024;
 const BLOCKS_PER_QUERY = 100;
 const LOG_PREFIX = "BlockchainMonitorInternal";
@@ -88,6 +90,46 @@ export default class BlockchainMonitorInternal {
           })`
         );
         if (retryOnFailure && retry < MAX_RETRIES) {
+          await this.sleepBetweenRetries();
+        } else {
+          return null;
+        }
+      }
+    } while (retry < MAX_RETRIES);
+    return null;
+  }
+
+  async getApplicationLog(
+    txid: string,
+    retryonFailure: boolean = true
+  ): Promise<ApplicationLog | null> {
+    const cachedLog = this.state.cachedLogs.find((_) => _.txid === txid);
+    if (cachedLog) {
+      return cachedLog;
+    }
+    let retry = 0;
+    do {
+      Log.log(LOG_PREFIX, `Retrieving logs for ${txid} (attempt ${retry++})`);
+      try {
+        const result = (await this.rpcClient.query({
+          method: "getapplicationlog",
+          params: [txid],
+          id: this.rpcId++,
+          jsonrpc: "2.0",
+        })) as ApplicationLog;
+        if (this.state.cachedLogs.length === APP_LOG_CACHE_SIZE) {
+          this.state.cachedLogs.shift();
+        }
+        this.state.cachedLogs.push(result);
+        return result;
+      } catch (e) {
+        Log.warn(
+          LOG_PREFIX,
+          `Error retrieving app logs for ${txid}: ${
+            e.message || "Unknown error"
+          }`
+        );
+        if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
           return null;

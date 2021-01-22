@@ -27,7 +27,7 @@ export default function Tracker({ viewState, postMessage }: Props) {
           <BlockDetails
             autoCompleteData={viewState.autoCompleteData}
             block={viewState.selectedBlock}
-            selectedTransactionHash={viewState.selectedTransaction?.hash}
+            selectedTransactionHash={viewState.selectedTransaction?.tx.hash}
             selectAddress={(selectAddress) => postMessage({ selectAddress })}
             selectTransaction={(txid) =>
               postMessage({ selectTransaction: txid })
@@ -42,8 +42,9 @@ export default function Tracker({ viewState, postMessage }: Props) {
           onClose={() => postMessage({ selectTransaction: "" })}
         >
           <TransactionDetails
+            applicationLog={viewState.selectedTransaction.log}
             autoCompleteData={viewState.autoCompleteData}
-            transaction={viewState.selectedTransaction}
+            transaction={viewState.selectedTransaction.tx}
             selectAddress={(address) => postMessage({ selectAddress: address })}
           />
         </Dialog>

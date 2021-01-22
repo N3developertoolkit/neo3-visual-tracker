@@ -3,6 +3,7 @@ import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
 import AddressInfo from "../../shared/addressInfo";
+import ApplicationLog from "../../shared/applicationLog";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitor from "../blockchainMonitor/blockchainMonitor";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
@@ -194,7 +195,7 @@ export default class TrackerPanelController extends PanelControllerBase<
   private async getTransaction(
     hash: string,
     retryOnFailure: boolean = true
-  ): Promise<neonTx.TransactionJson | null> {
+  ): Promise<{ tx: neonTx.TransactionJson; log?: ApplicationLog } | null> {
     const tx = await this.blockchainMonitor.getTransaction(
       hash,
       retryOnFailure
@@ -274,7 +275,7 @@ export default class TrackerPanelController extends PanelControllerBase<
       try {
         const tx = await this.getTransaction(query.toLowerCase(), false);
         if (tx) {
-          request.selectTransaction = tx.hash;
+          request.selectTransaction = tx.tx.hash;
         }
       } catch {
         await vscode.window.showErrorMessage(

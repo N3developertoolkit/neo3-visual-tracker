@@ -3,18 +3,21 @@ import * as neonCore from "@cityofzion/neon-core";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import Address from "../Address";
+import ApplicationLog from "../../../shared/applicationLog";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
 import Script from "./Script";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
+  applicationLog?: ApplicationLog;
   transaction: Partial<neonCore.tx.TransactionJson>;
   selectAddress?: (address: string) => void;
 };
 
 export default function TransactionDetails({
   autoCompleteData,
+  applicationLog,
   transaction,
   selectAddress,
 }: Props) {
@@ -82,6 +85,13 @@ export default function TransactionDetails({
               script={transaction.script}
               selectAddress={selectAddress}
             />
+          </MetadataBadge>
+        </div>
+      )}
+      {!!applicationLog && (
+        <div style={{ width: "100%" }}>
+          <MetadataBadge alignLeft grow title="Log">
+            {JSON.stringify(applicationLog)}
           </MetadataBadge>
         </div>
       )}

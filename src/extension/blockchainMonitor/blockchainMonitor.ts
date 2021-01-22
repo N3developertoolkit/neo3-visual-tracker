@@ -3,6 +3,7 @@ import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
 
 import AddressInfo from "../../shared/addressInfo";
+import ApplicationLog from "../../shared/applicationLog";
 import BlockchainMonitorInternal from "./blockchainMonitorInternal";
 
 export default class BlockchainMonitor {
@@ -41,11 +42,22 @@ export default class BlockchainMonitor {
     return this.blockchainMonitorInternal.getBlock(indexOrHash, retryonFailure);
   }
 
-  getTransaction(
+  async getTransaction(
     hash: string,
     retryonFailure: boolean = true
-  ): Promise<neonTx.TransactionJson | null> {
-    return this.blockchainMonitorInternal.getTransaction(hash, retryonFailure);
+  ): Promise<{ tx: neonTx.TransactionJson; log?: ApplicationLog } | null> {
+    const tx = await this.blockchainMonitorInternal.getTransaction(
+      hash,
+      retryonFailure
+    );
+    if (tx) {
+      const log = await this.blockchainMonitorInternal.getApplicationLog(
+        hash,
+        false
+      );
+      return { tx, log: log || undefined };
+    }
+    return null;
   }
 
   isBlockPopulated(blockIndex: number) {

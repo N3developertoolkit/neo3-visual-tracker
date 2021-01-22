@@ -11,6 +11,7 @@ const now = () => new Date().getTime();
 export default class BlockchainState {
   public readonly blockTimes: number[];
   public readonly cachedBlocks: neonTypes.BlockJson[];
+  public readonly cachedLogs: any[];
   public readonly cachedTransactions: neonTx.TransactionJson[];
   public readonly populatedBlocks: bitset.BitSet;
 
@@ -20,6 +21,7 @@ export default class BlockchainState {
   constructor(public readonly lastKnownCacheId: string = "") {
     this.blockTimes = [];
     this.cachedBlocks = [];
+    this.cachedLogs = [];
     this.cachedTransactions = [];
     this.populatedBlocks = new bitset.default();
     this.isHealthy = false;
