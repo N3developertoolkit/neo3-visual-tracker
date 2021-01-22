@@ -6,7 +6,10 @@ import Address from "../Address";
 import ApplicationLog from "../../../shared/applicationLog";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
+import reverseBytes from "./reverseBytes";
 import Script from "./Script";
+import ScriptToken from "./ScriptToken";
+import TypedValueDisplay from "./TypedValueDisplay";
 
 type Props = {
   autoCompleteData: AutoCompleteData;
@@ -88,13 +91,64 @@ export default function TransactionDetails({
           </MetadataBadge>
         </div>
       )}
-      {!!applicationLog && (
-        <div style={{ width: "100%" }}>
-          <MetadataBadge alignLeft grow title="Log">
-            {JSON.stringify(applicationLog)}
-          </MetadataBadge>
-        </div>
-      )}
+      {(applicationLog?.executions || []).map((execution, i) => (
+        <>
+          <div
+            key={i}
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "stretch",
+            }}
+          >
+            <MetadataBadge title="Execution">#{i + 1}</MetadataBadge>
+            <MetadataBadge title="Trigger">{execution.trigger}</MetadataBadge>
+            <MetadataBadge title="VM State">{execution.vmstate}</MetadataBadge>
+            <MetadataBadge title="Exception">
+              {execution.exception || "(none)"}
+            </MetadataBadge>
+            <MetadataBadge title="Gas">{execution.gasconsumed}</MetadataBadge>
+            {execution.stack?.map((stack, j) => (
+              <MetadataBadge key={j} title={`Result ${j + 1}`}>
+                <TypedValueDisplay
+                  autoCompleteData={autoCompleteData}
+                  value={stack}
+                  selectAddress={selectAddress}
+                />
+              </MetadataBadge>
+            ))}
+          </div>
+          <div style={{ width: "100%" }}>
+            {execution.notifications?.map((notification, j) => (
+              <MetadataBadge
+                key={j}
+                alignLeft
+                grow
+                title={`Notification #${j + 1}`}
+              >
+                {!!notification.contract && (
+                  <>
+                    <ScriptToken
+                      autoCompleteData={autoCompleteData}
+                      token={reverseBytes(notification.contract.substring(2))}
+                      selectAddress={selectAddress}
+                    />
+                    fired: <strong>{notification.eventname}</strong> with state:
+                  </>
+                )}
+                {!!notification.state && (
+                  <TypedValueDisplay
+                    autoCompleteData={autoCompleteData}
+                    value={notification.state}
+                    selectAddress={selectAddress}
+                  />
+                )}
+              </MetadataBadge>
+            ))}
+          </div>
+        </>
+      ))}
       {!!transaction.witnesses?.length &&
         transaction.witnesses.map((witness, i) => (
           <div style={{ width: "100%" }} key={i}>

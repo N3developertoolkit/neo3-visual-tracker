@@ -3,12 +3,7 @@ import * as neonCore from "@cityofzion/neon-core";
 
 import Address from "../Address";
 import AutoCompleteData from "../../../shared/autoCompleteData";
-
-const reverseBytes = (token: string) =>
-  token
-    .match(/[a-f0-9]{2}/g)
-    ?.reverse()
-    .join("") || "";
+import reverseBytes from "./reverseBytes";
 
 type Props = {
   autoCompleteData: AutoCompleteData;

@@ -1,15 +1,13 @@
-type TypedValue = {
-  type: string;
-  value?: TypedValue[] | string;
-};
+import TypedValue from "./typedValue";
 
 type ApplicationLog = {
   txid?: string;
   executions?: Partial<{
     trigger: string;
     vmstate: string;
+    exception: string | null;
     gasconsumed: string;
-    stack: any[];
+    stack: TypedValue[];
     notifications: Partial<{
       contract: string;
       eventname: string;
