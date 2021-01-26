@@ -4,8 +4,8 @@ import ActiveConnection from "./activeConnection";
 import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
-import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
+import { CommandArguments, sanitizeCommandArguments } from "./commandArguments";
 import ContractDetector from "./fileDetectors/contractDetector";
 import Log from "../shared/log";
 import NeoCommands from "./commands/neoCommands";
@@ -21,32 +21,27 @@ import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "index";
 
-function registerBlockchainInstanceCommand(
+function registerCommand(
   context: vscode.ExtensionContext,
-  blockchainType: BlockchainType | undefined,
-  blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
   commandId: string,
-  handler: (identifier: BlockchainIdentifier, path?: string) => Promise<void>
+  handler: (commandArguments: CommandArguments) => Promise<void>
 ) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       commandId,
-      async (context?: BlockchainIdentifier | vscode.Uri) => {
-        let identifier: BlockchainIdentifier | undefined = undefined;
-        let path: string | undefined = undefined;
-        if (context && (context as vscode.Uri).fsPath) {
-          path = (context as vscode.Uri).fsPath;
+      async (context?: BlockchainIdentifier | vscode.Uri | any) => {
+        let commandArguments: CommandArguments = {};
+        if (context && !!(context as vscode.Uri).fsPath) {
+          // Activation was by right-click on an item in the VS Code file explorer
+          commandArguments.path = (context as vscode.Uri).fsPath;
+        } else if (context && !!(context as BlockchainIdentifier).name) {
+          // Activation was by right-click on an item in the Blockchain explorer
+          commandArguments.blockchainIdentifier = context as BlockchainIdentifier;
+        } else if (context && Array.isArray(context) && context.length === 1) {
+          // Activation by command URI containing query string parameters
+          commandArguments = await sanitizeCommandArguments(context[0] || {});
         }
-        if (context && (context as BlockchainIdentifier).blockchainType) {
-          identifier = context as BlockchainIdentifier;
-        }
-        if (!identifier) {
-          identifier = await blockchainsTreeDataProvider.select(blockchainType);
-          if (!identifier) {
-            return;
-          }
-        }
-        await handler(identifier, path);
+        await handler(commandArguments);
       }
     )
   );
@@ -123,153 +118,147 @@ export async function activate(context: vscode.ExtensionContext) {
     )
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.express.create",
-      () =>
-        NeoExpressCommands.create(
-          context,
-          neoExpress,
-          neoExpressInstanceManager,
-          autoComplete,
-          blockchainMonitorPool
-        )
+  registerCommand(context, "neo3-visual-devtracker.express.create", () =>
+    NeoExpressCommands.create(
+      context,
+      neoExpress,
+      neoExpressInstanceManager,
+      autoComplete,
+      blockchainMonitorPool,
+      blockchainsTreeDataProvider
     )
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.neo.newContract",
-      () => NeoCommands.newContract(context)
-    )
+  registerCommand(context, "neo3-visual-devtracker.neo.newContract", () =>
+    NeoCommands.newContract(context)
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.neo.walletCreate",
-      () => NeoCommands.createWallet()
-    )
+  registerCommand(context, "neo3-visual-devtracker.neo.walletCreate", () =>
+    NeoCommands.createWallet()
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("neo3-visual-devtracker.connect", () =>
-      activeConnection.connect()
-    )
+  registerCommand(context, "neo3-visual-devtracker.connect", () =>
+    activeConnection.connect()
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo3-visual-devtracker.customizeServerList",
-      () => serverListDetector.customize()
-    )
+  registerCommand(context, "neo3-visual-devtracker.customizeServerList", () =>
+    serverListDetector.customize()
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("neo3-visual-devtracker.disconnect", () =>
-      activeConnection.disconnect()
-    )
+  registerCommand(context, "neo3-visual-devtracker.disconnect", () =>
+    activeConnection.disconnect()
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.contractDeploy",
-    (identifier, nefPath) =>
+    (commandArguments) =>
       NeoExpressCommands.contractDeploy(
         neoExpress,
-        identifier,
         contractDetector,
-        nefPath
+        blockchainsTreeDataProvider,
+        commandArguments
       )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.customCommand",
-    (identifier) => NeoExpressCommands.customCommand(neoExpress, identifier)
+    (commandArguments) =>
+      NeoExpressCommands.customCommand(
+        neoExpress,
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.reset",
-    (identifier) =>
+    (commandArguments) =>
       NeoExpressCommands.reset(
         neoExpress,
-        identifier,
-        neoExpressInstanceManager
+        neoExpressInstanceManager,
+        blockchainsTreeDataProvider,
+        commandArguments
       )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.run",
-    (identifier) => neoExpressInstanceManager.run(identifier)
+    (commandArguments) =>
+      neoExpressInstanceManager.run(
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.runAdvanced",
-    (identifier) => neoExpressInstanceManager.runAdvanced(identifier)
+    (commandArguments) =>
+      neoExpressInstanceManager.runAdvanced(
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.transfer",
-    (identifier) => NeoExpressCommands.transfer(neoExpress, identifier)
+    (commandArguments) =>
+      NeoExpressCommands.transfer(
+        neoExpress,
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    "express",
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.express.walletCreate",
-    (identifier) => NeoExpressCommands.walletCreate(neoExpress, identifier)
+    (commandArguments) =>
+      NeoExpressCommands.walletCreate(
+        neoExpress,
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    undefined,
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.neo.contractDeploy",
-    (identifier, nefPath) =>
+    (commandArguments) =>
       NeoCommands.contractDeploy(
-        identifier,
         contractDetector,
         walletDetector,
-        nefPath
+        blockchainsTreeDataProvider,
+        commandArguments
       )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    undefined,
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.neo.invokeContract",
-    (identifier) => NeoCommands.invokeContract(identifier, activeConnection)
+    (commandArguments) =>
+      NeoCommands.invokeContract(
+        activeConnection,
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
   );
 
-  registerBlockchainInstanceCommand(
+  registerCommand(
     context,
-    undefined,
-    blockchainsTreeDataProvider,
     "neo3-visual-devtracker.tracker.openTracker",
-    (identifier) =>
+    (commandArguments) =>
       TrackerCommands.openTracker(
         context,
-        identifier,
         autoComplete,
-        blockchainMonitorPool
+        blockchainMonitorPool,
+        blockchainsTreeDataProvider,
+        commandArguments
       )
   );
 }

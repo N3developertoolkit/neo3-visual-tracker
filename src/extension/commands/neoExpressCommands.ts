@@ -3,6 +3,8 @@ import * as vscode from "vscode";
 import AutoComplete from "../autoComplete";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
+import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
+import { CommandArguments } from "../commandArguments";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
@@ -12,11 +14,14 @@ import TrackerPanelController from "../panelControllers/trackerPanelController";
 export default class NeoExpressCommands {
   static async contractDeploy(
     neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier,
     contractDetector: ContractDetector,
-    nefPath?: string
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
-    if (identifer.blockchainType !== "express") {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
       return;
     }
     if (!Object.keys(contractDetector.contracts).length) {
@@ -25,7 +30,7 @@ export default class NeoExpressCommands {
       );
       return;
     }
-    const walletNames = Object.keys(await identifer.getWalletAddresses());
+    const walletNames = Object.keys(await identifier.getWalletAddresses());
     const account = await IoHelpers.multipleChoice(
       "Select an account...",
       ...walletNames
@@ -34,7 +39,7 @@ export default class NeoExpressCommands {
       return;
     }
     const contractFile =
-      nefPath ||
+      commandArguments?.path ||
       (await IoHelpers.multipleChoiceFiles(
         `Use account "${account}" to deploy...`,
         ...Object.values(contractDetector.contracts).map(
@@ -50,7 +55,7 @@ export default class NeoExpressCommands {
       contractFile,
       account,
       "-i",
-      identifer.configPath
+      identifier.configPath
     );
     NeoExpressCommands.showResult(output);
   }
@@ -60,7 +65,8 @@ export default class NeoExpressCommands {
     neoExpress: NeoExpress,
     neoExpressInstanceManager: NeoExpressInstanceManager,
     autoComplete: AutoComplete,
-    blockchainMonitorPool: BlockchainMonitorPool
+    blockchainMonitorPool: BlockchainMonitorPool,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider
   ) {
     const nodeCount = await IoHelpers.multipleChoice(
       "Number of nodes in the new instance",
@@ -88,15 +94,16 @@ export default class NeoExpressCommands {
       configSavePath
     );
     NeoExpressCommands.showResult(output);
-    NeoExpressCommands.showResult(output);
     if (!output.isError) {
-      const identifier = await BlockchainIdentifier.fromNeoExpressConfig(
+      const blockchainIdentifier = await BlockchainIdentifier.fromNeoExpressConfig(
         context.extensionPath,
         configSavePath
       );
-      if (identifier) {
-        await neoExpressInstanceManager.run(identifier);
-        const rpcUrl = await identifier.selectRpcUrl();
+      if (blockchainIdentifier) {
+        await neoExpressInstanceManager.run(blockchainsTreeDataProvider, {
+          blockchainIdentifier,
+        });
+        const rpcUrl = await blockchainIdentifier.selectRpcUrl();
         if (rpcUrl) {
           new TrackerPanelController(
             context,
@@ -111,9 +118,13 @@ export default class NeoExpressCommands {
 
   static async customCommand(
     neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
-    if (identifer.blockchainType !== "express") {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
       return;
     }
     const command = await IoHelpers.enterString("Enter a neo-express command");
@@ -123,28 +134,32 @@ export default class NeoExpressCommands {
     const output = await neoExpress.runUnsafe(
       command,
       "-i",
-      identifer.configPath
+      identifier.configPath
     );
     NeoExpressCommands.showResult(output);
   }
 
   static async reset(
     neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier,
-    neoExpressInstanceManager: NeoExpressInstanceManager
+    neoExpressInstanceManager: NeoExpressInstanceManager,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
-    if (identifer.blockchainType !== "express") {
+    const blockchainIdentifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!blockchainIdentifier) {
       return;
     }
     const confirmed = await IoHelpers.yesNo(
-      `Are you sure that you want to reset "${identifer.configPath}"?`
+      `Are you sure that you want to reset "${blockchainIdentifier.configPath}"?`
     );
     if (!confirmed) {
       return;
     }
     const wasRunning =
       neoExpressInstanceManager.runningInstance?.configPath ===
-      identifer.configPath;
+      blockchainIdentifier.configPath;
     if (wasRunning) {
       await neoExpressInstanceManager.stop();
     }
@@ -153,21 +168,27 @@ export default class NeoExpressCommands {
         "reset",
         "-f",
         "-i",
-        identifer.configPath
+        blockchainIdentifier.configPath
       );
       NeoExpressCommands.showResult(output);
     } finally {
       if (wasRunning) {
-        await neoExpressInstanceManager.run(identifer);
+        await neoExpressInstanceManager.run(blockchainsTreeDataProvider, {
+          blockchainIdentifier,
+        });
       }
     }
   }
 
   static async transfer(
     neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
-    if (identifer.blockchainType !== "express") {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
       return;
     }
     const asset = await IoHelpers.multipleChoice(
@@ -184,7 +205,7 @@ export default class NeoExpressCommands {
     if (amount === undefined) {
       return;
     }
-    const walletNames = Object.keys(await identifer.getWalletAddresses());
+    const walletNames = Object.keys(await identifier.getWalletAddresses());
     const sender = await IoHelpers.multipleChoice(
       `Transfer ${amount} ${asset} from which wallet?`,
       ...walletNames
@@ -202,7 +223,7 @@ export default class NeoExpressCommands {
     const output = await neoExpress.run(
       "transfer",
       "-i",
-      identifer.configPath,
+      identifier.configPath,
       asset,
       `${amount}`,
       sender,
@@ -213,9 +234,13 @@ export default class NeoExpressCommands {
 
   static async walletCreate(
     neoExpress: NeoExpress,
-    identifer: BlockchainIdentifier
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
-    if (identifer.blockchainType !== "express") {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
       return;
     }
     const walletName = await IoHelpers.enterString("Wallet name");
@@ -227,7 +252,7 @@ export default class NeoExpressCommands {
       "create",
       walletName,
       "-i",
-      identifer.configPath
+      identifier.configPath
     );
     NeoExpressCommands.showResult(output);
   }

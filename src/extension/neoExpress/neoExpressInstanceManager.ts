@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
+import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
+import { CommandArguments } from "../commandArguments";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 import IoHelpers from "../util/ioHelpers";
@@ -39,10 +41,18 @@ export default class NeoExpressInstanceManager {
     this.disposed = true;
   }
 
-  async run(identifer: BlockchainIdentifier, secondsPerBlock: number = 15) {
-    if (identifer.blockchainType !== "express") {
+  async run(
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments: CommandArguments
+  ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (identifier?.blockchainType !== "express") {
       return;
     }
+
+    const secondsPerBlock = commandArguments.secondsPerBlock || 15;
 
     const runningPreviously = this.running;
     await this.stop();
@@ -55,7 +65,7 @@ export default class NeoExpressInstanceManager {
       await this.activeConnection.disconnect(true);
     }
 
-    const children = identifer.getChildren();
+    const children = identifier.getChildren();
     if (children.length) {
       for (const child of children) {
         const terminal = this.neoExpress.runInTerminal(
@@ -73,20 +83,20 @@ export default class NeoExpressInstanceManager {
       }
     } else {
       const terminal = this.neoExpress.runInTerminal(
-        identifer.name,
+        identifier.name,
         "run",
         "-i",
-        identifer.configPath,
+        identifier.configPath,
         "-s",
         `${secondsPerBlock}`,
-        `${identifer.index}`
+        `${identifier.index}`
       );
       if (terminal) {
         this.terminals.push(terminal);
       }
     }
 
-    this.running = identifer;
+    this.running = identifier;
 
     // Give the terminal a chance to get a lock on the blockchain before
     // starting to do any offline commands.
@@ -94,18 +104,17 @@ export default class NeoExpressInstanceManager {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
     if (!this.activeConnection.connection?.blockchainMonitor.healthy) {
-      await this.activeConnection.connect(identifer);
+      await this.activeConnection.connect(identifier);
     }
 
     this.onChangeEmitter.fire();
   }
 
-  async runAdvanced(identifer: BlockchainIdentifier) {
-    if (identifer.blockchainType !== "express") {
-      return;
-    }
-
-    const secondsPerBlock = await IoHelpers.enterNumber(
+  async runAdvanced(
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments: CommandArguments
+  ) {
+    commandArguments.secondsPerBlock = await IoHelpers.enterNumber(
       "How often (in seconds) should new blocks be produced?",
       15,
       (n) =>
@@ -113,8 +122,7 @@ export default class NeoExpressInstanceManager {
           ? null
           : "Enter a whole number between 1 and 3600"
     );
-
-    await this.run(identifer, secondsPerBlock);
+    await this.run(blockchainsTreeDataProvider, commandArguments);
   }
 
   async stop() {

@@ -4,7 +4,8 @@ import * as path from "path";
 import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
-import BlockchainIdentifier from "../blockchainIdentifier";
+import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
+import { CommandArguments } from "../commandArguments";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
@@ -13,11 +14,17 @@ import WalletDetector from "../fileDetectors/walletDetector";
 
 export default class NeoCommands {
   static async contractDeploy(
-    identifer: BlockchainIdentifier,
     contractDetector: ContractDetector,
     walletDetector: WalletDetector,
-    nefPath?: string
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments: CommandArguments
   ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select());
+    if (!identifier) {
+      return;
+    }
     const wallets = walletDetector.wallets;
     if (!wallets.length) {
       vscode.window.showErrorMessage(
@@ -31,7 +38,7 @@ export default class NeoCommands {
       );
       return;
     }
-    const rpcUrl = await identifer.selectRpcUrl();
+    const rpcUrl = await identifier.selectRpcUrl();
     if (!rpcUrl) {
       return;
     }
@@ -59,7 +66,7 @@ export default class NeoCommands {
     }
     const contracts = contractDetector.contracts;
     const contractFile =
-      nefPath ||
+      commandArguments.path ||
       (await IoHelpers.multipleChoiceFiles(
         `Deploy contract using ${walletAddress} (from ${path.basename(
           walletPath
@@ -150,13 +157,20 @@ export default class NeoCommands {
   }
 
   static async invokeContract(
-    identifer: BlockchainIdentifier,
-    activeConnection: ActiveConnection
+    activeConnection: ActiveConnection,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
   ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select());
+    if (!identifier) {
+      return;
+    }
     if (
-      activeConnection.connection?.blockchainIdentifier.name !== identifer.name
+      activeConnection.connection?.blockchainIdentifier.name !== identifier.name
     ) {
-      await activeConnection.connect(identifer);
+      await activeConnection.connect(identifier);
     }
     const workspaceFolder = NeoCommands.workspaceFolder();
     if (!workspaceFolder) {
