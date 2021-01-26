@@ -191,32 +191,44 @@ export default class NeoExpressCommands {
     if (!identifier) {
       return;
     }
-    const asset = await IoHelpers.multipleChoice(
-      "Select an asset",
-      "NEO",
-      "GAS"
-    );
+    let asset: string | undefined = undefined;
+    if (commandArguments?.asset?.toUpperCase() === "NEO") {
+      asset = "NEO";
+    } else if (commandArguments?.asset?.toUpperCase() === "GAS") {
+      asset = "GAS";
+    } else {
+      asset = await IoHelpers.multipleChoice("Select an asset", "NEO", "GAS");
+    }
     if (!asset) {
       return;
     }
-    const amount = await IoHelpers.enterNumber(
-      `How many ${asset} should be transferred?`
-    );
+    const amount =
+      commandArguments?.amount === undefined
+        ? await IoHelpers.enterNumber(
+            `How many ${asset} should be transferred?`
+          )
+        : commandArguments.amount;
     if (amount === undefined) {
       return;
     }
     const walletNames = Object.keys(await identifier.getWalletAddresses());
-    const sender = await IoHelpers.multipleChoice(
-      `Transfer ${amount} ${asset} from which wallet?`,
-      ...walletNames
-    );
+    let sender = commandArguments?.sender;
+    if (!sender || walletNames.indexOf(sender) === -1) {
+      sender = await IoHelpers.multipleChoice(
+        `Transfer ${amount} ${asset} from which wallet?`,
+        ...walletNames
+      );
+    }
     if (!sender) {
       return;
     }
-    const receiver = await IoHelpers.multipleChoice(
-      `Transfer ${amount} ${asset} from '${sender}' to...`,
-      ...walletNames
-    );
+    let receiver = commandArguments?.receiver;
+    if (!receiver || walletNames.indexOf(receiver) === -1) {
+      receiver = await IoHelpers.multipleChoice(
+        `Transfer ${amount} ${asset} from '${sender}' to...`,
+        ...walletNames
+      );
+    }
     if (!receiver) {
       return;
     }
