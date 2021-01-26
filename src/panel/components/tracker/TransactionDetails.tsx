@@ -110,7 +110,7 @@ export default function TransactionDetails({
             </MetadataBadge>
             <MetadataBadge title="Gas">{execution.gasconsumed}</MetadataBadge>
             {execution.stack?.map((stack, j) => (
-              <MetadataBadge key={j} title={`Result ${j + 1}`}>
+              <MetadataBadge grow key={j} title={`Result ${j + 1}`} alignLeft>
                 <TypedValueDisplay
                   autoCompleteData={autoCompleteData}
                   value={stack}

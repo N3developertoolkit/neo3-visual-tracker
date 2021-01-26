@@ -18,6 +18,7 @@ export default function ScriptToken({
 }: Props) {
   const style: React.CSSProperties = {
     marginRight: "1em",
+    wordBreak: "break-all",
   };
   token = token.trim();
 
