@@ -37,7 +37,13 @@ export default function TypedValueDisplay({
         selectAddress={selectAddress}
       />
     );
+  } else if (value.type === "Boolean") {
+    return <>{value.value === true ? "True" : "False"}</>;
+  } else if (value.type === "Integer") {
+    return <>{parseInt(`${value.value}`)}</>;
+  } else if (!value.value) {
+    return <i>(null)</i>;
   } else {
-    return <>{value.value}</>;
+    return <>{JSON.stringify(value)}</>;
   }
 }
