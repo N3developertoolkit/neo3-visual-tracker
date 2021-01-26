@@ -44,12 +44,12 @@ export default class ContractDetector extends DetectorBase {
     // TODO: Replace with a call to an RPC method that also exists on TestNet/MainNet
     //       See: https://github.com/neo-project/neo-modules/issues/426
     try {
-      return (await rpcClient.query({
-        method: "expressgetcontractstate",
-        params: [contractName],
-        id: 0,
-        jsonrpc: "2.0",
-      })) as any[];
+      return (await rpcClient.execute(
+        new neonRpc.Query({
+          method: "expressgetcontractstate",
+          params: [contractName],
+        })
+      )) as any[];
     } catch (e) {
       if (`${e.message}`.toLowerCase().indexOf("method not found") !== -1) {
         return [];

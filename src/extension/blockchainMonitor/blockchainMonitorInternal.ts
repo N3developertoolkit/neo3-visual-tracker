@@ -1,4 +1,5 @@
 import * as neonCore from "@cityofzion/neon-core";
+import * as neonRpc from "@cityofzion/neon-core/lib/rpc";
 import * as neonTypes from "@cityofzion/neon-core/lib/types";
 import * as neonTx from "@cityofzion/neon-core/lib/tx";
 import * as vscode from "vscode";
@@ -32,7 +33,6 @@ export default class BlockchainMonitorInternal {
 
   private disposed: boolean;
   private getPopulatedBlocksSuccess: boolean;
-  private rpcId: number;
   private state: BlockchainState;
   private tryGetPopulatedBlocks: boolean;
 
@@ -48,7 +48,6 @@ export default class BlockchainMonitorInternal {
     this.disposed = false;
     this.getPopulatedBlocksSuccess = false;
     this.id = id++;
-    this.rpcId = 0;
     this.state = new BlockchainState();
     this.tryGetPopulatedBlocks = true;
     this.onChangeEmitter = new vscode.EventEmitter<number>();
@@ -111,12 +110,12 @@ export default class BlockchainMonitorInternal {
     do {
       Log.log(LOG_PREFIX, `Retrieving logs for ${txid} (attempt ${retry++})`);
       try {
-        const result = (await this.rpcClient.query({
-          method: "getapplicationlog",
-          params: [txid],
-          id: this.rpcId++,
-          jsonrpc: "2.0",
-        })) as ApplicationLog;
+        const result = (await this.rpcClient.execute(
+          new neonRpc.Query({
+            method: "getapplicationlog",
+            params: [txid],
+          })
+        )) as ApplicationLog;
         if (this.state.cachedLogs.length === APP_LOG_CACHE_SIZE) {
           this.state.cachedLogs.shift();
         }
@@ -275,12 +274,12 @@ export default class BlockchainMonitorInternal {
             2,
             Math.min(start - this.state.lastKnownBlockHeight, BLOCKS_PER_QUERY)
           );
-          const result = (await this.rpcClient.query({
-            method: "expressgetpopulatedblocks",
-            params: [count, start],
-            id: this.rpcId++,
-            jsonrpc: "2.0",
-          })) as { blocks: number[]; cacheId: string };
+          const result = (await this.rpcClient.execute(
+            new neonRpc.Query({
+              method: "expressgetpopulatedblocks",
+              params: [count, start],
+            })
+          )) as { blocks: number[]; cacheId: string };
           if (!this.getPopulatedBlocksSuccess) {
             this.getPopulatedBlocksSuccess = true;
             fireChangeEvent = true;
@@ -323,21 +322,21 @@ export default class BlockchainMonitorInternal {
   }
 
   private async getBalance(address: string, assetScriptHash: string) {
-    const result: any = await this.rpcClient.query({
-      jsonrpc: "2.0",
-      id: this.rpcId++,
-      method: "invokefunction",
-      params: [
-        assetScriptHash,
-        "balanceOf",
-        [
-          {
-            type: "Hash160",
-            value: neonCore.wallet.getScriptHashFromAddress(address),
-          },
+    const result: any = await this.rpcClient.execute(
+      new neonRpc.Query({
+        method: "invokefunction",
+        params: [
+          assetScriptHash,
+          "balanceOf",
+          [
+            {
+              type: "Hash160",
+              value: neonCore.wallet.getScriptHashFromAddress(address),
+            },
+          ],
         ],
-      ],
-    });
+      })
+    );
     return parseInt((result.stack || [])[0]?.value || "0");
   }
 }

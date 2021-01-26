@@ -227,10 +227,10 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         .filter((_) => _.contract?.startsWith("0x"))
         .map((_) => _.contract || "")) {
         try {
-          const manifest = (
-            await connection.rpcClient.getContractState(contractHash)
-          ).toJson();
-          result.contractManifests[manifest.abi.hash] = manifest;
+          const contractState = await connection.rpcClient.getContractState(
+            contractHash
+          );
+          result.contractManifests[contractState.hash] = contractState.manifest;
         } catch {}
       }
       for (const contractName of this.viewState.fileContents
