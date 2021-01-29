@@ -22,13 +22,18 @@ export default function ViewRouter() {
   };
   const receiveMessage = (request: ControllerRequest) => {
     Log.log("📬", request);
-    if (request.viewState.view !== view) {
-      // Replace viewstate:
-      setView(request.viewState.view);
-      setViewState(request.viewState);
-    } else {
-      // Merge viewstate:
-      setViewState((existing: any) => ({ ...existing, ...request.viewState }));
+    if (request.viewState) {
+      if (request.viewState.view !== view) {
+        // Replace viewstate:
+        setView(request.viewState.view);
+        setViewState(request.viewState);
+      } else {
+        // Merge viewstate:
+        setViewState((existing: any) => ({
+          ...existing,
+          ...request.viewState,
+        }));
+      }
     }
   };
   const [view, setView] = useState<View | null>(null);

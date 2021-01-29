@@ -52,7 +52,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
 
   onClose() {}
 
-  refresh() {
+  private async refresh() {
     const connectionName =
       this.activeConnection.connection?.blockchainIdentifier.friendlyName ||
       null;
@@ -94,7 +94,7 @@ export default class QuickStartPanelController extends PanelControllerBase<
 
     const workspaceIsOpen = !!vscode.workspace.workspaceFolders?.length;
 
-    this.updateViewState({
+    await this.updateViewState({
       connectionName,
       hasContracts,
       hasDeployedContract,

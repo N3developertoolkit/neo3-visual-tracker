@@ -1,7 +1,8 @@
 import ViewStateBase from "../viewState/viewStateBase";
 
 type ControllerRequest = {
-  viewState: ViewStateBase;
+  loadingState?: { isLoading: boolean };
+  viewState?: ViewStateBase;
 };
 
 export default ControllerRequest;

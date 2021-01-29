@@ -21,7 +21,7 @@ export default abstract class PanelControllerBase<
 
   private closed: boolean;
 
-  private readonly postMessage: (request: ControllerRequest) => void;
+  private readonly postMessage: (request: ControllerRequest) => Promise<void>;
 
   private readonly setTitle: (newTitle: string) => void;
 
@@ -57,7 +57,9 @@ export default abstract class PanelControllerBase<
       this,
       context.subscriptions
     );
-    this.postMessage = (message) => panel?.webview.postMessage(message);
+    this.postMessage = async (message) => {
+      await panel?.webview.postMessage(message);
+    };
     this.setTitle = (newTitle) => {
       if (panel) {
         panel.title = newTitle;
@@ -80,9 +82,9 @@ export default abstract class PanelControllerBase<
 
   abstract onClose(): void;
 
-  protected abstract onRequest(request: TViewRequest): void;
+  protected abstract onRequest(request: TViewRequest): Promise<void>;
 
-  protected updateViewState(updates: Partial<TViewState>) {
+  protected async updateViewState(updates: Partial<TViewState>) {
     if (this.closed) {
       return;
     }
@@ -100,10 +102,10 @@ export default abstract class PanelControllerBase<
       this.setTitle(updates.panelTitle);
     }
     this.viewState = mergedViewState;
-    this.sendRequest({ viewState: this.viewState });
+    await this.sendRequest({ viewState: this.viewState });
   }
 
-  private recieveRequest(request: ViewRequest) {
+  private async recieveRequest(request: ViewRequest) {
     Log.log(
       LOG_PREFIX,
       "Received:",
@@ -111,20 +113,22 @@ export default abstract class PanelControllerBase<
       JSON.stringify(Object.keys(request))
     );
     if (request.retrieveViewState) {
-      this.sendRequest({ viewState: this.viewState });
+      await this.sendRequest({ viewState: this.viewState });
     }
     if (request.typedRequest) {
-      this.onRequest(request.typedRequest);
+      await this.sendRequest({ loadingState: { isLoading: true } });
+      await this.onRequest(request.typedRequest);
+      await this.sendRequest({ loadingState: { isLoading: false } });
     }
   }
 
-  private sendRequest(request: ControllerRequest) {
+  private async sendRequest(request: ControllerRequest) {
     Log.log(
       LOG_PREFIX,
       "Sent:",
       this.viewState.panelTitle,
       JSON.stringify(Object.keys(request))
     );
-    this.postMessage(request);
+    await this.postMessage(request);
   }
 }

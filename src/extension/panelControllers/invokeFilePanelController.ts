@@ -141,19 +141,19 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
 
     if (request.selectTransaction) {
-      this.updateViewState({
+      await this.updateViewState({
         selectedTransactionId: request.selectTransaction.txid,
       });
     }
 
     if (request.toggleJsonMode) {
-      this.updateViewState({
+      await this.updateViewState({
         jsonMode: !this.viewState.jsonMode,
       });
     }
 
     if (request.toggleTransactions) {
-      this.updateViewState({
+      await this.updateViewState({
         collapseTransactions: !this.viewState.collapseTransactions,
       });
     }
@@ -270,21 +270,21 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         if (!Array.isArray(fileContents)) {
           fileContents = [fileContents];
         }
-        this.updateViewState({
+        await this.updateViewState({
           fileContents,
           fileContentsJson,
           comments: JSONC.extractComments(fileContentsJson),
           errorText: "",
         });
       } catch (e) {
-        this.updateViewState({
+        await this.updateViewState({
           errorText: e.message || "Unknown error",
           fileContentsJson,
         });
         return;
       }
     } catch {
-      this.updateViewState({
+      await this.updateViewState({
         errorText: `There was an error reading ${posixPath(
           this.document.uri.fsPath
         )}`,
@@ -341,7 +341,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         if (recentTransactions.length > MAX_RECENT_TXS) {
           recentTransactions.length = MAX_RECENT_TXS;
         }
-        this.updateViewState({ recentTransactions });
+        await this.updateViewState({ recentTransactions });
       }
     } else {
       await vscode.window.showWarningMessage(
@@ -484,7 +484,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       })
     );
 
-    this.updateViewState({
+    await this.updateViewState({
       autoCompleteData: await this.augmentAutoCompleteData(
         this.autoComplete.data
       ),
