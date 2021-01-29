@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import ControllerRequest from "../shared/messages/controllerRequest";
 import InvokeFile from "./components/views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
+import LoadingIndicator from "./components/LoadingIndicator";
 import Log from "../shared/log";
 import QuickStart from "./components/views/QuickStart";
 import QuickStartViewState from "../shared/viewState/quickStartViewState";
@@ -16,6 +17,9 @@ declare var acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
 
 export default function ViewRouter() {
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [view, setView] = useState<View | null>(null);
+  const [viewState, setViewState] = useState<ViewStateBase | null>(null);
   const postMessage = (request: ViewRequest) => {
     Log.log("📤", request);
     vscode.postMessage(request);
@@ -35,37 +39,47 @@ export default function ViewRouter() {
         }));
       }
     }
+    if (request.loadingState) {
+      setIsLoading(request.loadingState.isLoading);
+    }
   };
-  const [view, setView] = useState<View | null>(null);
-  const [viewState, setViewState] = useState<ViewStateBase | null>(null);
   useEffect(() => {
     window.addEventListener("message", (msg) => receiveMessage(msg.data));
     postMessage({ retrieveViewState: true });
   }, []);
-  if (!view || !viewState) {
-    return <div>Loading&hellip;</div>;
+  let panelContent = <div></div>;
+  if (!!view && !!viewState) {
+    switch (view) {
+      case "invokeFile":
+        panelContent = (
+          <InvokeFile
+            viewState={viewState as InvokeFileViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
+      case "quickStart":
+        panelContent = (
+          <QuickStart
+            viewState={viewState as QuickStartViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
+      case "tracker":
+        panelContent = (
+          <Tracker
+            viewState={viewState as TrackerViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
+    }
   }
-  switch (view) {
-    case "invokeFile":
-      return (
-        <InvokeFile
-          viewState={viewState as InvokeFileViewState}
-          postMessage={(typedRequest) => postMessage({ typedRequest })}
-        />
-      );
-    case "quickStart":
-      return (
-        <QuickStart
-          viewState={viewState as QuickStartViewState}
-          postMessage={(typedRequest) => postMessage({ typedRequest })}
-        />
-      );
-    case "tracker":
-      return (
-        <Tracker
-          viewState={viewState as TrackerViewState}
-          postMessage={(typedRequest) => postMessage({ typedRequest })}
-        />
-      );
-  }
+  return (
+    <>
+      {panelContent}
+      {(isLoading || !view || !viewState) && <LoadingIndicator />}
+    </>
+  );
 }
