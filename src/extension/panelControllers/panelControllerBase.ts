@@ -58,7 +58,14 @@ export default abstract class PanelControllerBase<
       context.subscriptions
     );
     this.postMessage = async (message) => {
-      await panel?.webview.postMessage(message);
+      try {
+        await panel?.webview.postMessage(message);
+      } catch (e) {
+        Log.error(
+          LOG_PREFIX,
+          `Could not post message: ${e.message || "Unknown error"}`
+        );
+      }
     };
     this.setTitle = (newTitle) => {
       if (panel) {
@@ -117,8 +124,11 @@ export default abstract class PanelControllerBase<
     }
     if (request.typedRequest) {
       await this.sendRequest({ loadingState: { isLoading: true } });
-      await this.onRequest(request.typedRequest);
-      await this.sendRequest({ loadingState: { isLoading: false } });
+      try {
+        await this.onRequest(request.typedRequest);
+      } finally {
+        await this.sendRequest({ loadingState: { isLoading: false } });
+      }
     }
   }
 
