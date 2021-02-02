@@ -83,7 +83,7 @@ export default function ContractInput({
     <div style={{ ...style, position: "relative" }}>
       <InputNonDraggable
         disabled={isReadOnly}
-        ref={inputRef}
+        inputRef={inputRef}
         style={inputStyle}
         type="text"
         value={contract}

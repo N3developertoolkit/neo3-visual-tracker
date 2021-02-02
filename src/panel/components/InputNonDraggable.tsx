@@ -3,7 +3,7 @@ import React from "react";
 type Props = {
   disabled?: boolean;
   list?: string;
-  ref?: React.RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement>;
   style?: React.CSSProperties;
   type: string;
   value?: string;
@@ -16,7 +16,7 @@ type Props = {
 export default function InputNonDraggable({
   disabled,
   list,
-  ref,
+  inputRef,
   style,
   type,
   value,
@@ -30,7 +30,7 @@ export default function InputNonDraggable({
       disabled={disabled}
       draggable={true}
       list={list}
-      ref={ref}
+      ref={inputRef}
       style={style}
       type={type}
       value={value}
