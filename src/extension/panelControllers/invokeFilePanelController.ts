@@ -297,8 +297,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     let connection = this.activeConnection.connection;
     if (!connection) {
       await this.activeConnection.connect();
-      await this.updateTransactionList();
       connection = this.activeConnection.connection;
+      if (
+        connection &&
+        connection.blockchainIdentifier.blockchainType === "express"
+      ) {
+        await this.updateTransactionList();
+      }
     }
     if (
       connection &&
@@ -325,7 +330,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         account
       );
       if (result.isError) {
-        await vscode.window.showErrorMessage(result.message);
+        // showErrorMessage is not await'ed so that the loading spinner does not hang:
+        vscode.window.showErrorMessage(result.message);
       } else {
         const recentTransactions = [...this.viewState.recentTransactions];
         for (const txidMatch of ` ${result.message} `.matchAll(
@@ -344,8 +350,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         await this.updateViewState({ recentTransactions });
       }
     } else {
-      await vscode.window.showWarningMessage(
-        "Currently, you must be connected to a Neo Express blockchain to invoke contracts. Support for TestNet and MainNet contract invocation is coming soon."
+      // showWarningMessage is not await'ed so that the loading spinner does not hang:
+      vscode.window.showWarningMessage(
+        "You must be connected to a Neo Express blockchain to invoke contracts. Support for TestNet and MainNet contract invocation is coming soon."
       );
     }
   }

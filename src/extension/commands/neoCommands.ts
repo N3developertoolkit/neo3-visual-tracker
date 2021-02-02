@@ -85,7 +85,7 @@ export default class NeoCommands {
         await fs.promises.readFile(contract.absolutePathToNef)
       ).toString("hex");
     } catch (e) {
-      await vscode.window.showErrorMessage(
+      vscode.window.showErrorMessage(
         `Could not read contract: ${contract.absolutePathToNef}`
       );
     }
@@ -93,7 +93,7 @@ export default class NeoCommands {
     //   manifest: JSON.stringify(contract.manifest),
     //   script,
     // }).str;
-    await vscode.window.showInformationMessage(
+    vscode.window.showInformationMessage(
       `Coming soon: TestNet deployment/invocation`
     );
   }
@@ -131,7 +131,7 @@ export default class NeoCommands {
       return;
     }
     if (!(await wallet.encryptAll(password))) {
-      await vscode.window.showErrorMessage(
+      vscode.window.showErrorMessage(
         "Could not encrypt the wallet using the supplied password"
       );
     }

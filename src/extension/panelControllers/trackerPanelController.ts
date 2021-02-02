@@ -246,7 +246,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.selectBlock = block.hash;
         }
       } catch {
-        await vscode.window.showErrorMessage(
+        vscode.window.showErrorMessage(
           `Could not retrieve block ${parseInt(query)}`
         );
       }
@@ -259,9 +259,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.selectAddress = query;
         }
       } catch {
-        await vscode.window.showErrorMessage(
-          `Could not retrieve address ${query}`
-        );
+        vscode.window.showErrorMessage(`Could not retrieve address ${query}`);
       }
       return;
     }
@@ -278,7 +276,7 @@ export default class TrackerPanelController extends PanelControllerBase<
           request.selectTransaction = tx.tx.hash;
         }
       } catch {
-        await vscode.window.showErrorMessage(
+        vscode.window.showErrorMessage(
           `Could not retrieve block or transaction with hash ${query}`
         );
       }
