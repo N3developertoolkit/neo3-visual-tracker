@@ -11,6 +11,7 @@ import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
 import posixPath from "../util/posixPath";
 import WalletDetector from "../fileDetectors/walletDetector";
+import workspaceFolder from "../util/workspaceFolder";
 
 export default class NeoCommands {
   static async contractDeploy(
@@ -99,14 +100,14 @@ export default class NeoCommands {
   }
 
   static async createWallet() {
-    const workspaceFolder = NeoCommands.workspaceFolder();
-    if (!workspaceFolder) {
+    const rootFolder = workspaceFolder();
+    if (!rootFolder) {
       vscode.window.showErrorMessage(
         "Please open a folder in your Visual Studio Code workspace before creating a wallet"
       );
       return;
     }
-    const walletFilesFolder = posixPath(workspaceFolder, "wallets");
+    const walletFilesFolder = posixPath(rootFolder, "wallets");
     try {
       await fs.promises.mkdir(walletFilesFolder);
     } catch {}
@@ -172,14 +173,14 @@ export default class NeoCommands {
     ) {
       await activeConnection.connect(identifier);
     }
-    const workspaceFolder = NeoCommands.workspaceFolder();
-    if (!workspaceFolder) {
+    const rootFolder = workspaceFolder();
+    if (!rootFolder) {
       vscode.window.showErrorMessage(
         "Please open a folder in your Visual Studio Code workspace before invoking a contract"
       );
       return;
     }
-    const invokeFilesFolder = posixPath(workspaceFolder, "invoke-files");
+    const invokeFilesFolder = posixPath(rootFolder, "invoke-files");
     try {
       await fs.promises.mkdir(invokeFilesFolder);
     } catch {}
@@ -217,16 +218,16 @@ export default class NeoCommands {
       return;
     }
 
-    const workspaceFolder = NeoCommands.workspaceFolder();
-    if (!workspaceFolder) {
+    const rootFolder = workspaceFolder();
+    if (!rootFolder) {
       vscode.window.showErrorMessage(
         "Please open a folder in your Visual Studio Code workspace before creating a contract"
       );
       return;
     }
-    const dotVsCodeFolderPath = posixPath(workspaceFolder, ".vscode");
+    const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
     const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
-    const contractPath = posixPath(workspaceFolder, contractName);
+    const contractPath = posixPath(rootFolder, contractName);
     const templatePath = posixPath(
       context.extensionPath,
       "resources",
@@ -322,13 +323,5 @@ export default class NeoCommands {
     if (buildTask) {
       vscode.tasks.executeTask(buildTask);
     }
-  }
-
-  private static workspaceFolder() {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders || !workspaceFolders.length) {
-      return null;
-    }
-    return posixPath(workspaceFolders[0].uri.fsPath);
   }
 }

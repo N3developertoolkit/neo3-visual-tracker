@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import * as vscode from "vscode";
 
 import AutoComplete from "../autoComplete";
@@ -9,7 +10,9 @@ import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
+import posixPath from "../util/posixPath";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
+import workspaceFolder from "../util/workspaceFolder";
 
 export default class NeoExpressCommands {
   static async contractDeploy(
@@ -114,6 +117,47 @@ export default class NeoExpressCommands {
         }
       }
     }
+  }
+
+  static async createCheckpoint(
+    neoExpress: NeoExpress,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments?: CommandArguments
+  ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
+      return;
+    }
+    const rootFolder = workspaceFolder();
+    if (!rootFolder) {
+      vscode.window.showErrorMessage(
+        "Please open a folder in your Visual Studio Code workspace before creating checkpoints"
+      );
+      return;
+    }
+    const checkpointsFolder = posixPath(rootFolder, "checkpoints");
+    try {
+      await fs.promises.mkdir(checkpointsFolder);
+    } catch {}
+    let filename = posixPath(checkpointsFolder, "checkpoint-1.nxp3-checkpoint");
+    let i = 1;
+    while (fs.existsSync(filename)) {
+      i++;
+      filename = posixPath(
+        checkpointsFolder,
+        `checkpoint-${i}.nxp3-checkpoint`
+      );
+    }
+    const output = await neoExpress.run(
+      "checkpoint",
+      "create",
+      "-i",
+      identifier.configPath,
+      filename
+    );
+    NeoExpressCommands.showResult(output);
   }
 
   static async customCommand(

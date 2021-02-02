@@ -174,6 +174,17 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand(
     context,
+    "neo3-visual-devtracker.express.createCheckpoint",
+    (commandArguments) =>
+      NeoExpressCommands.createCheckpoint(
+        neoExpress,
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
+  );
+
+  registerCommand(
+    context,
     "neo3-visual-devtracker.express.reset",
     (commandArguments) =>
       NeoExpressCommands.reset(

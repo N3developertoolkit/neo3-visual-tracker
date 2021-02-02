@@ -27,6 +27,7 @@
     "onCommand:neo3-visual-devtracker.customizeServerList",
     "onCommand:neo3-visual-devtracker.express.contractDeploy",
     "onCommand:neo3-visual-devtracker.express.create",
+    "onCommand:neo3-visual-devtracker.express.createCheckpoint",
     "onCommand:neo3-visual-devtracker.express.reset",
     "onCommand:neo3-visual-devtracker.express.run",
     "onCommand:neo3-visual-devtracker.express.runAdvanced",
@@ -73,6 +74,11 @@
       {
         "command": "neo3-visual-devtracker.express.create",
         "title": "Create private blockchain",
+        "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.express.createCheckpoint",
+        "title": "Create checkpoint",
         "category": "Neo Express 3"
       },
       {
@@ -172,6 +178,10 @@
         },
         {
           "command": "neo3-visual-devtracker.express.customCommand",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.createCheckpoint",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
