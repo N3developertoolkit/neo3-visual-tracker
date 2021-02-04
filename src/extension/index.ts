@@ -37,9 +37,9 @@ function registerCommand(
         } else if (context && !!(context as BlockchainIdentifier).name) {
           // Activation was by right-click on an item in the Blockchain explorer
           commandArguments.blockchainIdentifier = context as BlockchainIdentifier;
-        } else if (context && Array.isArray(context) && context.length === 1) {
+        } else if (context) {
           // Activation by command URI containing query string parameters
-          commandArguments = await sanitizeCommandArguments(context[0] || {});
+          commandArguments = await sanitizeCommandArguments(context);
         }
         await handler(commandArguments);
       }
