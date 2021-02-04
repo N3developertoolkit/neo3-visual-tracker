@@ -29,6 +29,7 @@
     "onCommand:neo3-visual-devtracker.express.create",
     "onCommand:neo3-visual-devtracker.express.createCheckpoint",
     "onCommand:neo3-visual-devtracker.express.reset",
+    "onCommand:neo3-visual-devtracker.express.restoreCheckpoint",
     "onCommand:neo3-visual-devtracker.express.run",
     "onCommand:neo3-visual-devtracker.express.runAdvanced",
     "onCommand:neo3-visual-devtracker.express.transfer",
@@ -89,6 +90,11 @@
       {
         "command": "neo3-visual-devtracker.express.reset",
         "title": "Reset blockchain",
+        "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.express.restoreCheckpoint",
+        "title": "Restore checkpoint",
         "category": "Neo Express 3"
       },
       {
@@ -186,6 +192,10 @@
         },
         {
           "command": "neo3-visual-devtracker.express.reset",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.restoreCheckpoint",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {

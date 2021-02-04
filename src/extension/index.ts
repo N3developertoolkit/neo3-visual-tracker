@@ -5,6 +5,7 @@ import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
+import CheckpointDetector from "./fileDetectors/checkpointDetector";
 import { CommandArguments, sanitizeCommandArguments } from "./commandArguments";
 import ContractDetector from "./fileDetectors/contractDetector";
 import Log from "../shared/log";
@@ -81,9 +82,11 @@ export async function activate(context: vscode.ExtensionContext) {
     neoExpress,
     autoComplete
   );
+  const checkpointDetector = new CheckpointDetector();
 
   context.subscriptions.push(activeConnection);
   context.subscriptions.push(autoComplete);
+  context.subscriptions.push(checkpointDetector);
   context.subscriptions.push(contractDetector);
   context.subscriptions.push(neoExpressDetector);
   context.subscriptions.push(neoExpressInstanceManager);
@@ -191,6 +194,18 @@ export async function activate(context: vscode.ExtensionContext) {
         neoExpress,
         neoExpressInstanceManager,
         blockchainsTreeDataProvider,
+        commandArguments
+      )
+  );
+
+  registerCommand(
+    context,
+    "neo3-visual-devtracker.express.restoreCheckpoint",
+    (commandArguments) =>
+      NeoExpressCommands.restoreCheckpoint(
+        neoExpress,
+        blockchainsTreeDataProvider,
+        checkpointDetector,
         commandArguments
       )
   );

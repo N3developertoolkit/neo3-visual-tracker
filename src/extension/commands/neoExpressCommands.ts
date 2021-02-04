@@ -5,6 +5,7 @@ import AutoComplete from "../autoComplete";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
+import CheckpointDetector from "../fileDetectors/checkpointDetector";
 import { CommandArguments } from "../commandArguments";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
@@ -222,6 +223,39 @@ export default class NeoExpressCommands {
         });
       }
     }
+  }
+
+  static async restoreCheckpoint(
+    neoExpress: NeoExpress,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    checkpointDetector: CheckpointDetector,
+    commandArguments?: CommandArguments
+  ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
+      return;
+    }
+    const filename = await IoHelpers.multipleChoiceFiles(
+      "Select a checkpoint to restore",
+      ...checkpointDetector.checkpointFiles
+    );
+    const confirmed = await IoHelpers.yesNo(
+      `Are you sure that you want to restore "${identifier.configPath}" to the checkpoint "${filename}"?`
+    );
+    if (!confirmed) {
+      return;
+    }
+    const output = await neoExpress.run(
+      "checkpoint",
+      "restore",
+      "-f",
+      "-i",
+      identifier.configPath,
+      filename
+    );
+    NeoExpressCommands.showResult(output);
   }
 
   static async transfer(
