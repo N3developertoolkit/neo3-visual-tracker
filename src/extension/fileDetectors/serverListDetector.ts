@@ -30,7 +30,7 @@ const UNKNOWN_BLOCKCHAIN =
 // names the user has supplied through neo-servers.json file(s) in the
 // current workspace):
 const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
-  "0xc4d50ea6bd8e0d1422714f8edbd4eee182b9f6958b2b0795bf6f3e9f9117ee03":
+  "0xa61cd05f0863168fc93ec390eb4ed413e1eeb0f8b420090514b1b8a03926f2b1":
     "Neo 3 TestNet",
 };
 
