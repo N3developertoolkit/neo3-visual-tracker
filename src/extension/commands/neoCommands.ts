@@ -80,20 +80,29 @@ export default class NeoCommands {
     if (!contract) {
       return;
     }
-    let script = "";
+    let scriptBase64 = "";
     try {
-      script = (
+      scriptBase64 = (
         await fs.promises.readFile(contract.absolutePathToNef)
-      ).toString("hex");
+      ).toString("base64");
     } catch (e) {
       vscode.window.showErrorMessage(
         `Could not read contract: ${contract.absolutePathToNef}`
       );
     }
-    // const deployScript = neonJs.sc.generateDeployScript({
-    //   manifest: JSON.stringify(contract.manifest),
-    //   script,
-    // }).str;
+
+    const sb = new neonCore.sc.ScriptBuilder();
+    sb.emitContractCall({
+      operation: "deploy",
+      scriptHash: "cd97b70d82d69adfcd9165374109419fade8d6ab", // ManagementContract
+      args: [
+        neonCore.sc.ContractParam.string(JSON.stringify(contract.manifest)),
+        neonCore.sc.ContractParam.byteArray(scriptBase64),
+      ],
+    });
+    const deploymentScript = sb.build();
+    // console.log(disassembleScript(Buffer.from(deploymentScript, "hex").toString("base64")) || "");
+
     vscode.window.showInformationMessage(
       `Coming soon: TestNet deployment/invocation`
     );
