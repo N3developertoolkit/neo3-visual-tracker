@@ -206,7 +206,7 @@ export default class NeoExpressCommands {
       neoExpressInstanceManager.runningInstance?.configPath ===
       blockchainIdentifier.configPath;
     if (wasRunning) {
-      await neoExpressInstanceManager.stop();
+      await neoExpressInstanceManager.stopAll();
     }
     try {
       const output = await neoExpress.run(

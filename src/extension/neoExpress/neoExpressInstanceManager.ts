@@ -55,7 +55,7 @@ export default class NeoExpressInstanceManager {
     const secondsPerBlock = commandArguments.secondsPerBlock || 15;
 
     const runningPreviously = this.running;
-    await this.stop();
+    await this.stopAll();
 
     const connectedTo = this.activeConnection.connection?.blockchainIdentifier;
     if (
@@ -125,7 +125,28 @@ export default class NeoExpressInstanceManager {
     await this.run(blockchainsTreeDataProvider, commandArguments);
   }
 
-  async stop() {
+  async stop(
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    commandArguments: CommandArguments
+  ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (identifier?.blockchainType !== "express") {
+      return;
+    }
+    if (
+      this.activeConnection.connection?.blockchainIdentifier.configPath ===
+      identifier.configPath
+    ) {
+      await this.activeConnection.disconnect(true);
+    }
+    if (this.runningInstance?.configPath === identifier.configPath) {
+      await this.stopAll();
+    }
+  }
+
+  async stopAll() {
     try {
       for (const terminal of this.terminals) {
         if (!terminal.exitStatus) {

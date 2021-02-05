@@ -232,6 +232,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand(
     context,
+    "neo3-visual-devtracker.express.stop",
+    (commandArguments) =>
+      neoExpressInstanceManager.stop(
+        blockchainsTreeDataProvider,
+        commandArguments
+      )
+  );
+
+  registerCommand(
+    context,
     "neo3-visual-devtracker.express.transfer",
     (commandArguments) =>
       NeoExpressCommands.transfer(

@@ -112,6 +112,11 @@
         "category": "Neo Express 3"
       },
       {
+        "command": "neo3-visual-devtracker.express.stop",
+        "title": "Stop blockchain",
+        "category": "Neo Express 3"
+      },
+      {
         "command": "neo3-visual-devtracker.express.transfer",
         "title": "Transfer assets",
         "category": "Neo Express 3"
@@ -209,6 +214,10 @@
         },
         {
           "command": "neo3-visual-devtracker.express.runAdvanced",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.stop",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
