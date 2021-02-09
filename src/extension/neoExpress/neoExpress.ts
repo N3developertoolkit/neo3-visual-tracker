@@ -30,9 +30,9 @@ export default class NeoExpress {
       "deps",
       "nxp",
       "tools",
-      "netcoreapp3.1",
+      "net5.0",
       "any",
-      "nxp3.dll"
+      "neoxp.dll"
     );
     this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
     this.runLock = false;
@@ -66,7 +66,7 @@ export default class NeoExpress {
       if (duration > 1000) {
         Log.log(
           LOG_PREFIX,
-          `\`nxp3 ${command} ${options.join(" ")}\` took ${duration}ms`
+          `\`neoexp ${command} ${options.join(" ")}\` took ${duration}ms`
         );
       }
       return result;
@@ -122,14 +122,14 @@ export default class NeoExpress {
       ok =
         parseInt(
           childProcess.execFileSync(this.dotnetPath, ["--version"]).toString()
-        ) >= 3;
+        ) >= 5;
     } catch (e) {
       Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
       ok = false;
     }
     if (!ok) {
       const response = await vscode.window.showErrorMessage(
-        ".NET Core 3 or higher is required to use this functionality.",
+        ".NET 5 or higher is required to use this functionality.",
         "Dismiss",
         "More info"
       );

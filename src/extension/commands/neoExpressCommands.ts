@@ -142,14 +142,11 @@ export default class NeoExpressCommands {
     try {
       await fs.promises.mkdir(checkpointsFolder);
     } catch {}
-    let filename = posixPath(checkpointsFolder, "checkpoint-1.nxp3-checkpoint");
+    let filename = posixPath(checkpointsFolder, "checkpoint-1");
     let i = 1;
-    while (fs.existsSync(filename)) {
+    while (fs.existsSync(`${filename}.neoxp-checkpoint`)) {
       i++;
-      filename = posixPath(
-        checkpointsFolder,
-        `checkpoint-${i}.nxp3-checkpoint`
-      );
+      filename = posixPath(checkpointsFolder, `checkpoint-${i}`);
     }
     const output = await neoExpress.run(
       "checkpoint",
@@ -241,6 +238,9 @@ export default class NeoExpressCommands {
       "Select a checkpoint to restore",
       ...checkpointDetector.checkpointFiles
     );
+    if (!filename) {
+      return;
+    }
     const confirmed = await IoHelpers.yesNo(
       `Are you sure that you want to restore "${identifier.configPath}" to the checkpoint "${filename}"?`
     );

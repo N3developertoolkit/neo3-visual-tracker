@@ -1,6 +1,6 @@
 import DetectorBase from "./detectorBase";
 
-const SEARCH_PATTERN = "**/*.nxp3-checkpoint";
+const SEARCH_PATTERN = "**/*.neoxp-checkpoint";
 
 export default class CheckpointDetector extends DetectorBase {
   get checkpointFiles() {
