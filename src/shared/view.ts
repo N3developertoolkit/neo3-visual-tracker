@@ -1,3 +1,3 @@
-type View = "invokeFile" | "quickStart" | "tracker";
+type View = "invokeFile" | "quickStart" | "storageExplorer" | "tracker";
 
 export default View;

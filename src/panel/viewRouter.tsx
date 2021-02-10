@@ -7,6 +7,8 @@ import LoadingIndicator from "./components/LoadingIndicator";
 import Log from "../shared/log";
 import QuickStart from "./components/views/QuickStart";
 import QuickStartViewState from "../shared/viewState/quickStartViewState";
+import StorageExplorer from "./components/views/StorageExplorer";
+import StorageExplorerViewState from "../shared/viewState/storageExplorerViewState";
 import Tracker from "./components/views/Tracker";
 import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
@@ -62,6 +64,14 @@ export default function ViewRouter() {
         panelContent = (
           <QuickStart
             viewState={viewState as QuickStartViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
+      case "storageExplorer":
+        panelContent = (
+          <StorageExplorer
+            viewState={viewState as StorageExplorerViewState}
             postMessage={(typedRequest) => postMessage({ typedRequest })}
           />
         );
