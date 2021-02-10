@@ -5,7 +5,7 @@ import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataP
 import ContractDetector from "../fileDetectors/contractDetector";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import PanelControllerBase from "./panelControllerBase";
-import QuickStartViewRequest from "../../shared/messages/quickStartFileViewRequest";
+import QuickStartViewRequest from "../../shared/messages/quickStartViewRequest";
 import QuickStartViewState from "../../shared/viewState/quickStartViewState";
 import WalletDetector from "../fileDetectors/walletDetector";
 

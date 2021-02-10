@@ -7,7 +7,7 @@ import CreateOrOpenWorkspace from "../quickStart/CreateOrOpenWorkspace";
 import CreateWallet from "../quickStart/CreateWallet";
 import DeployContract from "../quickStart/DeployContract";
 import OpenBlockchainExplorer from "../quickStart/OpenBlockchainExplorer";
-import QuickStartViewRequest from "../../../shared/messages/quickStartFileViewRequest";
+import QuickStartViewRequest from "../../../shared/messages/quickStartViewRequest";
 import QuickStartViewState from "../../../shared/viewState/quickStartViewState";
 import StartNeoExpress from "../quickStart/StartNeoExpress";
 import InvokeContract from "../quickStart/InvokeContract";
