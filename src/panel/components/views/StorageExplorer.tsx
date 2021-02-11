@@ -8,6 +8,6 @@ type Props = {
   postMessage: (message: StorageExplorerViewRequest) => void;
 };
 
-export default function StorageExplorer({}: Props) {
-  return <>Hello world!</>;
+export default function StorageExplorer({ viewState }: Props) {
+  return <pre>{JSON.stringify(viewState, undefined, 2)}</pre>;
 }

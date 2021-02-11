@@ -12,6 +12,7 @@ import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
 import NeoExpressInstanceManager from "../neoExpress/neoExpressInstanceManager";
 import posixPath from "../util/posixPath";
+import StorageExplorerPanelController from "../panelControllers/storageExplorerPanelController";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
 import workspaceFolder from "../util/workspaceFolder";
 
@@ -179,6 +180,30 @@ export default class NeoExpressCommands {
       identifier.configPath
     );
     NeoExpressCommands.showResult(output);
+  }
+
+  static async exploreStorage(
+    context: vscode.ExtensionContext,
+    autoComplete: AutoComplete,
+    blockchainMonitorPool: BlockchainMonitorPool,
+    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
+    neoExpress: NeoExpress,
+    commandArguments?: CommandArguments
+  ) {
+    const identifier =
+      commandArguments?.blockchainIdentifier ||
+      (await blockchainsTreeDataProvider.select("express"));
+    if (!identifier) {
+      return;
+    }
+    new StorageExplorerPanelController(
+      context,
+      identifier,
+      autoComplete,
+      blockchainMonitorPool,
+      await identifier.selectRpcUrl(),
+      neoExpress
+    );
   }
 
   static async reset(

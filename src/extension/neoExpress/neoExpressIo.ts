@@ -76,4 +76,37 @@ export default class NeoExpressIo {
       throw Error(`List contract parse error: ${e.message}`);
     }
   }
+
+  static async contractStorage(
+    neoExpress: NeoExpress,
+    identifer: BlockchainIdentifier,
+    contractName: string
+  ): Promise<{ key?: string; value?: string; constant?: boolean }[]> {
+    if (identifer.blockchainType !== "express") {
+      return [];
+    }
+    const output = await neoExpress.run(
+      "contract",
+      "storage",
+      contractName,
+      "-i",
+      identifer.configPath,
+      "--json"
+    );
+    if (output.isError) {
+      Log.error(LOG_PREFIX, "Contract storage retrieval error", output.message);
+      throw Error(output.message);
+    }
+    try {
+      return (
+        (JSONC.parse(output.message) as {
+          key?: string;
+          value?: string;
+          constant?: boolean;
+        }[]) || []
+      );
+    } catch (e) {
+      throw Error(`Contract storage parse error: ${e.message}`);
+    }
+  }
 }

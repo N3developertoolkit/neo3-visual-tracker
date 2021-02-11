@@ -28,6 +28,7 @@
     "onCommand:neo3-visual-devtracker.express.contractDeploy",
     "onCommand:neo3-visual-devtracker.express.create",
     "onCommand:neo3-visual-devtracker.express.createCheckpoint",
+    "onCommand:neo3-visual-devtracker.express.exploreStorage",
     "onCommand:neo3-visual-devtracker.express.reset",
     "onCommand:neo3-visual-devtracker.express.restoreCheckpoint",
     "onCommand:neo3-visual-devtracker.express.run",
@@ -85,6 +86,11 @@
       {
         "command": "neo3-visual-devtracker.express.customCommand",
         "title": "Run custom Neo Express command",
+        "category": "Neo Express 3"
+      },
+      {
+        "command": "neo3-visual-devtracker.express.exploreStorage",
+        "title": "Explore contract storage",
         "category": "Neo Express 3"
       },
       {
@@ -193,6 +199,10 @@
         },
         {
           "command": "neo3-visual-devtracker.express.createCheckpoint",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
+          "command": "neo3-visual-devtracker.express.exploreStorage",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
