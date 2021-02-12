@@ -33,8 +33,8 @@ export default class Wallet {
     private readonly wallet: neonCore.wallet.Wallet
   ) {}
 
-  get addresses() {
-    return this.wallet.accounts.map((_) => _.address);
+  get accounts() {
+    return [...this.wallet.accounts];
   }
 
   async tryUnlockWithoutPassword() {

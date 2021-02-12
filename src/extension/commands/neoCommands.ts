@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
+import * as neonExperimental from "../neonExperimental";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -51,25 +52,26 @@ export default class NeoCommands {
     if (!wallet) {
       return;
     }
-    const walletAddresses = wallet.addresses;
-    if (!walletAddresses.length) {
+    const walletAccounts = wallet.accounts;
+    if (!walletAccounts.length) {
       return;
     }
-    let walletAddress: string | undefined = walletAddresses[0];
-    if (walletAddresses.length > 1) {
-      walletAddress = await IoHelpers.multipleChoice(
+    let account: neonCore.wallet.Account | undefined = walletAccounts[0];
+    if (walletAccounts.length > 1) {
+      const selectedAddress = await IoHelpers.multipleChoice(
         `Select an address from wallet ${path.basename(walletPath)}...`,
-        ...walletAddresses
+        ...walletAccounts.map((_) => _.address)
       );
+      account = walletAccounts.find((_) => _.address === selectedAddress);
     }
-    if (!walletAddress) {
+    if (!account) {
       return;
     }
     const contracts = contractDetector.contracts;
     const contractFile =
       commandArguments.path ||
       (await IoHelpers.multipleChoiceFiles(
-        `Deploy contract using ${walletAddress} (from ${path.basename(
+        `Deploy contract using ${account.address} (from ${path.basename(
           walletPath
         )})`,
         ...Object.values(contracts).map((_) => _.absolutePathToNef)
@@ -80,32 +82,59 @@ export default class NeoCommands {
     if (!contract) {
       return;
     }
-    let scriptBase64 = "";
+    let contractByteCode: Buffer;
     try {
-      scriptBase64 = (
-        await fs.promises.readFile(contract.absolutePathToNef)
-      ).toString("base64");
+      contractByteCode = await fs.promises.readFile(
+        contract.absolutePathToNef,
+        null
+      );
     } catch (e) {
       vscode.window.showErrorMessage(
         `Could not read contract: ${contract.absolutePathToNef}`
       );
+      return;
     }
 
-    const sb = new neonCore.sc.ScriptBuilder();
-    sb.emitContractCall({
-      operation: "deploy",
-      scriptHash: "cd97b70d82d69adfcd9165374109419fade8d6ab", // ManagementContract
-      args: [
-        neonCore.sc.ContractParam.string(JSON.stringify(contract.manifest)),
-        neonCore.sc.ContractParam.byteArray(scriptBase64),
-      ],
-    });
-    const deploymentScript = sb.build();
-    // console.log(disassembleScript(Buffer.from(deploymentScript, "hex").toString("base64")) || "");
+    const rpcAddress = await identifier.selectRpcUrl();
+    if (!rpcAddress) {
+      return;
+    }
 
-    vscode.window.showInformationMessage(
-      `Coming soon: TestNet deployment/invocation`
-    );
+    try {
+      const manifestJson = contract.manifest;
+      if (
+        !manifestJson.abi ||
+        !manifestJson.extra ||
+        !manifestJson.groups ||
+        !manifestJson.name ||
+        !manifestJson.permissions ||
+        !manifestJson.supportedstandards ||
+        !manifestJson.trusts
+      ) {
+        throw Error("Could not deploy the contract as manifest was incomplete");
+      }
+      const manifest = neonCore.sc.ContractManifest.fromJson(
+        (manifestJson as unknown) as neonCore.sc.ContractManifestJson
+      );
+      const result = await neonExperimental.deployContract(
+        contractByteCode,
+        manifest,
+        {
+          networkMagic: neonCore.CONST.MAGIC_NUMBER.TestNet,
+          rpcAddress,
+          account,
+          networkFeeOverride: neonCore.u.BigInteger.fromNumber(200),
+          systemFeeOverride: neonCore.u.BigInteger.fromNumber(200),
+        }
+      );
+      vscode.window.showInformationMessage(result);
+    } catch (e) {
+      // TODO: Debug why this is not currently working
+      vscode.window.showErrorMessage(
+        e.message || "Could not deploy contract: Unknown error"
+      );
+      console.error(e);
+    }
   }
 
   static async createWallet() {
