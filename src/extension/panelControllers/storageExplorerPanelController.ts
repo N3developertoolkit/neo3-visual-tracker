@@ -22,13 +22,14 @@ export default class StorageExplorerPanelController extends PanelControllerBase<
   constructor(
     context: vscode.ExtensionContext,
     private readonly identifier: BlockchainIdentifier,
-    autoComplete: AutoComplete,
+    private readonly autoComplete: AutoComplete,
     blockchainMonitorPool: BlockchainMonitorPool,
     rpcUrl: string | undefined,
     private readonly neoExpress: NeoExpress
   ) {
     super(
       {
+        autoCompleteData: autoComplete.data,
         contracts: [],
         error: null,
         panelTitle: `Storage Explorer: ${identifier.friendlyName}`,
@@ -64,7 +65,10 @@ export default class StorageExplorerPanelController extends PanelControllerBase<
   }
 
   private async refresh() {
-    let updates: Partial<StorageExplorerViewState> = { error: null };
+    let updates: Partial<StorageExplorerViewState> = {
+      autoCompleteData: this.autoComplete.data,
+      error: null,
+    };
 
     try {
       updates.contracts = Object.keys(

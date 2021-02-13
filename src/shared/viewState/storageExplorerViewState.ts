@@ -1,4 +1,7 @@
+import AutoCompleteData from "../autoCompleteData";
+
 type StorageExplorerViewState = {
+  autoCompleteData: AutoCompleteData;
   contracts: string[];
   error: string | null;
   panelTitle: string;
