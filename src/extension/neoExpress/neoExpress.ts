@@ -17,6 +17,7 @@ type Command =
   | "-v";
 
 const LOG_PREFIX = "NeoExpress";
+const TIMEOUT_IN_MS = 5000;
 
 export default class NeoExpress {
   private readonly binaryPath: string;
@@ -89,6 +90,17 @@ export default class NeoExpress {
     ];
     try {
       return new Promise((resolve, reject) => {
+        const startedAt = new Date().getTime();
+        let complete = false;
+        const watchdog = () => {
+          if (!complete && new Date().getTime() - startedAt > TIMEOUT_IN_MS) {
+            complete = true;
+            reject("Operation timed out");
+          } else if (!complete) {
+            setTimeout(watchdog, 250);
+          }
+        };
+        watchdog();
         const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
         let message = "";
         process.stdout.on(
@@ -99,10 +111,14 @@ export default class NeoExpress {
           "data",
           (d) => (message = `${message}${d.toString()}`)
         );
-        process.on("close", (code) =>
-          resolve({ message, isError: code !== 0 })
-        );
-        process.on("error", reject);
+        process.on("close", (code) => {
+          complete = true;
+          resolve({ message, isError: code !== 0 });
+        });
+        process.on("error", () => {
+          complete = true;
+          reject();
+        });
       });
     } catch (e) {
       return {
