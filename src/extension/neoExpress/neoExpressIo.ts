@@ -37,7 +37,7 @@ export default class NeoExpressIo {
     neoExpress: NeoExpress,
     identifer: BlockchainIdentifier
   ): Promise<{
-    [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
+    [name: string]: { hash: string };
   }> {
     if (identifer.blockchainType !== "express") {
       return {};
@@ -55,21 +55,12 @@ export default class NeoExpressIo {
     }
     try {
       let result: {
-        [name: string]: { hash: string; manifest: neonSc.ContractManifestJson };
+        [name: string]: { hash: string };
       } = {};
       let contractSummaries = JSONC.parse(output.message);
       for (const contractSummary of contractSummaries) {
         const hash = contractSummary.hash;
-        const manifest = await this.contractGet(neoExpress, identifer, hash);
-        if (!manifest) {
-          Log.error(
-            LOG_PREFIX,
-            "Could not get manifest from neo-express",
-            hash
-          );
-        } else {
-          result[contractSummary.name] = { hash, manifest };
-        }
+        result[contractSummary.name] = { hash };
       }
       return result;
     } catch (e) {

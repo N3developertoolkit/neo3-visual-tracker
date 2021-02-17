@@ -28,6 +28,10 @@ export default class AutoComplete {
     [contractHash: string]: Partial<neonSc.ContractManifestJson>;
   } = {};
 
+  private readonly cachedManifests: {
+    [contractHash: string]: Partial<neonSc.ContractManifestJson> | null;
+  } = {};
+
   get data() {
     return this.latestData;
   }
@@ -119,10 +123,24 @@ export default class AutoComplete {
             result.message
           );
         } else {
-          wellKnownContracts = await NeoExpressIo.contractList(
+          const contractList = await NeoExpressIo.contractList(
             this.neoExpress,
             identifier
           );
+          for (const contractName of Object.keys(contractList)) {
+            const contract = contractList[contractName];
+            const manifest = await NeoExpressIo.contractGet(
+              this.neoExpress,
+              identifier,
+              contract.hash
+            );
+            if (manifest) {
+              wellKnownContracts[contractName] = {
+                hash: contract.hash,
+                manifest,
+              };
+            }
+          }
           if (cacheKey) {
             await this.context.globalState.update(cacheKey, wellKnownContracts);
           }
@@ -211,8 +229,18 @@ export default class AutoComplete {
         for (const contractName of Object.keys(deployedContracts)) {
           const deployedContract = deployedContracts[contractName];
           const contractHash = deployedContract.hash;
-          newData.contractManifests[contractHash] = deployedContract.manifest;
-          newData.contractManifests[contractName] = deployedContract.manifest;
+          if (!this.cachedManifests[contractHash]) {
+            this.cachedManifests[contractHash] = await NeoExpressIo.contractGet(
+              this.neoExpress,
+              connection.blockchainIdentifier,
+              contractHash
+            );
+          }
+          const manifest = this.cachedManifests[contractHash];
+          if (manifest) {
+            newData.contractManifests[contractHash] = manifest;
+            newData.contractManifests[contractName] = manifest;
+          }
           newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
