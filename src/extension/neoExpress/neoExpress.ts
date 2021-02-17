@@ -18,6 +18,7 @@ type Command =
 
 const LOG_PREFIX = "NeoExpress";
 const TIMEOUT_IN_MS = 5000;
+const TIMEOUT_POLLING_INTERVAL_IN_MS = 2000;
 
 export default class NeoExpress {
   private readonly binaryPath: string;
@@ -91,17 +92,25 @@ export default class NeoExpress {
     try {
       return new Promise((resolve, reject) => {
         const startedAt = new Date().getTime();
+        const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
         let complete = false;
         const watchdog = () => {
           if (!complete && new Date().getTime() - startedAt > TIMEOUT_IN_MS) {
             complete = true;
+            try {
+              process.kill();
+            } catch (e) {
+              Log.error(
+                LOG_PREFIX,
+                `Could not kill timed out neoxp command: ${command} (${e.message})`
+              );
+            }
             reject("Operation timed out");
           } else if (!complete) {
-            setTimeout(watchdog, 250);
+            setTimeout(watchdog, TIMEOUT_POLLING_INTERVAL_IN_MS);
           }
         };
         watchdog();
-        const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
         let message = "";
         process.stdout.on(
           "data",
