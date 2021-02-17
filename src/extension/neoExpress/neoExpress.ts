@@ -44,7 +44,7 @@ export default class NeoExpress {
   }
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
-    if (!this.checkForDotNet("runInTerminal")) {
+    if (!this.checkForDotNet()) {
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
@@ -90,7 +90,7 @@ export default class NeoExpress {
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
-    if (!this.checkForDotNet(command)) {
+    if (!this.checkForDotNet()) {
       return { message: "Could not launch Neo Express", isError: true };
     }
     const dotNetArguments = [
@@ -150,13 +150,13 @@ export default class NeoExpress {
     }
   }
 
-  private async checkForDotNet(command: string) {
+  private async checkForDotNet() {
     const now = new Date().getTime();
     if (now - this.checkForDotNetPassedAt < DOTNET_CHECK_EXPIRY_IN_MS) {
-      Log.debug(LOG_PREFIX, `checkForDotNet skipped: ${command}`);
+      Log.debug(LOG_PREFIX, `checkForDotNet skipped`);
       return true;
     }
-    Log.log(LOG_PREFIX, `Checking for dotnet... (${command})`);
+    Log.log(LOG_PREFIX, `Checking for dotnet...`);
     let ok = false;
     try {
       ok =
@@ -181,10 +181,7 @@ export default class NeoExpress {
         );
       }
     }
-    Log.log(
-      LOG_PREFIX,
-      `Checking for dotnet ${ok ? "succeeded" : "failed"} (${command})`
-    );
+    Log.log(LOG_PREFIX, `Checking for dotnet ${ok ? "succeeded" : "failed"}`);
     return ok;
   }
 
