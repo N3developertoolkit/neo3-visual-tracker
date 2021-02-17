@@ -2,11 +2,9 @@ import * as bitset from "bitset";
 import * as neonTypes from "@cityofzion/neon-core/lib/types";
 import * as neonTx from "@cityofzion/neon-core/lib/tx";
 
-const MAX_REFRESH_INTERVAL_MS = 500;
-const INITIAL_REFRESH_INTERVAL_MS = 3000;
-const MIN_REFRESH_INTERVAL_MS = 1000 * 30;
-
-const now = () => new Date().getTime();
+const MIN_REFRESH_INTERVAL_MS = 1000;
+const INITIAL_REFRESH_INTERVAL_MS = 5000;
+const MAX_REFRESH_INTERVAL_MS = 1000 * 30;
 
 export default class BlockchainState {
   public readonly blockTimes: number[];
@@ -35,20 +33,22 @@ export default class BlockchainState {
   currentRefreshInterval() {
     let differencesSum: number = 0;
     let differencesCount: number = 0;
-    let previous = now();
+    let previous: number | undefined = undefined;
     for (const timestamp of this.blockTimes) {
-      differencesSum += previous - timestamp;
-      differencesCount++;
+      if (previous !== undefined) {
+        differencesSum += previous - timestamp;
+        differencesCount++;
+      }
       previous = timestamp;
     }
     if (differencesCount < 3) {
       return INITIAL_REFRESH_INTERVAL_MS;
     }
     return Math.min(
-      MIN_REFRESH_INTERVAL_MS,
+      MAX_REFRESH_INTERVAL_MS,
       Math.max(
-        Math.round((1.0 / 3.0) * (differencesSum / differencesCount)),
-        MAX_REFRESH_INTERVAL_MS
+        Math.round((1.0 / 2.0) * (differencesSum / differencesCount)),
+        MIN_REFRESH_INTERVAL_MS
       )
     );
   }

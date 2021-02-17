@@ -17,7 +17,7 @@ const MAX_RETRIES = 3;
 const SCRIPTHASH_GAS = "0xa6a6c15dcdc9b997dac448b6926522d22efeedfb";
 const SCRIPTHASH_NEO = "0x0a46e2e37c9987f570b4af253fb77e7eef0f72b6";
 const SLEEP_ON_ERROR_MS = 500;
-const SPEED_DETECTION_WINDOW = 10; // Analyze previous 10 block times to calculate block speed
+const SPEED_DETECTION_WINDOW = 4; // Analyze previous 4 block times to calculate block speed
 const TRANSACTION_CACHE_SIZE = 1024;
 
 const now = () => new Date().getTime();
