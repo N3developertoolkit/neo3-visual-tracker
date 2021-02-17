@@ -16,6 +16,7 @@ type Command =
   | "wallet"
   | "-v";
 
+const DOTNET_CHECK_EXPIRY_IN_MS = 60000;
 const LOG_PREFIX = "NeoExpress";
 const TIMEOUT_IN_MS = 5000;
 const TIMEOUT_POLLING_INTERVAL_IN_MS = 2000;
@@ -25,6 +26,7 @@ export default class NeoExpress {
   private readonly dotnetPath: string;
 
   private runLock: boolean;
+  private checkForDotNetPassedAt: number;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this.binaryPath = posixPath(
@@ -38,10 +40,11 @@ export default class NeoExpress {
     );
     this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
     this.runLock = false;
+    this.checkForDotNetPassedAt = 0;
   }
 
   runInTerminal(name: string, command: Command, ...options: string[]) {
-    if (!this.checkForDotNet()) {
+    if (!this.checkForDotNet("runInTerminal")) {
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
@@ -81,7 +84,7 @@ export default class NeoExpress {
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
-    if (!this.checkForDotNet()) {
+    if (!this.checkForDotNet(command)) {
       return { message: "Could not launch Neo Express", isError: true };
     }
     const dotNetArguments = [
@@ -141,7 +144,13 @@ export default class NeoExpress {
     }
   }
 
-  private async checkForDotNet() {
+  private async checkForDotNet(command: string) {
+    const now = new Date().getTime();
+    if (now - this.checkForDotNetPassedAt < DOTNET_CHECK_EXPIRY_IN_MS) {
+      Log.debug(LOG_PREFIX, `checkForDotNet skipped: ${command}`);
+      return true;
+    }
+    Log.log(LOG_PREFIX, `Checking for dotnet... (${command})`);
     let ok = false;
     try {
       ok =
@@ -152,7 +161,9 @@ export default class NeoExpress {
       Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
       ok = false;
     }
-    if (!ok) {
+    if (ok) {
+      this.checkForDotNetPassedAt = now;
+    } else {
       const response = await vscode.window.showErrorMessage(
         ".NET 5 or higher is required to use this functionality.",
         "Dismiss",
@@ -164,6 +175,10 @@ export default class NeoExpress {
         );
       }
     }
+    Log.log(
+      LOG_PREFIX,
+      `Checking for dotnet ${ok ? "succeeded" : "failed"} (${command})`
+    );
     return ok;
   }
 
