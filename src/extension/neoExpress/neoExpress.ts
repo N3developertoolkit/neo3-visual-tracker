@@ -62,21 +62,27 @@ export default class NeoExpress {
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
+    let durationInternal = 0;
+    const startedAtExternal = new Date().getTime();
     const releaseLock = await this.getRunLock();
     try {
-      const startedAt = new Date().getTime();
+      const startedAtInternal = new Date().getTime();
       const result = await this.runUnsafe(command, ...options);
-      const endedAt = new Date().getTime();
-      const duration = endedAt - startedAt;
-      if (duration > 1000) {
-        Log.log(
-          LOG_PREFIX,
-          `\`neoexp ${command} ${options.join(" ")}\` took ${duration}ms`
-        );
-      }
+      const endedAtInternal = new Date().getTime();
+      durationInternal = endedAtInternal - startedAtInternal;
       return result;
     } finally {
       releaseLock();
+      const endedAtExternal = new Date().getTime();
+      const durationExternal = endedAtExternal - startedAtExternal;
+      if (durationExternal > 1000) {
+        Log.log(
+          LOG_PREFIX,
+          `\`neoexp ${command} ${options.join(
+            " "
+          )}\` took ${durationInternal}ms (${durationExternal}ms including time spent awaiting run-lock)`
+        );
+      }
     }
   }
 
