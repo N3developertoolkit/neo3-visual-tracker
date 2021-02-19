@@ -17,10 +17,6 @@ export default function ScriptToken({
   selectAddress,
 }: Props) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const style: React.CSSProperties = {
-    marginRight: "1em",
-    wordBreak: "break-all",
-  };
   token = token.trim();
 
   const getAbbreviatedElement = () => {
@@ -32,10 +28,7 @@ export default function ScriptToken({
       );
       if (token === contractHashRaw) {
         return (
-          <span
-            style={style}
-            title={`Contract:\n ${contractHashRaw}\n  (${name})`}
-          >
+          <span title={`Contract:\n ${contractHashRaw}\n  (${name})`}>
             <strong>
               {contractHashRaw.substring(0, 4)}..
               {contractHashRaw.substring(contractHashRaw.length - 4)} (
@@ -54,7 +47,7 @@ export default function ScriptToken({
         );
         if (address.startsWith("N")) {
           return (
-            <span style={style}>
+            <>
               <strong title={token}>
                 {token.substring(0, 4)}..
                 {token.substring(token.length - 4)}
@@ -64,7 +57,7 @@ export default function ScriptToken({
                 addressNames={autoCompleteData.addressNames}
                 onClick={selectAddress}
               />
-            </span>
+            </>
           );
         }
       } catch {}
@@ -84,10 +77,7 @@ export default function ScriptToken({
         }
         if (printableAscii) {
           return (
-            <span
-              style={style}
-              title={`Detected text:\n0x${token} =\n"${asText}"`}
-            >
+            <span title={`Detected text:\n0x${token} =\n"${asText}"`}>
               <strong>
                 {" "}
                 {token.length > 8 ? (
@@ -116,7 +106,7 @@ export default function ScriptToken({
         numericalValue < Math.pow(2, 32)
       ) {
         return (
-          <span style={style} title={`0x${token} = ${numericalValue}`}>
+          <span title={`0x${token} = ${numericalValue}`}>
             <strong>
               {" "}
               {token.length > 8 ? (
@@ -142,6 +132,19 @@ export default function ScriptToken({
   const unabbreviated = token;
   let innerElement = getAbbreviatedElement();
   const isAbbreviated = innerElement !== null;
-  innerElement = innerElement || <span style={style}>{token}</span>;
-  return <span>{innerElement}</span>;
+  innerElement = innerElement || <>{token}</>;
+  return (
+    <span
+      style={{
+        marginRight: "1em",
+        wordBreak: "break-all",
+        cursor: isAbbreviated ? "pointer" : undefined,
+      }}
+      onClick={() => {
+        setIsExpanded(!isExpanded);
+      }}
+    >
+      {isExpanded ? unabbreviated : innerElement}
+    </span>
+  );
 }

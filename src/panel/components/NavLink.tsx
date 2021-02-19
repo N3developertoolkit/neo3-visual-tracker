@@ -4,7 +4,7 @@ type Props = {
   children: JSX.Element | string;
   style?: React.CSSProperties;
   title?: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent) => void;
 };
 
 export default function NavLink({ children, style, title, onClick }: Props) {

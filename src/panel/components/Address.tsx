@@ -32,7 +32,14 @@ export default function Address({ address, addressNames, onClick }: Props) {
     ? `Address:\n ${address}\n  (${names.join(", ")})`
     : `Address:\n ${address}`;
   return !!onClick ? (
-    <NavLink style={style} title={title} onClick={() => onClick(address)}>
+    <NavLink
+      style={style}
+      title={title}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick(address);
+      }}
+    >
       {primaryName}
     </NavLink>
   ) : (
