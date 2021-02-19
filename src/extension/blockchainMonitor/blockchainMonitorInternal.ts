@@ -79,8 +79,9 @@ export default class BlockchainMonitorInternal {
         const allBalances = await this.getBalances(address);
         return {
           address,
-          neoBalance: allBalances[SCRIPTHASH_NEO] || 0,
+          allBalances,
           gasBalance: allBalances[SCRIPTHASH_GAS] || 0,
+          neoBalance: allBalances[SCRIPTHASH_NEO] || 0,
         };
       } catch (e) {
         Log.warn(
