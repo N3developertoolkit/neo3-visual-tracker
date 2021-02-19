@@ -140,8 +140,17 @@ export default function ScriptToken({
         wordBreak: "break-all",
         cursor: isAbbreviated ? "pointer" : undefined,
       }}
-      onClick={() => {
+      onClick={(e) => {
         setIsExpanded(!isExpanded);
+        if (!isExpanded) {
+          const selection = window.getSelection();
+          if (selection) {
+            selection.removeAllRanges();
+            const range = document.createRange();
+            range.selectNode(e.currentTarget);
+            selection.addRange(range);
+          }
+        }
       }}
     >
       {isExpanded ? unabbreviated : innerElement}

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import * as neonCore from "@cityofzion/neon-core";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
@@ -92,9 +92,8 @@ export default function TransactionDetails({
         </div>
       )}
       {(applicationLog?.executions || []).map((execution, i) => (
-        <>
+        <Fragment key={i}>
           <div
-            key={i}
             style={{
               display: "flex",
               flexWrap: "wrap",
@@ -147,7 +146,7 @@ export default function TransactionDetails({
               </MetadataBadge>
             ))}
           </div>
-        </>
+        </Fragment>
       ))}
       {!!transaction.witnesses?.length &&
         transaction.witnesses.map((witness, i) => (
