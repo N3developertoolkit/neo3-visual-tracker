@@ -76,10 +76,11 @@ export default class BlockchainMonitorInternal {
     do {
       Log.log(LOG_PREFIX, `Retrieving address ${address} (attempt ${retry++})`);
       try {
+        const allBalances = await this.getBalances(address);
         return {
           address,
-          neoBalance: await this.getBalance(address, SCRIPTHASH_NEO),
-          gasBalance: await this.getBalance(address, SCRIPTHASH_GAS),
+          neoBalance: allBalances[SCRIPTHASH_NEO] || 0,
+          gasBalance: allBalances[SCRIPTHASH_GAS] || 0,
         };
       } catch (e) {
         Log.warn(
@@ -321,22 +322,21 @@ export default class BlockchainMonitorInternal {
     }
   }
 
-  private async getBalance(address: string, assetScriptHash: string) {
-    const result: any = await this.rpcClient.execute(
+  private async getBalances(
+    address: string
+  ): Promise<{ [assetHash: string]: number }> {
+    let result: { [assetHash: string]: number } = {};
+    const response: any = await this.rpcClient.execute(
       new neonRpc.Query({
-        method: "invokefunction",
-        params: [
-          assetScriptHash,
-          "balanceOf",
-          [
-            {
-              type: "Hash160",
-              value: neonCore.wallet.getScriptHashFromAddress(address),
-            },
-          ],
-        ],
+        method: "getnep17balances",
+        params: [address, 0],
       })
     );
-    return parseInt((result.stack || [])[0]?.value || "0");
+    if (response.balance && Array.isArray(response.balance)) {
+      for (const balanceEntry of response.balance) {
+        result[balanceEntry.assethash || "Unknown"] = balanceEntry.amount || 0;
+      }
+    }
+    return result;
   }
 }
