@@ -2,6 +2,8 @@ import React from "react";
 
 import AddressInfo from "../../../shared/addressInfo";
 import AutoCompleteData from "../../../shared/autoCompleteData";
+import reverseBytes from "./reverseBytes";
+import ScriptToken from "./ScriptToken";
 
 type Props = {
   addressInfo: AddressInfo;
@@ -26,17 +28,44 @@ export default function AddressDetails({
           </>
         )}
       </p>
-      <p>
+      <p style={{ marginBottom: 5 }}>
         <small>NEO balance:</small>
       </p>
-      <p style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
+      <p style={{ fontWeight: "bold", fontSize: "1.25rem", marginTop: 0 }}>
         {addressInfo.neoBalance.toLocaleString()} NEO
       </p>
-      <p>
+      <p style={{ marginBottom: 5 }}>
         <small>GAS balance:</small>
       </p>
-      <p style={{ fontWeight: "bold", fontSize: "1.25rem" }}>
+      <p style={{ fontWeight: "bold", fontSize: "1.25rem", marginTop: 0 }}>
         {(addressInfo.gasBalance / 100000000.0).toLocaleString()} GAS
+      </p>
+      <p style={{ marginBottom: 5 }}>
+        <small>All NEP 17 balances:</small>
+      </p>
+      <p style={{ marginTop: 0 }}>
+        <table style={{ width: "100%" }}>
+          <tbody>
+            {Object.keys(addressInfo.allBalances).map((assetHash) => {
+              const balance = addressInfo.allBalances[assetHash];
+              return (
+                <tr key={assetHash}>
+                  <td>
+                    <small>
+                      <ScriptToken
+                        token={reverseBytes(assetHash.substring(2))}
+                        autoCompleteData={autoCompleteData}
+                      />
+                    </small>
+                  </td>
+                  <th>
+                    <small>{balance.toLocaleString()}</small>
+                  </th>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
       </p>
     </div>
   );

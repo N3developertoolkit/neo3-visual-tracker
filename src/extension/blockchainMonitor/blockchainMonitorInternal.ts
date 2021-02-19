@@ -335,7 +335,8 @@ export default class BlockchainMonitorInternal {
     );
     if (response.balance && Array.isArray(response.balance)) {
       for (const balanceEntry of response.balance) {
-        result[balanceEntry.assethash || "Unknown"] = balanceEntry.amount || 0;
+        result[balanceEntry.assethash || "Unknown"] =
+          parseInt(balanceEntry.amount) || 0;
       }
     }
     return result;
