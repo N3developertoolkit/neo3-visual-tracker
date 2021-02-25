@@ -239,6 +239,14 @@ export default class NeoCommands {
   }
 
   static async newContract(context: vscode.ExtensionContext) {
+    const rootFolder = workspaceFolder();
+    if (!rootFolder) {
+      vscode.window.showErrorMessage(
+        "Please open a folder in your Visual Studio Code workspace before creating a contract"
+      );
+      return;
+    }
+
     let contractName = await IoHelpers.enterString(
       "Enter name for your contract (e.g. TokenEscrow)"
     );
@@ -256,13 +264,6 @@ export default class NeoCommands {
       return;
     }
 
-    const rootFolder = workspaceFolder();
-    if (!rootFolder) {
-      vscode.window.showErrorMessage(
-        "Please open a folder in your Visual Studio Code workspace before creating a contract"
-      );
-      return;
-    }
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
     const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
     const contractPath = posixPath(rootFolder, contractName);
