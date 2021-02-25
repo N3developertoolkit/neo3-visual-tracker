@@ -303,6 +303,7 @@ export default class NeoCommands {
     await fs.promises.mkdir(contractPath);
     await doCopy("$_CLASSNAME_$.cs");
     await doCopy("$_CLASSNAME_$.csproj");
+    await doCopy("Directory.Build.Props");
     await vscode.window.showTextDocument(
       await vscode.workspace.openTextDocument(
         posixPath(contractPath, `${contractName}Contract.cs`)
