@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
+import { Language, languages } from "./languages";
 import posixPath from "../util/posixPath";
 import workspaceFolder from "../util/workspaceFolder";
 
@@ -34,14 +35,15 @@ export default class Templates {
     }
 
     // TODO: Multi language support
-    const language = "csharp";
+    const languageCode = "csharp";
+    const language = languages[languageCode];
 
     const contractPath = posixPath(rootFolder, contractName);
     const templatePath = posixPath(
       context.extensionPath,
       "resources",
       "new-contract",
-      language
+      languageCode
     );
     if (fs.existsSync(contractPath)) {
       vscode.window.showErrorMessage(
@@ -50,35 +52,30 @@ export default class Templates {
       return;
     }
 
-    const doSubstitutions = (text: string) =>
-      text
-        .replace(/\$_CLASSNAME_\$/g, `${contractName}Contract`)
-        .replace(/\$_NAMESPACENAME_\$/g, `${contractName}`);
-    const doCopy = async (srcFile: string) => {
-      const dstFile = doSubstitutions(srcFile);
-      const dstFileAbsolute = posixPath(contractPath, dstFile);
-      const srcFileAbsolute = posixPath(
-        templatePath,
-        `${srcFile}.template.txt`
-      );
-      await fs.promises.copyFile(srcFileAbsolute, dstFileAbsolute);
-      await fs.promises.writeFile(
-        dstFileAbsolute,
-        doSubstitutions(
-          (await fs.promises.readFile(dstFileAbsolute)).toString()
-        )
-      );
-    };
-    await fs.promises.mkdir(contractPath);
-    await doCopy("$_CLASSNAME_$.cs");
-    await doCopy("$_CLASSNAME_$.csproj");
-    await doCopy("Directory.Build.Props");
+    const parameters = await Templates.gatherParameters(language, contractName);
+    if (!parameters) {
+      return;
+    }
+
+    await Templates.hydrateFiles(
+      language,
+      templatePath,
+      contractPath,
+      parameters
+    );
+
+    //
+    // TODO: Make this language-agnostic
+    //
     await vscode.window.showTextDocument(
       await vscode.workspace.openTextDocument(
         posixPath(contractPath, `${contractName}Contract.cs`)
       )
     );
 
+    //
+    // TODO: Make this language-agnostic
+    //
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
     const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
     try {
@@ -137,5 +134,71 @@ export default class Templates {
     if (buildTask) {
       vscode.tasks.executeTask(buildTask);
     }
+  }
+
+  private static async gatherParameters(
+    language: Language,
+    contractName: string
+  ): Promise<{ [key: string]: string } | undefined> {
+    const result = {
+      $_CLASSNAME_$: `${contractName}Contract`,
+      $_NAMESPACENAME_$: contractName,
+    };
+    // TODO: Custom language-specific substitutions
+    console.log(language); // remove
+    //
+    return result;
+  }
+
+  private static async hydrateFiles(
+    language: Language,
+    templatePath: string,
+    destinationPath: string,
+    parameters: { [key: string]: string }
+  ) {
+    await fs.promises.mkdir(destinationPath, { recursive: true });
+    const templateFolderContents = await fs.promises.readdir(templatePath);
+    for (const item of templateFolderContents) {
+      const fullPathToSource = posixPath(templatePath, item);
+      const resolvedName = await Templates.substituteParameters(
+        item,
+        parameters
+      );
+      const fullPathToDestination = posixPath(destinationPath, resolvedName);
+      const stat = await fs.promises.stat(fullPathToSource);
+      if (stat.isDirectory()) {
+        await Templates.hydrateFiles(
+          language,
+          fullPathToSource,
+          posixPath(destinationPath, resolvedName),
+          parameters
+        );
+      } else if (item.endsWith(".template.txt")) {
+        const fileContents = (
+          await fs.promises.readFile(fullPathToSource)
+        ).toString();
+        const resolvedContents = await Templates.substituteParameters(
+          fileContents,
+          parameters
+        );
+        await fs.promises.writeFile(
+          fullPathToDestination.replace(/\.template\.txt$/, ""),
+          resolvedContents
+        );
+      } else {
+        await fs.promises.copyFile(fullPathToSource, fullPathToDestination);
+      }
+    }
+  }
+
+  private static async substituteParameters(
+    input: string,
+    parameters: { [key: string]: string }
+  ): Promise<string> {
+    let result = input;
+    for (const key of Object.keys(parameters)) {
+      result = result.replaceAll(key, parameters[key]);
+    }
+    return result;
   }
 }
