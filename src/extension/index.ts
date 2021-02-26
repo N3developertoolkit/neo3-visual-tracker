@@ -17,6 +17,7 @@ import NeoExpressInstanceManager from "./neoExpress/neoExpressInstanceManager";
 import NeoInvokeFileEditorProvider from "./vscodeProviders/neoInvokeFileEditorProvider";
 import QuickStartViewProvider from "./vscodeProviders/quickStartViewProvider";
 import ServerListDetector from "./fileDetectors/serverListDetector";
+import Templates from "./templates/templates";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 
@@ -133,7 +134,7 @@ export async function activate(context: vscode.ExtensionContext) {
   );
 
   registerCommand(context, "neo3-visual-devtracker.neo.newContract", () =>
-    NeoCommands.newContract(context)
+    Templates.newContract(context)
   );
 
   registerCommand(context, "neo3-visual-devtracker.neo.walletCreate", () =>
