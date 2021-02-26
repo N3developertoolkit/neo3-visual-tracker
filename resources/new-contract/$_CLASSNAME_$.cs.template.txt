@@ -30,20 +30,20 @@ namespace $_NAMESPACENAME_$
 
             var storageMap = Storage.CurrentContext.CreateMap(MAP_NAME);
 
-            storageMap.Put(tx.Sender.Serialize(), positiveNumber.ToByteArray());
+            storageMap.Put(tx.Sender, positiveNumber);
 
             OnNumberChanged(tx.Sender, positiveNumber);
 
             return true;
         }
 
-        public static BigInteger GetNumber()
+        public static ByteString GetNumber()
         {
             var tx = (Transaction) ExecutionEngine.ScriptContainer;
 
             var storageMap = Storage.CurrentContext.CreateMap(MAP_NAME);
 
-            return new BigInteger(storageMap.Get(tx.Sender.Serialize()));
+            return storageMap.Get(tx.Sender);
         }
     }
 }
