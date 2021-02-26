@@ -264,13 +264,17 @@ export default class NeoCommands {
       return;
     }
 
+    // TODO: Multi language support
+    const language = "csharp";
+
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
     const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
     const contractPath = posixPath(rootFolder, contractName);
     const templatePath = posixPath(
       context.extensionPath,
       "resources",
-      "new-contract"
+      "new-contract",
+      language
     );
     if (fs.existsSync(contractPath)) {
       vscode.window.showErrorMessage(
