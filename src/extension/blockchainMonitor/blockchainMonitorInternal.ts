@@ -198,10 +198,13 @@ export default class BlockchainMonitorInternal {
       Log.log(LOG_PREFIX, `Retrieving tx ${hash} (attempt ${retry++})`);
       try {
         const transaction = await this.rpcClient.getRawTransaction(hash, true);
-        if (this.state.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
-          this.state.cachedTransactions.shift();
+        if (transaction.blockhash) {
+          // only cache transactions that are non-pending
+          if (this.state.cachedTransactions.length === TRANSACTION_CACHE_SIZE) {
+            this.state.cachedTransactions.shift();
+          }
+          this.state.cachedTransactions.push(transaction);
         }
-        this.state.cachedTransactions.push(transaction);
         return transaction;
       } catch (e) {
         Log.warn(

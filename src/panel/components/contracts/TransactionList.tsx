@@ -62,17 +62,7 @@ export default function TransactionList({
             }}
           >
             {entry.blockchain}
-            <span
-              style={{
-                float: "right",
-                color:
-                  entry.state === "error"
-                    ? "var(--vscode-errorForeground)"
-                    : undefined,
-              }}
-            >
-              {entry.state}
-            </span>
+            <span style={{ float: "right" }}>{entry.state}</span>
           </div>
           <div
             style={{

@@ -472,17 +472,13 @@ export default class InvokeFilePanelController extends PanelControllerBase<
               _.txid,
               true
             );
-            const vmstate = (tx?.tx as any)?.vmstate;
+            const confirmed = !!(tx?.tx as any).blockhash;
             return {
               txid: _.txid,
               blockchain: _.blockchain,
               log: tx?.log,
               tx: tx?.tx,
-              state: (vmstate === "FAULT"
-                ? "error"
-                : vmstate
-                ? "ok"
-                : "pending") as TransactionStatus,
+              state: confirmed ? "confirmed" : ("pending" as TransactionStatus),
             };
           } catch (e) {
             return _;

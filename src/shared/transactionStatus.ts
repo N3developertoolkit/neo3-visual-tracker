@@ -1,3 +1,3 @@
-type TransactionStatus = "pending" | "error" | "ok";
+type TransactionStatus = "pending" | "confirmed";
 
 export default TransactionStatus;
