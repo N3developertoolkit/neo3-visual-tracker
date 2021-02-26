@@ -93,7 +93,7 @@ export default class AutoComplete {
         Log.error(LOG_PREFIX, "Could not determine neo-express version");
       } else {
         const version = versionResult.message.trim().substring(256);
-        cacheKey = `wellKnown_${version}`;
+        cacheKey = `wellKnownContracts_${version}`;
         wellKnownContracts = this.context.globalState.get<
           typeof wellKnownContracts
         >(cacheKey, wellKnownContracts);
