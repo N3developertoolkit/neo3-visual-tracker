@@ -17,8 +17,13 @@ export default class Templates {
       return;
     }
 
-    // TODO: Multi language support
-    const languageCode = "csharp";
+    const languageCode = await IoHelpers.multipleChoice(
+      "Choose a programming language",
+      ...Object.keys(languages)
+    );
+    if (!languageCode) {
+      return;
+    }
     const language = languages[languageCode];
 
     const parameters = await Templates.gatherParameters(language);

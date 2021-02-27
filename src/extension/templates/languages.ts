@@ -5,7 +5,6 @@ type VariableDeclaration = {
 };
 
 type Language = {
-  displayName: string;
   variables: { [variableName: string]: VariableDeclaration } & {
     [variableName in "CONTRACTNAME"]: VariableDeclaration;
   };
@@ -21,11 +20,8 @@ type Language = {
   }[];
 };
 
-type LanguageCode = "csharp" | "java";
-
-const languages: { [code in LanguageCode]: Language } = {
+const languages: { [code: string]: Language } = {
   csharp: {
-    displayName: "C#",
     variables: {
       CONTRACTNAME: {
         prompt: "Enter name for your contract (e.g. TokenEscrow)",
@@ -71,7 +67,6 @@ const languages: { [code in LanguageCode]: Language } = {
     ],
   },
   java: {
-    displayName: "Java",
     variables: {
       CONTRACTNAME: {
         prompt: "Enter name for your contract (e.g. TokenEscrow)",
@@ -103,4 +98,4 @@ const languages: { [code in LanguageCode]: Language } = {
   },
 };
 
-export { Language, LanguageCode, languages };
+export { Language, languages };
