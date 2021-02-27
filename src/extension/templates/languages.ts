@@ -33,6 +33,7 @@ const languages: { [code in LanguageCode]: Language } = {
         },
       },
       CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract" },
+      MAINFILE: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract.cs" },
     },
   },
   java: {
@@ -59,6 +60,10 @@ const languages: { [code in LanguageCode]: Language } = {
       },
       REVERSEDOMAINNAMEPATH: {
         eval: async ($) => $["$_REVERSEDOMAINNAME_$"].replaceAll(".", "//"),
+      },
+      MAINFILE: {
+        eval: async ($) =>
+          `src/main/java/${$["$_REVERSEDOMAINNAMEPATH_$"]}/${$["$_CLASSNAME_$"]}.java`,
       },
     },
   },

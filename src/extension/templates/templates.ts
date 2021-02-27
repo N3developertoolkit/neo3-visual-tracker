@@ -18,7 +18,7 @@ export default class Templates {
     }
 
     // TODO: Multi language support
-    const languageCode = "csharp";
+    const languageCode = "java";
     const language = languages[languageCode];
 
     const parameters = await Templates.gatherParameters(language);
@@ -48,14 +48,14 @@ export default class Templates {
       parameters
     );
 
-    //
-    // TODO: Make this language-agnostic
-    //
-    await vscode.window.showTextDocument(
-      await vscode.workspace.openTextDocument(
-        posixPath(contractPath, `${contractName}Contract.cs`)
-      )
-    );
+    const mainFile = parameters["$_MAINFILE_$"];
+    if (mainFile) {
+      await vscode.window.showTextDocument(
+        await vscode.workspace.openTextDocument(
+          posixPath(contractPath, mainFile)
+        )
+      );
+    }
 
     //
     // TODO: Make this language-agnostic
