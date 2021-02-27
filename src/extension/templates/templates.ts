@@ -17,27 +17,16 @@ export default class Templates {
       return;
     }
 
-    let contractName = await IoHelpers.enterString(
-      "Enter name for your contract (e.g. TokenEscrow)"
-    );
-    if (contractName?.toLocaleLowerCase().endsWith("contract")) {
-      contractName = contractName.replace(/contract$/i, "");
-    }
-    if (!contractName) {
-      return;
-    }
-    if (!contractName[0].match(/[a-z]/i)) {
-      contractName = "_" + contractName;
-    }
-    contractName = contractName.replace(/[^a-z0-9]+/gi, "_");
-    if (!contractName) {
-      return;
-    }
-
     // TODO: Multi language support
     const languageCode = "csharp";
     const language = languages[languageCode];
 
+    const parameters = await Templates.gatherParameters(language);
+    if (!parameters) {
+      return;
+    }
+
+    const contractName = parameters["$_CONTRACTNAME_$"];
     const contractPath = posixPath(rootFolder, contractName);
     const templatePath = posixPath(
       context.extensionPath,
@@ -49,11 +38,6 @@ export default class Templates {
       vscode.window.showErrorMessage(
         `A contract called ${contractName} already exists in this vscode.workspace.`
       );
-      return;
-    }
-
-    const parameters = await Templates.gatherParameters(language, contractName);
-    if (!parameters) {
       return;
     }
 
@@ -137,16 +121,25 @@ export default class Templates {
   }
 
   private static async gatherParameters(
-    language: Language,
-    contractName: string
+    language: Language
   ): Promise<{ [key: string]: string } | undefined> {
-    const result = {
-      $_CLASSNAME_$: `${contractName}Contract`,
-      $_NAMESPACENAME_$: contractName,
-    };
-    // TODO: Custom language-specific substitutions
-    console.log(language); // remove
-    //
+    const result: { [key: string]: string } = {};
+    if (language.variables) {
+      for (const variableName of Object.keys(language.variables)) {
+        const variable = language.variables[variableName];
+        let value: string | undefined = "";
+        if (variable.prompt) {
+          value = await IoHelpers.enterString(variable.prompt);
+        } else if (variable.eval) {
+          value = await variable.eval(result);
+        }
+        if (!value) {
+          // All variables are considered required
+          return undefined;
+        }
+        result[`$_${variableName}_$`] = value;
+      }
+    }
     return result;
   }
 

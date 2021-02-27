@@ -6,7 +6,7 @@ using Neo.SmartContract.Framework;
 using Neo.SmartContract.Framework.Services.Neo;
 using Neo.SmartContract.Framework.Services.System;
 
-namespace $_NAMESPACENAME_$
+namespace $_CONTRACTNAME_$
 {
     [DisplayName("YourName.$_CLASSNAME_$")]
     [ManifestExtra("Author", "Your name")]
