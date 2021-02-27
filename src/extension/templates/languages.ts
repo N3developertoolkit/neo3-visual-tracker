@@ -9,6 +9,16 @@ type Language = {
   variables: { [variableName: string]: VariableDeclaration } & {
     [variableName in "CONTRACTNAME"]: VariableDeclaration;
   };
+  tasks?: {
+    label: string;
+    dependsOnLabel?: string;
+    group: string;
+    type: string;
+    command: string;
+    args: string[];
+    problemMatcher: string | any[];
+    autoRun?: boolean;
+  }[];
 };
 
 type LanguageCode = "csharp" | "java";
@@ -35,6 +45,30 @@ const languages: { [code in LanguageCode]: Language } = {
       CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract" },
       MAINFILE: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract.cs" },
     },
+    tasks: [
+      {
+        label: "restore",
+        group: "build",
+        type: "shell",
+        command: "dotnet",
+        args: ["restore"],
+        problemMatcher: [],
+      },
+      {
+        label: "build",
+        dependsOnLabel: "restore",
+        group: "build",
+        type: "shell",
+        command: "dotnet",
+        args: [
+          "build",
+          "/property:GenerateFullPaths=true",
+          "/consoleloggerparameters:NoSummary",
+        ],
+        problemMatcher: "$msCompile",
+        autoRun: true,
+      },
+    ],
   },
   java: {
     displayName: "Java",

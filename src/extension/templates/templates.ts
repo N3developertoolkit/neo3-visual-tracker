@@ -18,7 +18,7 @@ export default class Templates {
     }
 
     // TODO: Multi language support
-    const languageCode = "java";
+    const languageCode = "csharp";
     const language = languages[languageCode];
 
     const parameters = await Templates.gatherParameters(language);
@@ -57,9 +57,10 @@ export default class Templates {
       );
     }
 
-    //
-    // TODO: Make this language-agnostic
-    //
+    if (!language.tasks) {
+      return;
+    }
+
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
     const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
     try {
@@ -81,41 +82,35 @@ export default class Templates {
         tasksJson.tasks = [];
       }
     } catch {}
-    const newTask = (
-      label: string,
-      args: string[],
-      problemMatcher: string | any[],
-      dependsOn?: string
-    ) => ({
-      options: { cwd: "${workspaceFolder}/" + contractName },
-      label: `${contractName}: ${label}`,
-      command: "dotnet",
-      type: "shell",
-      args,
-      group: "build",
-      presentation: { reveal: "silent" },
-      problemMatcher,
-      dependsOn: dependsOn ? `${contractName}: ${dependsOn}` : undefined,
-    });
-    (tasksJson.tasks as any[]).push(newTask("restore", ["restore"], []));
-    (tasksJson.tasks as any[]).push(
-      newTask(
-        "build",
-        [
-          "build",
-          "/property:GenerateFullPaths=true",
-          "/consoleloggerparameters:NoSummary",
-        ],
-        "$msCompile",
-        "restore"
-      )
-    );
-    const buildTaskLabel = tasksJson.tasks[tasksJson.tasks.length - 1].label;
+
+    let autorunTaskLabels: string[] = [];
+    for (const task of language.tasks) {
+      const taskJson = {
+        options: { cwd: "${workspaceFolder}/" + contractName },
+        label: `${contractName}: ${task.label}`,
+        command: task.command,
+        type: task.type,
+        args: task.args,
+        group: task.group,
+        presentation: { reveal: "silent" },
+        problemMatcher: task.problemMatcher,
+        dependsOn: task.dependsOnLabel
+          ? `${contractName}: ${task.dependsOnLabel}`
+          : undefined,
+      };
+      (tasksJson.tasks as any[]).push(taskJson);
+      if (task.autoRun) {
+        autorunTaskLabels.push(taskJson.label);
+      }
+    }
     await fs.promises.writeFile(tasksJsonPath, JSONC.stringify(tasksJson));
+    // TODO: Investigate ways to remove this sleep hack
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const tasks = await vscode.tasks.fetchTasks();
-    const buildTask = tasks.filter((_) => _.name === buildTaskLabel)[0];
-    if (buildTask) {
+    const buildTasks = tasks.filter(
+      (_) => autorunTaskLabels.indexOf(_.name) !== -1
+    );
+    for (const buildTask of buildTasks) {
       vscode.tasks.executeTask(buildTask);
     }
   }
