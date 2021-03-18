@@ -1,0 +1,45 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: ⏳ Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: 💿 Setup NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.x
+      - name: 💿 Setup .NET Core SDK
+        uses: actions/setup-dotnet@v1.7.2
+        with:
+          dotnet-version: 3.1.x
+      - name: Install nbgv
+        run: dotnet tool install nbgv --tool-path ./tools --version 3.3.37
+      - name: Run nbgv
+        run: echo "NUGET_PACKAGE_VERSION=$(./tools/nbgv get-version -v NuGetPackageVersion)" >> $GITHUB_ENV
+      - name: 🚀 Build
+        run: |
+          npm ci
+          npm run compile
+      - name: 🔢 Set version
+        run: npm run setversion
+      - name: 🎁 Package
+        id: package
+        shell: bash
+        run: |
+          npm run package
+      - name: Create Release
+        uses: "marvinpinto/action-automatic-releases@latest"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: ${{ contains(env.NUGET_PACKAGE_VERSION, '-preview') }}
+          title: Release ${{ env.NUGET_PACKAGE_VERSION }}
+          automatic_release_tag: ${{ env.NUGET_PACKAGE_VERSION }}
+          files: |
+            *.vsix
