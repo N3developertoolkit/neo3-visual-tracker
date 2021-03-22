@@ -293,14 +293,14 @@
         {
           "id": "neo3-visual-devtracker-mainView",
           "title": "Neo 3 Visual DevTracker",
-          "icon": "resources/neo-logo.png"
+          "icon": "resources/n3-logo.png"
         }
       ]
     }
   },
   "scripts": {
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "mkdirp deps/nxp && cleandir deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/2.0.9-preview/Neo.Express.2.0.9-preview.nupkg\" -O deps/nxp/nxp.nupkg",
+    "bundle-nxp-download": "mkdirp deps/nxp && cleandir deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/2.0.18-preview/Neo.Express.2.0.18-preview.nupkg\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
@@ -316,7 +316,7 @@
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --info-verbosity verbose"
   },
   "devDependencies": {
-    "@cityofzion/neon-core": "^5.0.0-next.5",
+    "@cityofzion/neon-core": "^5.0.0-next.6",
     "@types/crypto-js": "^4.0.1",
     "@types/glob": "^7.1.3",
     "@types/gulp": "^4.0.7",
