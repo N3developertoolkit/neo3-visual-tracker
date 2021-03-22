@@ -34,6 +34,11 @@ jobs:
         shell: bash
         run: |
           npm run package
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: packages
+          path: ./src/extension/*.vsix
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@v1.1.0
         with:
