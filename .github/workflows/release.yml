@@ -38,7 +38,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: packages
-          path: ./src/extension/*.vsix
+          path: ./*.vsix
       - name: Create Release
         uses: marvinpinto/action-automatic-releases@v1.1.0
         with:
