@@ -300,7 +300,7 @@
   },
   "scripts": {
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "mkdirp deps/nxp && cleandir deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/2.0.18-preview/Neo.Express.2.0.18-preview.nupkg\" -O deps/nxp/nxp.nupkg",
+    "bundle-nxp-download": "mkdirp deps/nxp && cleandir deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/2.0.21-preview/Neo.Express.2.0.21-preview.nupkg\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
