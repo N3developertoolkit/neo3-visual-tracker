@@ -339,8 +339,8 @@ export default class NeoExpressCommands {
       "transfer",
       "-i",
       identifier.configPath,
-      asset,
       `${amount}`,
+      asset,
       sender,
       receiver
     );
