@@ -4,6 +4,7 @@
   "displayName": "Neo N3 Visual DevTracker",
   "description": "A Neo N3 blockchain explorer that is directly available within Visual Studio Code",
   "version": "0.0.0",
+  "preview": true,
   "icon": "resources/neo-logo.png",
   "galleryBanner": {
     "color": "#242424",
