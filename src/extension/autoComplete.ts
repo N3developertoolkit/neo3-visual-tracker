@@ -109,11 +109,11 @@ export default class AutoComplete {
           "-f",
           "-c",
           "1",
-          tempFile.path + ".neo-express"
+          tempFile.path
         );
         const identifier = await BlockchainIdentifier.fromNeoExpressConfig(
           this.context.extensionPath,
-          tempFile.path + ".neo-express"
+          tempFile.path
         );
         if (!identifier || result.isError) {
           Log.error(
