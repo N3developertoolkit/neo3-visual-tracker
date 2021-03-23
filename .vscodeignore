@@ -1,4 +1,7 @@
+.github/**
 .vscode/**
+.tools/**
+sample-workspaces/**
 src/**
 .gitignore
 node_modules/**
@@ -6,4 +9,3 @@ node_modules/**
 **/*.map
 **/*.ts
 *.nupkg
-sample-workspace
