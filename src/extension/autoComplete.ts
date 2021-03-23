@@ -79,7 +79,7 @@ export default class AutoComplete {
   private async initializeWellKnownManifests() {
     Log.log(LOG_PREFIX, "Initializing well-known manifests...");
     const tempFile = await new Promise<temp.OpenFile>((resolve, reject) =>
-      temp.open(undefined, (err, result) =>
+      temp.open({ suffix: ".neo-express" }, (err, result) =>
         err ? reject(err) : resolve(result)
       )
     );

@@ -119,7 +119,7 @@ export default class BlockchainIdentifier {
         if (consensusNode.wallet?.accounts) {
           for (const account of consensusNode.wallet.accounts) {
             if (
-              account.label === "MultiSigContract" &&
+              account.label === "Consensus MultiSigContract" &&
               account["script-hash"]
             ) {
               result["genesis"] = account["script-hash"];

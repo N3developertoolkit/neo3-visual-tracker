@@ -1,10 +1,10 @@
 # Change Log
 
-All notable changes to the "neo3-visual-tracker" extension will be documented in this file.
+All notable changes to the Neo N3 Visual DevTracker extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
+## [2.0-preview] - 2021-03-24
 
 ### Added
 

@@ -42,6 +42,10 @@ const SEED_URLS: { [url: string]: boolean } = {
   //
   // V3 TestNet:
   "http://seed1t.neo.org:20332": true,
+  "http://seed2t.neo.org:20332": true,
+  "http://seed3t.neo.org:20332": true,
+  "http://seed4t.neo.org:20332": true,
+  "http://seed5t.neo.org:20332": true,
 };
 
 export default class ServerListDetector extends DetectorBase {

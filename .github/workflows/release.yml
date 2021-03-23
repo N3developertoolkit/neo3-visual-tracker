@@ -34,8 +34,13 @@ jobs:
         shell: bash
         run: |
           npm run package
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: packages
+          path: ./*.vsix
       - name: Create Release
-        uses: marvinpinto/action-automatic-releases@v1.1.0
+        uses: marvinpinto/action-automatic-releases@v1.1.1
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: ${{ contains(env.NUGET_PACKAGE_VERSION, '-preview') }}
