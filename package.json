@@ -72,42 +72,42 @@
       {
         "command": "neo3-visual-devtracker.express.contractDeploy",
         "title": "Deploy contract to Neo Express",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.create",
         "title": "Create private blockchain",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.createCheckpoint",
         "title": "Create checkpoint",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.customCommand",
         "title": "Run custom Neo Express command",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.exploreStorage",
         "title": "Explore contract storage",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.reset",
         "title": "Reset blockchain",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.restoreCheckpoint",
         "title": "Restore checkpoint",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.run",
         "title": "Start blockchain",
-        "category": "Neo Express 3",
+        "category": "Neo Express N3",
         "icon": {
           "light": "resources/light/play.svg",
           "dark": "resources/dark/play.svg"
@@ -116,47 +116,47 @@
       {
         "command": "neo3-visual-devtracker.express.runAdvanced",
         "title": "Start blockchain (with custom options)...",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.stop",
         "title": "Stop blockchain",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.transfer",
         "title": "Transfer assets",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.express.walletCreate",
         "title": "Create wallet",
-        "category": "Neo Express 3"
+        "category": "Neo Express N3"
       },
       {
         "command": "neo3-visual-devtracker.neo.contractDeploy",
         "title": "Deploy contract",
-        "category": "Neo 3"
+        "category": "Neo N3"
       },
       {
         "command": "neo3-visual-devtracker.neo.invokeContract",
         "title": "Invoke contract",
-        "category": "Neo 3"
+        "category": "Neo N3"
       },
       {
         "command": "neo3-visual-devtracker.neo.newContract",
         "title": "Create contract",
-        "category": "Neo 3"
+        "category": "Neo N3"
       },
       {
         "command": "neo3-visual-devtracker.neo.walletCreate",
         "title": "Create wallet",
-        "category": "Neo 3"
+        "category": "Neo N3"
       },
       {
         "command": "neo3-visual-devtracker.tracker.openTracker",
-        "title": "Open Neo Visual DevTracker",
-        "category": "Neo 3 Visual DevTracker",
+        "title": "Open Neo N3 Visual DevTracker",
+        "category": "Neo N3 Visual DevTracker",
         "icon": {
           "light": "resources/light/open.svg",
           "dark": "resources/dark/open.svg"
@@ -164,18 +164,18 @@
       },
       {
         "command": "neo3-visual-devtracker.connect",
-        "title": "Connect to a Neo blockchain",
-        "category": "Neo 3 Extension"
+        "title": "Connect to a Neo N3 blockchain",
+        "category": "Neo N3 Extension"
       },
       {
         "command": "neo3-visual-devtracker.customizeServerList",
         "title": "Customize blockchain list",
-        "category": "Neo 3 Extension"
+        "category": "Neo N3 Extension"
       },
       {
         "command": "neo3-visual-devtracker.disconnect",
         "title": "Disconnect from current Neo blockchain",
-        "category": "Neo 3 Extension"
+        "category": "Neo N3 Extension"
       }
     ],
     "menus": {
@@ -293,7 +293,7 @@
       "activitybar": [
         {
           "id": "neo3-visual-devtracker-mainView",
-          "title": "Neo 3 Visual DevTracker",
+          "title": "Neo N3 Visual DevTracker",
           "icon": "resources/n3-logo.png"
         }
       ]
