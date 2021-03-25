@@ -31,7 +31,7 @@ const UNKNOWN_BLOCKCHAIN =
 // current workspace):
 const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
   "0x6fcb2719ad6a74997fbf08c9d3c1db626d5c631ea7707a400073a702c5025ffa":
-    "Neo 3 TestNet",
+    "Neo N3 TestNet",
 };
 
 // These are the RPC URLs made available to users who do not have their
