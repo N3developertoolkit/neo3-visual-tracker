@@ -350,6 +350,5 @@
     "webpack-cli": "^3.3.12",
     "wget-improved": "^3.2.1",
     "which": "^2.0.2"
-  },
-  "dependencies": {}
+  }
 }
