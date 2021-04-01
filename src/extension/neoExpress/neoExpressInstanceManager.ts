@@ -68,7 +68,7 @@ export default class NeoExpressInstanceManager {
     const children = identifier.getChildren();
     if (children.length) {
       for (const child of children) {
-        const terminal = this.neoExpress.runInTerminal(
+        const terminal = await this.neoExpress.runInTerminal(
           child.name,
           "run",
           "-i",
@@ -82,7 +82,7 @@ export default class NeoExpressInstanceManager {
         }
       }
     } else {
-      const terminal = this.neoExpress.runInTerminal(
+      const terminal = await this.neoExpress.runInTerminal(
         identifier.name,
         "run",
         "-i",
@@ -97,11 +97,6 @@ export default class NeoExpressInstanceManager {
     }
 
     this.running = identifier;
-
-    // Give the terminal a chance to get a lock on the blockchain before
-    // starting to do any offline commands.
-    // TODO: Consider using a custom terminal so that this hack can be removed.
-    await new Promise((resolve) => setTimeout(resolve, 3000));
 
     if (!this.activeConnection.connection?.blockchainMonitor.healthy) {
       await this.activeConnection.connect(identifier);
