@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as which from "which";
 
 import Log from "../../shared/log";
+import NeoExpressTerminal from "./neoExpressTerminal";
 import posixPath from "../util/posixPath";
 
 type Command =
@@ -43,18 +44,28 @@ export default class NeoExpress {
     this.checkForDotNetPassedAt = 0;
   }
 
-  runInTerminal(name: string, command: Command, ...options: string[]) {
+  async runInTerminal(name: string, command: Command, ...options: string[]) {
     if (!this.checkForDotNet()) {
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
-    const terminal = vscode.window.createTerminal({
-      name,
-      shellPath: this.dotnetPath,
-      shellArgs: dotNetArguments,
-      hideFromUser: false,
+    const pty = new NeoExpressTerminal(this.dotnetPath, dotNetArguments);
+    const terminal = vscode.window.createTerminal({ name, pty });
+
+    const hasStarted: Promise<void> = new Promise((resolve) => {
+      pty.onDidWrite((data) => {
+        if (data.indexOf("OnStart") !== -1) {
+          resolve();
+        }
+      });
     });
+    
     terminal.show();
+    
+    // Give the terminal a chance to get a lock on the blockchain before
+    // starting to do any offline commands.
+    await hasStarted;
+    
     return terminal;
   }
 
