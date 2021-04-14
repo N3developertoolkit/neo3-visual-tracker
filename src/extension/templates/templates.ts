@@ -128,10 +128,14 @@ export default class Templates {
       for (const variableName of Object.keys(language.variables)) {
         const variable = language.variables[variableName];
         let value: string | undefined = "";
-        if (variable.prompt) {
-          value = await IoHelpers.enterString(variable.prompt);
-        } else if (variable.eval) {
+        if (variable.eval) {
           value = await variable.eval(result);
+        }
+        if (variable.prompt) {
+          value = await IoHelpers.enterString(variable.prompt, value);
+        }
+        if (variable.parse) {
+          value = await variable.parse(value);
         }
         if (!value) {
           // All variables are considered required

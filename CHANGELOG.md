@@ -4,6 +4,12 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Changed
+
+- Creating a Java smart contract automatically targets the latest version of neow3j (per Maven Central)
+
 ## [2.0-preview] - 2021-03-24
 
 ### Added
