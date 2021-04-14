@@ -4,7 +4,7 @@ import tryFetchJson from "../util/tryFetchJson";
 // i)   The `eval` function is called (if-present) and its result is used as the
 //      variable value.
 // ii)  If a `prompt` is provided the user is allowed to optionally specify a 
-//      value (which will overwrite that provided the result of `eval`, if any)
+//      value (which will overwrite the result of `eval`, if any)
 // iii) If a `parse` function is present it will be called and can modify the
 //      user-provided value.
 // After the above steps, the variable value must be non-empty or template hydration
