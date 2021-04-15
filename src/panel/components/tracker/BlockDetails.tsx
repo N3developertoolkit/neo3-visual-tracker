@@ -54,10 +54,9 @@ export default function BlockDetails({
           <Hash hash={block.merkleroot} />
         </MetadataBadge>
       )}
-      {!!block.consensusdata && (
-        <MetadataBadge title="Consensus data">
-          <Hash hash={block.consensusdata.nonce} /> &mdash;{" "}
-          {block.consensusdata.primary}
+      {!!block.nextconsensus && (
+        <MetadataBadge title="Next consensus">
+          <Hash hash={block.nextconsensus} />
         </MetadataBadge>
       )}
       {!!block.witnesses &&
