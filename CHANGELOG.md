@@ -4,6 +4,10 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unpublished
+
+- Outdated npm package dependencies have been updated (now using TypeScript 4, Node 14, React 17, webpack 5)
+
 ## [2.0-preview] - 2021-03-24
 
 ### Added
