@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import * as buffer from "buffer";
 import * as neonCore from "@cityofzion/neon-core";
 
 import Address from "../Address";
@@ -64,7 +65,7 @@ export default function ScriptToken({
     }
 
     try {
-      const asText = Buffer.from(token, "hex")
+      const asText = buffer.Buffer.from(token, "hex")
         .toString("ascii")
         .replace(/\\n/g, " ")
         .trim();
