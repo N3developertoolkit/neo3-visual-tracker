@@ -21,6 +21,10 @@ const config = {
   },
   resolve: {
     extensions: [".ts", ".js"],
+    fallback: {
+      "bignumber.js": require.resolve("bignumber.js"),
+      crypto: false,
+    },
   },
   module: {
     rules: [

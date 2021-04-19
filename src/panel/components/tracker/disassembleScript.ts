@@ -2,6 +2,7 @@
 // Credit: https://github.com/CityOfZion/neo3-preview/blob/master/src/utils/disassemble.js
 //
 
+import * as buffer from "buffer";
 import * as cryptoJS from "crypto-js";
 
 const opcodetable: { [opcode: number]: { name: string; size: number } } = {
@@ -245,15 +246,18 @@ const methodnames = [
 // resolve all interop method names to 32-bit hash
 const interopmethod: { [key: number]: string } = {};
 for (let i = 0; i < methodnames.length; i++) {
-  const data = Buffer.from(methodnames[i], "utf8").toString("hex");
+  const data = buffer.Buffer.from(methodnames[i], "utf8").toString("hex");
   const datawords = cryptoJS.enc.Hex.parse(data);
-  const hash_buffer = Buffer.from(cryptoJS.SHA256(datawords).toString(), "hex");
+  const hash_buffer = buffer.Buffer.from(
+    cryptoJS.SHA256(datawords).toString(),
+    "hex"
+  );
   interopmethod[hash_buffer.readUInt32LE(0)] = methodnames[i];
 }
 
 export default function disassembleScript(base64_encoded_script: string) {
   let out = "";
-  const script = Buffer.from(base64_encoded_script, "base64");
+  const script = buffer.Buffer.from(base64_encoded_script, "base64");
 
   let ip = 0;
   while (ip < script.length) {

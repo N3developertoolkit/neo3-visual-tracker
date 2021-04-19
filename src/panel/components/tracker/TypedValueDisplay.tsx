@@ -1,4 +1,5 @@
 import React from "react";
+import * as buffer from "buffer";
 
 import AutoCompleteData from "../../../shared/autoCompleteData";
 import ScriptToken from "./ScriptToken";
@@ -33,7 +34,7 @@ export default function TypedValueDisplay({
     return (
       <ScriptToken
         autoCompleteData={autoCompleteData}
-        token={Buffer.from(`${value.value}`, "base64").toString("hex")}
+        token={buffer.Buffer.from(`${value.value}`, "base64").toString("hex")}
         selectAddress={selectAddress}
       />
     );

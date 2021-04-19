@@ -1,6 +1,6 @@
 import * as fs from "fs";
 import * as neonCore from "@cityofzion/neon-core";
-import * as neonExperimental from "../neonExperimental";
+import * as neonExperimental from "../neonExperimental/index";
 import * as path from "path";
 import * as vscode from "vscode";
 
@@ -117,7 +117,7 @@ export default class NeoCommands {
         (manifestJson as unknown) as neonCore.sc.ContractManifestJson
       );
       const result = await neonExperimental.deployContract(
-        contractByteCode,
+        neonCore.sc.NEF.fromBuffer(contractByteCode),
         manifest,
         {
           networkMagic: neonCore.CONST.MAGIC_NUMBER.TestNet,

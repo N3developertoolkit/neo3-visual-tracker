@@ -11,6 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 - Creating a Java smart contract automatically targets the latest version of neow3j (per Maven Central)
 - Make use of the ms-dotnettools.vscode-dotnet-sdk extension to acquire a path to dotnet
   (instead of requiring a global installation accessible in the PATH)
+- Outdated npm package dependencies have been updated (now using TypeScript 4, Node 14, React 17, webpack 5)
 
 ## [2.0-preview] - 2021-03-24
 
