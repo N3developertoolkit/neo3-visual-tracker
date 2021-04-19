@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
+- Creating a Java smart contract automatically targets the latest version of neow3j (per Maven Central)
 - Make use of the ms-dotnettools.vscode-dotnet-sdk extension to acquire a path to dotnet
   (instead of requiring a global installation accessible in the PATH)
 

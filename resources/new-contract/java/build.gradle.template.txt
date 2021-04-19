@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'io.neow3j.gradle-plugin' version "3.8.0"
+    id 'io.neow3j.gradle-plugin' version "$_NEOW3JLIBVERSION_$"
 }
 
 group '$_REVERSEDOMAINNAME_$'
@@ -15,9 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'io.neow3j:contract:3.8.0'
-    implementation 'io.neow3j:devpack:3.8.0'
-    implementation 'io.neow3j:compiler:3.8.0'
+    implementation 'io.neow3j:contract:$_NEOW3JLIBVERSION_$'
+    implementation 'io.neow3j:devpack:$_NEOW3JLIBVERSION_$'
+    implementation 'io.neow3j:compiler:$_NEOW3JLIBVERSION_$'
     implementation 'junit:junit:4.12'
 }
 
