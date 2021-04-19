@@ -16,7 +16,7 @@ export default class NeoExpressIo {
     if (identifer.blockchainType !== "express") {
       return null;
     }
-    const output = await neoExpress.run(
+    const output = await neoExpress.runInBackground(
       "contract",
       "get",
       hashOrNefPath,
@@ -42,7 +42,7 @@ export default class NeoExpressIo {
     if (identifer.blockchainType !== "express") {
       return {};
     }
-    const output = await neoExpress.run(
+    const output = await neoExpress.runInBackground(
       "contract",
       "list",
       "-i",
@@ -76,7 +76,7 @@ export default class NeoExpressIo {
     if (identifer.blockchainType !== "express") {
       return [];
     }
-    const output = await neoExpress.run(
+    const output = await neoExpress.runInBackground(
       "contract",
       "storage",
       contractName,
