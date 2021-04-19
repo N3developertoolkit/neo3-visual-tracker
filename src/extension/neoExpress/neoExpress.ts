@@ -1,6 +1,5 @@
 import * as childProcess from "child_process";
 import * as vscode from "vscode";
-import * as which from "which";
 
 import Log from "../../shared/log";
 import NeoExpressTerminal from "./neoExpressTerminal";
@@ -17,17 +16,27 @@ type Command =
   | "wallet"
   | "-v";
 
-const DOTNET_CHECK_EXPIRY_IN_MS = 60000;
 const LOG_PREFIX = "NeoExpress";
 const TIMEOUT_IN_MS = 5000;
 const TIMEOUT_POLLING_INTERVAL_IN_MS = 2000;
 
+async function resolveDotNetPath(): Promise<string> {
+  const result = await vscode.commands.executeCommand<any>(
+    "dotnet-sdk.acquire",
+    {
+      version: "5.0",
+      requestingExtensionId: "ngd-seattle.neo3-visual-tracker",
+    }
+  );
+  return result?.dotnetPath;
+}
+
 export default class NeoExpress {
   private readonly binaryPath: string;
-  private readonly dotnetPath: string;
+  private readonly dotnetPath: Promise<string>;
 
   private runLock: boolean;
-  private checkForDotNetPassedAt: number;
+  private dotNetResolved: boolean;
 
   constructor(private readonly context: vscode.ExtensionContext) {
     this.binaryPath = posixPath(
@@ -39,17 +48,24 @@ export default class NeoExpress {
       "any",
       "neoxp.dll"
     );
-    this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
+    this.dotNetResolved = false;
+    this.dotnetPath = resolveDotNetPath();
+    this.dotnetPath.then((_) => (this.dotNetResolved = true));
     this.runLock = false;
-    this.checkForDotNetPassedAt = 0;
   }
 
   async runInTerminal(name: string, command: Command, ...options: string[]) {
-    if (!this.checkForDotNet()) {
+    if (!this.dotNetResolved) {
+      // Show .NET SDK download progress, so the user is aware of what they are waiting for...
+      await vscode.commands.executeCommand("dotnet-sdk.showAcquisitionLog");
+    }
+    const dotnetPath = await this.dotnetPath;
+    if (!dotnetPath) {
+      Log.error(LOG_PREFIX, "dotnet path not found; cannot open terminal");
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
-    const pty = new NeoExpressTerminal(this.dotnetPath, dotNetArguments);
+    const pty = new NeoExpressTerminal(dotnetPath, dotNetArguments);
     const terminal = vscode.window.createTerminal({ name, pty });
 
     const hasStarted: Promise<void> = new Promise((resolve) => {
@@ -59,17 +75,32 @@ export default class NeoExpress {
         }
       });
     });
-    
+
     terminal.show();
-    
+
     // Give the terminal a chance to get a lock on the blockchain before
     // starting to do any offline commands.
     await hasStarted;
-    
+
     return terminal;
   }
 
   async run(
+    command: Command,
+    ...options: string[]
+  ): Promise<{ message: string; isError?: boolean }> {
+    return this.runInternal(false, command, ...options);
+  }
+
+  async runInBackground(
+    command: Command,
+    ...options: string[]
+  ): Promise<{ message: string; isError?: boolean }> {
+    return this.runInternal(true, command, ...options);
+  }
+
+  private async runInternal(
+    isBackground: boolean,
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
@@ -78,7 +109,7 @@ export default class NeoExpress {
     const releaseLock = await this.getRunLock();
     try {
       const startedAtInternal = new Date().getTime();
-      const result = await this.runUnsafe(command, ...options);
+      const result = await this.runUnsafe(isBackground, command, ...options);
       const endedAtInternal = new Date().getTime();
       durationInternal = endedAtInternal - startedAtInternal;
       return result;
@@ -98,10 +129,16 @@ export default class NeoExpress {
   }
 
   async runUnsafe(
+    isBackground: boolean,
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
-    if (!this.checkForDotNet()) {
+    if (!isBackground && !this.dotNetResolved) {
+      // Show .NET SDK download progress, so the user is aware of what they are waiting for...
+      await vscode.commands.executeCommand("dotnet-sdk.showAcquisitionLog");
+    }
+    const dotnetPath = await this.dotnetPath;
+    if (!dotnetPath) {
       return { message: "Could not launch Neo Express", isError: true };
     }
     const dotNetArguments = [
@@ -112,7 +149,7 @@ export default class NeoExpress {
     try {
       return new Promise((resolve, reject) => {
         const startedAt = new Date().getTime();
-        const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
+        const process = childProcess.spawn(dotnetPath, dotNetArguments);
         let complete = false;
         const watchdog = () => {
           if (!complete && new Date().getTime() - startedAt > TIMEOUT_IN_MS) {
@@ -159,41 +196,6 @@ export default class NeoExpress {
           "Unknown failure",
       };
     }
-  }
-
-  private async checkForDotNet() {
-    const now = new Date().getTime();
-    if (now - this.checkForDotNetPassedAt < DOTNET_CHECK_EXPIRY_IN_MS) {
-      Log.debug(LOG_PREFIX, `checkForDotNet skipped`);
-      return true;
-    }
-    Log.log(LOG_PREFIX, `Checking for dotnet...`);
-    let ok = false;
-    try {
-      ok =
-        parseInt(
-          childProcess.execFileSync(this.dotnetPath, ["--version"]).toString()
-        ) >= 5;
-    } catch (e) {
-      Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
-      ok = false;
-    }
-    if (ok) {
-      this.checkForDotNetPassedAt = now;
-    } else {
-      const response = await vscode.window.showErrorMessage(
-        ".NET 5 or higher is required to use this functionality.",
-        "Dismiss",
-        "More info"
-      );
-      if (response === "More info") {
-        await vscode.env.openExternal(
-          vscode.Uri.parse("https://dotnet.microsoft.com/download")
-        );
-      }
-    }
-    Log.log(LOG_PREFIX, `Checking for dotnet ${ok ? "succeeded" : "failed"}`);
-    return ok;
   }
 
   private async getRunLock(): Promise<() => void> {

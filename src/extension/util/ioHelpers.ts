@@ -63,8 +63,11 @@ export default class IoHelpers {
     }
   }
 
-  static async enterString(prompt: string): Promise<string | undefined> {
-    return await vscode.window.showInputBox({ prompt });
+  static async enterString(
+    prompt: string,
+    value?: string
+  ): Promise<string | undefined> {
+    return await vscode.window.showInputBox({ prompt, value });
   }
 
   static async multipleChoice(placeHolder: string, ...items: string[]) {
