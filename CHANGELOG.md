@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Added
+
+- A panel that shows a list of all known smart contracts, allowing quick access to contract metadata
+
 ### Changed
 
 - Creating a Java smart contract automatically targets the latest version of neow3j (per Maven Central)
