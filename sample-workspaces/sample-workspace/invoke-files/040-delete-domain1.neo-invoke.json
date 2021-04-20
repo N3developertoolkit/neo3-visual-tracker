@@ -1,7 +1,0 @@
-[
-  {
-    "contract": "DevHawk.Registrar",
-    "operation": "delete",
-    "args": ["alice.domain"]
-  }
-]

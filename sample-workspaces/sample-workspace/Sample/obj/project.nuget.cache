@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "R6OuunvEHn91FVYXu7dItvpAs0Ghl4CCk5DuZoQan58f9d2YSLq9ZextIP6ELUhralJp4sOAZr/EqLbH2bzrPQ==",
+  "success": true,
+  "projectFilePath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/Sample/SampleContract.csproj",
+  "expectedPackageFiles": [
+    "/Users/david/.nuget/packages/neo.smartcontract.framework/3.0.0-rc1/neo.smartcontract.framework.3.0.0-rc1.nupkg.sha512"
+  ],
+  "logs": []
+}

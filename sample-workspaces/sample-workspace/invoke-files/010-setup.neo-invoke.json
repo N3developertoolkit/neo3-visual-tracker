@@ -2,11 +2,11 @@
   {
     "contract": "GasToken",
     "operation": "transfer",
-    "args": ["@genesis", "@registrant1", 10000000, "Fund registrant1"]
+    "args": ["@genesis", "@alice", 10000000, "Fund Alice"]
   },
   {
     "contract": "GasToken",
     "operation": "transfer",
-    "args": ["@genesis", "@registrant2", 10000000, "Fund registrant2"]
+    "args": ["@genesis", "@bob", 10000000, "Fund Bob"]
   }
 ]

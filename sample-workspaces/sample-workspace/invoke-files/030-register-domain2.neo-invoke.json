@@ -1,7 +1,0 @@
-[
-  {
-    "contract": "DevHawk.Registrar",
-    "operation": "register",
-    "args": ["bob.domain", "@registrant2"]
-  }
-]

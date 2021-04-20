@@ -1,6 +1,4 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
   "version": "2.0.0",
   "tasks": [
     {
@@ -10,7 +8,9 @@
       "label": "restore",
       "command": "dotnet",
       "type": "shell",
-      "args": ["restore"],
+      "args": [
+        "restore"
+      ],
       "group": "build",
       "presentation": {
         "reveal": "silent"
@@ -35,6 +35,41 @@
       },
       "problemMatcher": "$msCompile",
       "dependsOn": "restore"
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/Sample"
+      },
+      "label": "Sample: restore",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "restore"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/Sample"
+      },
+      "label": "Sample: build",
+      "command": "dotnet",
+      "type": "shell",
+      "args": [
+        "build",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": "$msCompile",
+      "dependsOn": "Sample: restore"
     }
   ]
 }

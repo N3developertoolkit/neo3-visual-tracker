@@ -1,0 +1,96 @@
+{
+  "version": 3,
+  "targets": {
+    "net5.0": {
+      "Neo.SmartContract.Framework/3.0.0-rc1": {
+        "type": "package",
+        "compile": {
+          "lib/net5.0/Neo.SmartContract.Framework.dll": {}
+        },
+        "runtime": {
+          "lib/net5.0/Neo.SmartContract.Framework.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Neo.SmartContract.Framework/3.0.0-rc1": {
+      "sha512": "6uZ8cvblHaUfSJaAclCGv3IXZkcALHancYFPhJ4Ky2iT0yeQkUaiIAP62NquLoyIqnpbzZruoE/yn4OM5VIqJA==",
+      "type": "package",
+      "path": "neo.smartcontract.framework/3.0.0-rc1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net5.0/Neo.SmartContract.Framework.dll",
+        "neo.smartcontract.framework.3.0.0-rc1.nupkg.sha512",
+        "neo.smartcontract.framework.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net5.0": [
+      "Neo.SmartContract.Framework >= 3.0.0-rc1"
+    ]
+  },
+  "packageFolders": {
+    "/Users/david/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/Sample/SampleContract.csproj",
+      "projectName": "SampleContract",
+      "projectPath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/Sample/SampleContract.csproj",
+      "packagesPath": "/Users/david/.nuget/packages/",
+      "outputPath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/Sample/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/david/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net5.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net5.0": {
+        "targetAlias": "net5.0",
+        "dependencies": {
+          "Neo.SmartContract.Framework": {
+            "target": "Package",
+            "version": "[3.0.0-rc1, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.102/RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
