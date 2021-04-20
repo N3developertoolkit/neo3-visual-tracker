@@ -8,6 +8,7 @@ import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataPr
 import CheckpointDetector from "./fileDetectors/checkpointDetector";
 import { CommandArguments, sanitizeCommandArguments } from "./commandArguments";
 import ContractDetector from "./fileDetectors/contractDetector";
+import ContractsTreeDataProvider from "./vscodeProviders/contractsTreeDataProvider";
 import Log from "../shared/log";
 import NeoCommands from "./commands/neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
@@ -77,6 +78,10 @@ export async function activate(context: vscode.ExtensionContext) {
     walletDetector,
     neoExpressDetector
   );
+  const contractsTreeDataProvider = new ContractsTreeDataProvider(
+    context.extensionPath,
+    autoComplete
+  );
   const neoInvokeFileEditorProvider = new NeoInvokeFileEditorProvider(
     context,
     activeConnection,
@@ -98,6 +103,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider(
       "neo3-visual-devtracker.views.blockchains",
       blockchainsTreeDataProvider
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(
+      "neo3-visual-devtracker.views.contracts",
+      contractsTreeDataProvider
     )
   );
 

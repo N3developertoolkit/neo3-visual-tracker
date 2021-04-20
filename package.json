@@ -259,19 +259,19 @@
       ],
       "view/title": [
         {
+          "command": "neo3-visual-devtracker.customizeServerList",
+          "when": "view == neo3-visual-devtracker.views.blockchains"
+        },
+        {
           "command": "neo3-visual-devtracker.express.create",
           "when": "view == neo3-visual-devtracker.views.blockchains"
         },
         {
           "command": "neo3-visual-devtracker.neo.newContract",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
+          "when": "view == neo3-visual-devtracker.views.contracts"
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
-        },
-        {
-          "command": "neo3-visual-devtracker.customizeServerList",
           "when": "view == neo3-visual-devtracker.views.blockchains"
         }
       ]
@@ -281,6 +281,10 @@
         {
           "id": "neo3-visual-devtracker.views.blockchains",
           "name": "Blockchains"
+        },
+        {
+          "id": "neo3-visual-devtracker.views.contracts",
+          "name": "Smart contracts"
         },
         {
           "id": "neo3-visual-devtracker.views.quickStart",
