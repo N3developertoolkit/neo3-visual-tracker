@@ -14,7 +14,7 @@ export default class ContractPanelController extends PanelControllerBase<
 > {
   constructor(
     context: vscode.ExtensionContext,
-    contractHash: string,
+    private readonly contractHash: string,
     autoComplete: AutoComplete
   ) {
     super(
@@ -37,5 +37,11 @@ export default class ContractPanelController extends PanelControllerBase<
 
   protected async onRequest(request: ContractViewRequest) {
     Log.log(LOG_PREFIX, `Request: ${JSON.stringify(request)}`);
+    if (request.copyHash) {
+      await vscode.env.clipboard.writeText(this.contractHash);
+      vscode.window.showInformationMessage(
+        `Contract hash copied to clipboard: ${this.contractHash}`
+      );
+    }
   }
 }
