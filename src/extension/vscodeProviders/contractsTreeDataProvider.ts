@@ -32,6 +32,11 @@ export default class ContractsTreeDataProvider
 
   getTreeItem(contract: ContractData): vscode.TreeItem {
     return {
+      command: {
+        command: "neo3-visual-devtracker.tracker.openContract",
+        arguments: [{ hash: contract.hash }],
+        title: contract.hash,
+      },
       label: contract.name,
       tooltip: `${contract.hash}\n${contract.description || ""}`.trim(),
       description: contract.description,

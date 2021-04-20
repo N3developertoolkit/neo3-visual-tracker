@@ -324,6 +324,13 @@ export async function activate(context: vscode.ExtensionContext) {
         commandArguments
       )
   );
+
+  registerCommand(
+    context,
+    "neo3-visual-devtracker.tracker.openContract",
+    (commandArguments) =>
+      TrackerCommands.openContract(context, autoComplete, commandArguments)
+  );
 }
 
 export function deactivate() {

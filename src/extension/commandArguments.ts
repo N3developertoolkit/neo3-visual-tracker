@@ -19,6 +19,7 @@ type CommandArguments = {
   amount?: number;
   asset?: string;
   blockchainIdentifier?: BlockchainIdentifier;
+  hash?: string;
   path?: string;
   receiver?: string;
   secondsPerBlock?: number;
@@ -32,6 +33,7 @@ async function sanitizeCommandArguments(input: any): Promise<CommandArguments> {
       ? `${input.asset}`.replace(/[^a-z0-9]/gi, "")
       : undefined,
     blockchainIdentifier: undefined, // TODO: Allow blockchain to be specified in command URIs
+    hash: input.hash ? `${input.hash}`.replace(/[^xa-f0-9]/gi, "") : undefined,
     path: undefined, // TODO: Allow specification of path in command URIs (ensure supplied path is within the workspace though)
     receiver: input.receiver
       ? `${input.receiver}`.replace(/[^a-z0-9]/gi, "")
