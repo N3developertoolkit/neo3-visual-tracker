@@ -1,3 +1,8 @@
-type View = "invokeFile" | "quickStart" | "storageExplorer" | "tracker";
+type View =
+  | "contract"
+  | "invokeFile"
+  | "quickStart"
+  | "storageExplorer"
+  | "tracker";
 
 export default View;

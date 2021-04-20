@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import Contract from "./components/views/Contract";
+import ContractViewState from "../shared/viewState/contractViewState";
 import ControllerRequest from "../shared/messages/controllerRequest";
 import InvokeFile from "./components/views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
@@ -52,6 +54,14 @@ export default function ViewRouter() {
   let panelContent = <div></div>;
   if (!!view && !!viewState) {
     switch (view) {
+      case "contract":
+        panelContent = (
+          <Contract
+            viewState={viewState as ContractViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
       case "invokeFile":
         panelContent = (
           <InvokeFile

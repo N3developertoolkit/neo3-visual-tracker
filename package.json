@@ -40,6 +40,7 @@
     "onCommand:neo3-visual-devtracker.neo.invokeContract",
     "onCommand:neo3-visual-devtracker.neo.newContract",
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
+    "onCommand:neo3-visual-devtracker.tracker.openContract",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
     "onView:neo3-visual-devtracker.views.blockchains",
@@ -154,6 +155,11 @@
         "category": "Neo N3"
       },
       {
+        "command": "neo3-visual-devtracker.tracker.openContract",
+        "title": "Show smart contract information",
+        "category": "Neo N3 Visual DevTracker"
+      },
+      {
         "command": "neo3-visual-devtracker.tracker.openTracker",
         "title": "Open Neo N3 Visual DevTracker",
         "category": "Neo N3 Visual DevTracker",
@@ -259,19 +265,19 @@
       ],
       "view/title": [
         {
+          "command": "neo3-visual-devtracker.customizeServerList",
+          "when": "view == neo3-visual-devtracker.views.blockchains"
+        },
+        {
           "command": "neo3-visual-devtracker.express.create",
           "when": "view == neo3-visual-devtracker.views.blockchains"
         },
         {
           "command": "neo3-visual-devtracker.neo.newContract",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
+          "when": "view == neo3-visual-devtracker.views.contracts"
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
-        },
-        {
-          "command": "neo3-visual-devtracker.customizeServerList",
           "when": "view == neo3-visual-devtracker.views.blockchains"
         }
       ]
@@ -281,6 +287,10 @@
         {
           "id": "neo3-visual-devtracker.views.blockchains",
           "name": "Blockchains"
+        },
+        {
+          "id": "neo3-visual-devtracker.views.contracts",
+          "name": "Smart contracts"
         },
         {
           "id": "neo3-visual-devtracker.views.quickStart",
