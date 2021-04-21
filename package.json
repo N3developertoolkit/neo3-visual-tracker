@@ -278,7 +278,7 @@
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
+          "when": "view == neo3-visual-devtracker.views.wallets"
         }
       ]
     },
@@ -287,6 +287,10 @@
         {
           "id": "neo3-visual-devtracker.views.blockchains",
           "name": "Blockchains"
+        },
+        {
+          "id": "neo3-visual-devtracker.views.wallets",
+          "name": "Wallets"
         },
         {
           "id": "neo3-visual-devtracker.views.contracts",

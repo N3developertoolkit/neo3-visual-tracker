@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
-import { CommandArguments } from "../commandArguments";
+import { CommandArguments } from "./commandArguments";
 import ContractPanelController from "../panelControllers/contractPanelController";
 import IoHelpers from "../util/ioHelpers";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
