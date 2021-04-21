@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import Log from "../../shared/log";
 import PanelControllerBase from "./panelControllerBase";
@@ -15,7 +16,8 @@ export default class WalletPanelController extends PanelControllerBase<
   constructor(
     context: vscode.ExtensionContext,
     private readonly address: string,
-    autoComplete: AutoComplete
+    autoComplete: AutoComplete,
+    private readonly activeConnection: ActiveConnection
   ) {
     super(
       {
@@ -23,6 +25,8 @@ export default class WalletPanelController extends PanelControllerBase<
         panelTitle: autoComplete.data.addressNames[address][0] || address,
         autoCompleteData: autoComplete.data,
         address,
+        addressInfo: null,
+        offline: false,
       },
       context
     );
@@ -30,17 +34,38 @@ export default class WalletPanelController extends PanelControllerBase<
       const name = autoComplete.data.addressNames[address][0] || address;
       this.updateViewState({ panelTitle: name, autoCompleteData });
     });
+    activeConnection.onChange(() => this.updateBalances());
+    this.updateBalances();
   }
 
   onClose() {}
 
   protected async onRequest(request: WalletViewRequest) {
     Log.log(LOG_PREFIX, `Request: ${JSON.stringify(request)}`);
+
     if (request.copyAddress) {
       await vscode.env.clipboard.writeText(this.address);
       vscode.window.showInformationMessage(
         `Wallet address copied to clipboard: ${this.address}`
       );
+    }
+
+    if (request.refresh) {
+      await this.updateBalances();
+    }
+  }
+
+  private async updateBalances() {
+    const blockchainMonitor = this.activeConnection.connection
+      ?.blockchainMonitor;
+    if (blockchainMonitor) {
+      const addressInfo = await blockchainMonitor.getAddress(
+        this.address,
+        true
+      );
+      await this.updateViewState({ addressInfo, offline: false });
+    } else {
+      await this.updateViewState({ addressInfo: null, offline: true });
     }
   }
 }

@@ -1,3 +1,3 @@
-type WalletViewRequest = { copyAddress?: boolean };
+type WalletViewRequest = { copyAddress?: boolean; refresh?: boolean };
 
 export default WalletViewRequest;

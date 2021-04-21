@@ -352,7 +352,12 @@ export async function activate(context: vscode.ExtensionContext) {
     context,
     "neo3-visual-devtracker.tracker.openWallet",
     (commandArguments) =>
-      TrackerCommands.openWallet(context, autoComplete, commandArguments)
+      TrackerCommands.openWallet(
+        context,
+        autoComplete,
+        commandArguments,
+        activeConnection
+      )
   );
 }
 

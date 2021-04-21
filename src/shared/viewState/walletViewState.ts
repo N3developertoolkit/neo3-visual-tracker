@@ -1,3 +1,4 @@
+import AddressInfo from "../addressInfo";
 import AutoCompleteData from "../autoCompleteData";
 
 type WalletViewState = {
@@ -5,6 +6,8 @@ type WalletViewState = {
   panelTitle: string;
   autoCompleteData: AutoCompleteData;
   address: string;
+  addressInfo: AddressInfo | null;
+  offline: boolean;
 };
 
 export default WalletViewState;

@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
@@ -66,7 +67,8 @@ export default class TrackerCommands {
   static async openWallet(
     context: vscode.ExtensionContext,
     autoComplete: AutoComplete,
-    commandArguments: CommandArguments
+    commandArguments: CommandArguments,
+    activeConnection: ActiveConnection
   ) {
     let address = commandArguments.address;
     if (!address) {
@@ -88,7 +90,12 @@ export default class TrackerCommands {
       }
     }
     if (address) {
-      new WalletPanelController(context, address, autoComplete);
+      new WalletPanelController(
+        context,
+        address,
+        autoComplete,
+        activeConnection
+      );
     }
   }
 }
