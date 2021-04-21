@@ -347,6 +347,13 @@ export async function activate(context: vscode.ExtensionContext) {
     (commandArguments) =>
       TrackerCommands.openContract(context, autoComplete, commandArguments)
   );
+
+  registerCommand(
+    context,
+    "neo3-visual-devtracker.tracker.openWallet",
+    (commandArguments) =>
+      TrackerCommands.openWallet(context, autoComplete, commandArguments)
+  );
 }
 
 export function deactivate() {
