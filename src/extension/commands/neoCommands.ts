@@ -6,7 +6,7 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
-import { CommandArguments } from "../commandArguments";
+import { CommandArguments } from "./commandArguments";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";

@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 
+import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
-import { CommandArguments } from "../commandArguments";
+import { CommandArguments } from "./commandArguments";
 import ContractPanelController from "../panelControllers/contractPanelController";
 import IoHelpers from "../util/ioHelpers";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
+import WalletPanelController from "../panelControllers/walletPanelController";
 
 export default class TrackerCommands {
   static async openContract(
@@ -14,9 +16,9 @@ export default class TrackerCommands {
     autoComplete: AutoComplete,
     commandArguments: CommandArguments
   ) {
-    const autoCompleteData = autoComplete.data;
     let hash = commandArguments.hash;
     if (!hash) {
+      const autoCompleteData = autoComplete.data;
       if (!!Object.keys(autoCompleteData.contractNames).length) {
         const selection = await IoHelpers.multipleChoice(
           "Select a contract",
@@ -58,6 +60,41 @@ export default class TrackerCommands {
         rpcUrl,
         autoComplete,
         blockchainMonitorPool
+      );
+    }
+  }
+
+  static async openWallet(
+    context: vscode.ExtensionContext,
+    autoComplete: AutoComplete,
+    commandArguments: CommandArguments,
+    activeConnection: ActiveConnection
+  ) {
+    let address = commandArguments.address;
+    if (!address) {
+      const autoCompleteData = autoComplete.data;
+      if (!!Object.keys(autoCompleteData.addressNames).length) {
+        const selection = await IoHelpers.multipleChoice(
+          "Select a wallet",
+          ...Object.keys(autoCompleteData.addressNames).map(
+            (_) => `${_} - ${autoCompleteData.addressNames[_].join(", ")}`
+          )
+        );
+        if (selection) {
+          address = selection.split(" ")[0];
+        }
+      } else {
+        vscode.window.showInformationMessage(
+          "No wallets found in current workspace"
+        );
+      }
+    }
+    if (address) {
+      new WalletPanelController(
+        context,
+        address,
+        autoComplete,
+        activeConnection
       );
     }
   }

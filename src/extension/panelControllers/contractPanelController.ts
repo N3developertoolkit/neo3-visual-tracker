@@ -29,7 +29,7 @@ export default class ContractPanelController extends PanelControllerBase<
     );
     autoComplete.onChange((autoCompleteData) => {
       const name = autoCompleteData.contractNames[contractHash] || contractHash;
-      this.updateViewState({ panelTitle: name, ...autoCompleteData });
+      this.updateViewState({ panelTitle: name, autoCompleteData });
     });
   }
 

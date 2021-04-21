@@ -6,7 +6,10 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import CheckpointDetector from "./fileDetectors/checkpointDetector";
-import { CommandArguments, sanitizeCommandArguments } from "./commandArguments";
+import {
+  CommandArguments,
+  sanitizeCommandArguments,
+} from "./commands/commandArguments";
 import ContractDetector from "./fileDetectors/contractDetector";
 import ContractsTreeDataProvider from "./vscodeProviders/contractsTreeDataProvider";
 import Log from "../shared/log";
@@ -21,6 +24,7 @@ import ServerListDetector from "./fileDetectors/serverListDetector";
 import Templates from "./templates/templates";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
+import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
 
 const LOG_PREFIX = "index";
 
@@ -64,6 +68,11 @@ export async function activate(context: vscode.ExtensionContext) {
   const activeConnection = new ActiveConnection(
     blockchainsTreeDataProvider,
     blockchainMonitorPool
+  );
+  const walletsTreeDataProvider = new WalletsTreeDataProvider(
+    context.extensionPath,
+    activeConnection,
+    walletDetector
   );
   const contractDetector = new ContractDetector(activeConnection);
   const neoExpressInstanceManager = new NeoExpressInstanceManager(
@@ -110,6 +119,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider(
       "neo3-visual-devtracker.views.contracts",
       contractsTreeDataProvider
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(
+      "neo3-visual-devtracker.views.wallets",
+      walletsTreeDataProvider
     )
   );
 
@@ -330,6 +346,18 @@ export async function activate(context: vscode.ExtensionContext) {
     "neo3-visual-devtracker.tracker.openContract",
     (commandArguments) =>
       TrackerCommands.openContract(context, autoComplete, commandArguments)
+  );
+
+  registerCommand(
+    context,
+    "neo3-visual-devtracker.tracker.openWallet",
+    (commandArguments) =>
+      TrackerCommands.openWallet(
+        context,
+        autoComplete,
+        commandArguments,
+        activeConnection
+      )
   );
 }
 

@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Added
 
 - A panel that shows a list of all known smart contracts, allowing quick access to contract metadata
+- A panel that shows a list of all known wallets, allowing quick access to balance information
 
 ### Changed
 

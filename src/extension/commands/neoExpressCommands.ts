@@ -6,7 +6,7 @@ import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
 import CheckpointDetector from "../fileDetectors/checkpointDetector";
-import { CommandArguments } from "../commandArguments";
+import { CommandArguments } from "./commandArguments";
 import ContractDetector from "../fileDetectors/contractDetector";
 import IoHelpers from "../util/ioHelpers";
 import NeoExpress from "../neoExpress/neoExpress";
