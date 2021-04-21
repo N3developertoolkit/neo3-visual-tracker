@@ -3,6 +3,7 @@ type View =
   | "invokeFile"
   | "quickStart"
   | "storageExplorer"
-  | "tracker";
+  | "tracker"
+  | "wallet";
 
 export default View;

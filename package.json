@@ -42,6 +42,7 @@
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openContract",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
+    "onCommand:neo3-visual-devtracker.tracker.openWallet",
     "onCustomEditor:neo3-visual-devtracker.express.neo-invoke-json",
     "onView:neo3-visual-devtracker.views.blockchains",
     "onView:neo3-visual-devtracker.views.quickStart",
@@ -169,6 +170,11 @@
         }
       },
       {
+        "command": "neo3-visual-devtracker.tracker.openWallet",
+        "title": "Show wallet",
+        "category": "Neo N3 Visual DevTracker"
+      },
+      {
         "command": "neo3-visual-devtracker.connect",
         "title": "Connect to a Neo N3 blockchain",
         "category": "Neo N3 Extension"
@@ -278,7 +284,7 @@
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
+          "when": "view == neo3-visual-devtracker.views.wallets"
         }
       ]
     },
@@ -287,6 +293,10 @@
         {
           "id": "neo3-visual-devtracker.views.blockchains",
           "name": "Blockchains"
+        },
+        {
+          "id": "neo3-visual-devtracker.views.wallets",
+          "name": "Wallets"
         },
         {
           "id": "neo3-visual-devtracker.views.contracts",

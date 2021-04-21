@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
-import { CommandArguments } from "../commandArguments";
+import { CommandArguments } from "../commands/commandArguments";
 import Log from "../../shared/log";
 import NeoExpress from "./neoExpress";
 import IoHelpers from "../util/ioHelpers";

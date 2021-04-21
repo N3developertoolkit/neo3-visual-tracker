@@ -1,4 +1,4 @@
-import BlockchainIdentifier from "./blockchainIdentifier";
+import BlockchainIdentifier from "../blockchainIdentifier";
 
 //
 // Represents all possible arguments to any command explosed by
@@ -16,6 +16,7 @@ import BlockchainIdentifier from "./blockchainIdentifier";
 //   );
 //
 type CommandArguments = {
+  address?: string;
   amount?: number;
   asset?: string;
   blockchainIdentifier?: BlockchainIdentifier;
@@ -28,6 +29,9 @@ type CommandArguments = {
 
 async function sanitizeCommandArguments(input: any): Promise<CommandArguments> {
   return {
+    address: input.address
+      ? `${input.address}`.replace(/[^a-z0-9]/gi, "")
+      : undefined,
     amount: parseFloat(input.amount) || undefined,
     asset: input.asset
       ? `${input.asset}`.replace(/[^a-z0-9]/gi, "")

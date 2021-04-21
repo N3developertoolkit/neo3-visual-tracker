@@ -16,6 +16,8 @@ import TrackerViewState from "../shared/viewState/trackerViewState";
 import View from "../shared/view";
 import ViewRequest from "../shared/messages/viewRequest";
 import ViewStateBase from "../shared/viewState/viewStateBase";
+import Wallet from "./components/views/Wallet";
+import WalletViewState from "../shared/viewState/walletViewState";
 
 declare var acquireVsCodeApi: any;
 const vscode = acquireVsCodeApi();
@@ -90,6 +92,14 @@ export default function ViewRouter() {
         panelContent = (
           <Tracker
             viewState={viewState as TrackerViewState}
+            postMessage={(typedRequest) => postMessage({ typedRequest })}
+          />
+        );
+        break;
+      case "wallet":
+        panelContent = (
+          <Wallet
+            viewState={viewState as WalletViewState}
             postMessage={(typedRequest) => postMessage({ typedRequest })}
           />
         );

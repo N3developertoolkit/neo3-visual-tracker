@@ -180,11 +180,14 @@ export default class AutoComplete {
 
     const wallets = [...this.walletDetector.wallets];
     for (const wallet of wallets) {
-      for (const address of wallet.accounts.map((_) => _.address)) {
-        newData.addressNames[address] = newData.addressNames[address] || [];
-        newData.addressNames[address].push(wallet.path);
-        newData.addressNames[address] = dedupeAndSort(
-          newData.addressNames[address]
+      for (const account of wallet.accounts) {
+        newData.addressNames[account.address] =
+          newData.addressNames[account.address] || [];
+        newData.addressNames[account.address].push(
+          account.label || wallet.path
+        );
+        newData.addressNames[account.address] = dedupeAndSort(
+          newData.addressNames[account.address]
         );
       }
     }
