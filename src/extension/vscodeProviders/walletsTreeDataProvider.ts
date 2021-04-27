@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
+import AutoComplete from "../autoComplete";
 import Log from "../../shared/log";
 import posixPath from "../util/posixPath";
 import WalletDetector from "../fileDetectors/walletDetector";
@@ -25,12 +26,14 @@ export default class WalletsTreeDataProvider
   constructor(
     private readonly extensionPath: string,
     private readonly activeConnection: ActiveConnection,
-    private readonly walletDetector: WalletDetector
+    private readonly walletDetector: WalletDetector,
+    autoComplete: AutoComplete
   ) {
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
     activeConnection.onChange(() => this.refresh());
     walletDetector.onChange(() => this.refresh());
+    autoComplete.onChange(() => this.refresh());
   }
 
   getTreeItem(wallet: WalletData): vscode.TreeItem {
