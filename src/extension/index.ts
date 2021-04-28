@@ -90,7 +90,8 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   const contractsTreeDataProvider = new ContractsTreeDataProvider(
     context.extensionPath,
-    autoComplete
+    autoComplete,
+    contractDetector
   );
   const neoInvokeFileEditorProvider = new NeoInvokeFileEditorProvider(
     context,
