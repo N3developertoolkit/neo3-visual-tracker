@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <NeoTestPackagesVersion>1.0.19-preview</NeoTestPackagesVersion>
+    <RootNamespace>Sample</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ContractUnderTest Include="../Sample/SampleContract.csproj" RootNamespace="$(RootNamespace)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.4" />
+    <PackageReference Include="moq" Version="4.16.1" />
+    <PackageReference Include="Neo.Assertions" Version="$(NeoTestPackagesVersion)" />
+    <PackageReference Include="Neo.BuildTasks" Version="$(NeoTestPackagesVersion)" PrivateAssets="All" />
+    <PackageReference Include="Neo.Test.Harness" Version="$(NeoTestPackagesVersion)" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+</Project>

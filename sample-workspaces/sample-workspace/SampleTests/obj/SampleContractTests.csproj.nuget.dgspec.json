@@ -1,0 +1,93 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/SampleTests/SampleContractTests.csproj": {}
+  },
+  "projects": {
+    "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/SampleTests/SampleContractTests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/SampleTests/SampleContractTests.csproj",
+        "projectName": "SampleContractTests",
+        "projectPath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/SampleTests/SampleContractTests.csproj",
+        "packagesPath": "/Users/david/.nuget/packages/",
+        "outputPath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/SampleTests/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/david/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net5.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net5.0": {
+            "targetAlias": "net5.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[16.9.4, )"
+            },
+            "Neo.Assertions": {
+              "target": "Package",
+              "version": "[1.0.19-preview, )"
+            },
+            "Neo.BuildTasks": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.19-preview, )"
+            },
+            "Neo.Test.Harness": {
+              "target": "Package",
+              "version": "[1.0.19-preview, )"
+            },
+            "moq": {
+              "target": "Package",
+              "version": "[4.16.1, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.4.1, )"
+            },
+            "xunit.runner.visualstudio": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.4.3, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/Users/david/.vscode-dotnet-sdk/.dotnet/sdk/5.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
