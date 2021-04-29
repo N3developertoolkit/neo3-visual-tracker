@@ -69,11 +69,6 @@ export async function activate(context: vscode.ExtensionContext) {
     blockchainsTreeDataProvider,
     blockchainMonitorPool
   );
-  const walletsTreeDataProvider = new WalletsTreeDataProvider(
-    context.extensionPath,
-    activeConnection,
-    walletDetector
-  );
   const contractDetector = new ContractDetector(activeConnection);
   const neoExpressInstanceManager = new NeoExpressInstanceManager(
     neoExpress,
@@ -87,9 +82,16 @@ export async function activate(context: vscode.ExtensionContext) {
     walletDetector,
     neoExpressDetector
   );
+  const walletsTreeDataProvider = new WalletsTreeDataProvider(
+    context.extensionPath,
+    activeConnection,
+    walletDetector,
+    autoComplete
+  );
   const contractsTreeDataProvider = new ContractsTreeDataProvider(
     context.extensionPath,
-    autoComplete
+    autoComplete,
+    contractDetector
   );
   const neoInvokeFileEditorProvider = new NeoInvokeFileEditorProvider(
     context,
