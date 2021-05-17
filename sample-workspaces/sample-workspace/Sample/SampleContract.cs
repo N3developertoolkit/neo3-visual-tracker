@@ -3,8 +3,7 @@ using System.ComponentModel;
 using System.Numerics;
 
 using Neo.SmartContract.Framework;
-using Neo.SmartContract.Framework.Services.Neo;
-using Neo.SmartContract.Framework.Services.System;
+using Neo.SmartContract.Framework.Services;
 
 namespace Sample
 {
@@ -26,9 +25,9 @@ namespace Sample
                 throw new Exception("Only positive numbers are allowed.");
             }
 
-            var tx = (Transaction) ExecutionEngine.ScriptContainer;
+            var tx = (Transaction) Runtime.ScriptContainer;
 
-            var storageMap = Storage.CurrentContext.CreateMap(MAP_NAME);
+            var storageMap = new StorageMap(Storage.CurrentContext, MAP_NAME);
 
             storageMap.Put(tx.Sender, positiveNumber);
 
@@ -39,9 +38,9 @@ namespace Sample
 
         public static ByteString GetNumber()
         {
-            var tx = (Transaction) ExecutionEngine.ScriptContainer;
+            var tx = (Transaction) Runtime.ScriptContainer;
 
-            var storageMap = Storage.CurrentContext.CreateMap(MAP_NAME);
+            var storageMap = new StorageMap(Storage.CurrentContext, MAP_NAME);
 
             return storageMap.Get(tx.Sender);
         }

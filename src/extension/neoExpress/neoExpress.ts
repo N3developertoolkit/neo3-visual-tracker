@@ -70,7 +70,7 @@ export default class NeoExpress {
 
     const hasStarted: Promise<void> = new Promise((resolve) => {
       pty.onDidWrite((data) => {
-        if (data.indexOf("OnStart") !== -1) {
+        if (data.indexOf("Neo express is running") !== -1) {
           resolve();
         }
       });

@@ -11,7 +11,7 @@ const LOG_PREFIX = "ContractDetector";
 const SEARCH_PATTERN = "**/*.nef";
 
 type ContractMap = {
-  [contractHash: string]: {
+  [contractName: string]: {
     manifest: Partial<neonSc.ContractManifestJson>;
     absolutePathToNef: string;
     deploymentRequired: boolean;

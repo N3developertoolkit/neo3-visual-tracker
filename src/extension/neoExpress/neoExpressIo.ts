@@ -90,7 +90,7 @@ export default class NeoExpressIo {
     }
     try {
       return (
-        (JSONC.parse(output.message) as {
+        ((JSONC.parse(output.message).storages || []) as {
           key?: string;
           value?: string;
           constant?: boolean;
