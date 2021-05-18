@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Removed
+
+- Removed usage of ms-dotnettools.vscode-dotnet-sdk extension
+
 ## [v2.1.43] - 2021-05-17
 
 ### Added

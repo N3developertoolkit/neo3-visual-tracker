@@ -336,10 +336,6 @@
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --stats-error-details",
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --stats-error-details"
   },
-  "extensionDependencies": [
-    "ms-dotnettools.vscode-dotnet-runtime",
-    "ms-dotnettools.vscode-dotnet-sdk"
-  ],
   "devDependencies": {
     "@cityofzion/neon-core": "^5.0.0-next.10",
     "@types/crypto-js": "^4.0.1",
@@ -350,6 +346,7 @@
     "@types/react-dom": "^17.0.3",
     "@types/temp": "^0.9.0",
     "@types/vscode": "^1.51.0",
+    "@types/which": "^2.0.0",
     "bignumber.js": "^9.0.1",
     "bitset": "^5.1.1",
     "buffer": "^6.0.3",
@@ -373,6 +370,7 @@
     "vsce": "^1.87.1",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
-    "wget-improved": "^3.2.1"
+    "wget-improved": "^3.2.1",
+    "which": "^2.0.2"
   }
 }
