@@ -4,7 +4,11 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [2.1-preview] - 2021-04-21
+## [2.1.45] - 2021-05-18
+
+### Removed
+
+- Removed usage of ms-dotnettools.vscode-dotnet-sdk extension
 
 ## [v2.1.43] - 2021-05-17
 
