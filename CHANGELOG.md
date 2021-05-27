@@ -10,6 +10,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - C# sample contract now provides scaffolding for a ContractUpdate method
 
+## [2.1.45] - 2021-05-18
+
+### Removed
+
+- Removed usage of ms-dotnettools.vscode-dotnet-sdk extension
+
 ## [v2.1.43] - 2021-05-17
 
 ### Added
