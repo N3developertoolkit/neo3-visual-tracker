@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using System.Numerics;
 
+using Neo;
 using Neo.SmartContract.Framework;
+using Neo.SmartContract.Framework.Native;
 using Neo.SmartContract.Framework.Services;
 
 namespace $_CONTRACTNAME_$
@@ -13,10 +15,13 @@ namespace $_CONTRACTNAME_$
     [ManifestExtra("Description", "Describe your contract...")]
     public class $_CLASSNAME_$ : SmartContract
     {
-        const string MAP_NAME = "$_CLASSNAME_$";
+        private static StorageMap ContractStorage => new StorageMap(Storage.CurrentContext, "$_CLASSNAME_$");
+        private static StorageMap ContractMetadata => new StorageMap(Storage.CurrentContext, "Metadata");
+
+        private static Transaction Tx => (Transaction) Runtime.ScriptContainer;
 
         [DisplayName("NumberChanged")]
-        public static event Action<Neo.UInt160, BigInteger> OnNumberChanged;
+        public static event Action<UInt160, BigInteger> OnNumberChanged;
 
         public static bool ChangeNumber(BigInteger positiveNumber)
         {
@@ -25,24 +30,33 @@ namespace $_CONTRACTNAME_$
                 throw new Exception("Only positive numbers are allowed.");
             }
 
-            var tx = (Transaction) Runtime.ScriptContainer;
-
-            var storageMap = new StorageMap(Storage.CurrentContext, MAP_NAME);
-
-            storageMap.Put(tx.Sender, positiveNumber);
-
-            OnNumberChanged(tx.Sender, positiveNumber);
-
+            ContractStorage.Put(Tx.Sender, positiveNumber);
+            OnNumberChanged(Tx.Sender, positiveNumber);
             return true;
+        }
+
+        [DisplayName("_deploy")]
+        public static void Deploy(object data, bool update)
+        {
+            if (!update)
+            {
+                ContractMetadata.Put("Owner", (ByteString) Tx.Sender);
+            }
         }
 
         public static ByteString GetNumber()
         {
-            var tx = (Transaction) Runtime.ScriptContainer;
+            return ContractStorage.Get(Tx.Sender);
+        }
 
-            var storageMap = new StorageMap(Storage.CurrentContext, MAP_NAME);
-
-            return storageMap.Get(tx.Sender);
+        public static void UpdateContract(ByteString nefFile, string manifest)
+        {
+            ByteString owner = ContractMetadata.Get("Owner");
+            if (!Tx.Sender.Equals(owner))
+            {
+                throw new Exception("Only the contract owner can do this");
+            }
+            ContractManagement.Update(nefFile, manifest, null);
         }
     }
 }
