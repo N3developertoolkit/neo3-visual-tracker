@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Changed
+
+- C# sample contract now provides scaffolding for a ContractUpdate method
+
 ## [v2.1.43] - 2021-05-17
 
 ### Added
