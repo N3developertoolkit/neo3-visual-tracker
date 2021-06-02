@@ -319,11 +319,22 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       if (!account) {
         return;
       }
+      let witnessScope = await IoHelpers.multipleChoice(
+        "Select the witness scope for the transaction signature",
+        "CalledByEntry",
+        "Global",
+        "None"
+      );
+      if (!witnessScope) {
+        return;
+      }
       await this.document.save();
       await this.updateViewState({ collapseTransactions: false });
       const result = await this.neoExpress.run(
         "contract",
         "invoke",
+        "-w",
+        witnessScope,
         "-i",
         connection.blockchainIdentifier.configPath,
         path,
@@ -425,7 +436,8 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
 
     if (connection) {
-      const wallets = await connection.blockchainIdentifier.getWalletAddresses();
+      const wallets =
+        await connection.blockchainIdentifier.getWalletAddresses();
       const signerWalletName = await IoHelpers.multipleChoice(
         "Select an account",
         "(none)",
