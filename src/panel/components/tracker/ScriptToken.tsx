@@ -24,9 +24,7 @@ export default function ScriptToken({
     const contractHashes = Object.keys(autoCompleteData.contractNames);
     for (const contractHash of contractHashes) {
       const name = autoCompleteData.contractNames[contractHash] || "contract";
-      const contractHashRaw = reverseBytes(
-        contractHash.replace(/^0x/g, "").toLowerCase()
-      );
+      const contractHashRaw = contractHash.replace(/^0x/g, "").toLowerCase();
       if (token === contractHashRaw) {
         return (
           <span title={`Contract:\n ${contractHashRaw}\n  (${name})`}>
