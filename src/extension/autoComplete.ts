@@ -12,6 +12,7 @@ import Log from "../shared/log";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
+import reverseBytes from "../panel/components/tracker/reverseBytes";
 import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "AutoComplete";
@@ -232,19 +233,21 @@ export default class AutoComplete {
         for (const contractName of Object.keys(deployedContracts)) {
           const deployedContract = deployedContracts[contractName];
           const contractHash = deployedContract.hash;
-          if (!this.cachedManifests[contractHash]) {
-            this.cachedManifests[contractHash] = await NeoExpressIo.contractGet(
-              this.neoExpress,
-              connection.blockchainIdentifier,
-              contractHash
-            );
+          const contractHashReversed = reverseBytes(contractHash);
+          if (!this.cachedManifests[contractHashReversed]) {
+            this.cachedManifests[contractHashReversed] =
+              await NeoExpressIo.contractGet(
+                this.neoExpress,
+                connection.blockchainIdentifier,
+                contractHash
+              );
           }
           const manifest = this.cachedManifests[contractHash];
           if (manifest) {
-            newData.contractManifests[contractHash] = manifest;
+            newData.contractManifests[contractHashReversed] = manifest;
             newData.contractManifests[contractName] = manifest;
           }
-          newData.contractNames[contractHash] = contractName;
+          newData.contractNames[contractHashReversed] = contractName;
         }
       } catch (e) {
         Log.warn(
