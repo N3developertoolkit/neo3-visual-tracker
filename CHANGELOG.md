@@ -10,6 +10,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - C# sample contract now provides scaffolding for a ContractUpdate method
 - Fixed an issue where hashes were shown in an unintuitive byte order in some contexts
+- Updated Neo Express to latest RC3 build
+- Allow asset transfers to arbitrary wallets
 
 ## [2.1.45] - 2021-05-18
 
