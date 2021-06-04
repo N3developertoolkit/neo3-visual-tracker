@@ -102,7 +102,7 @@ export default function ScriptToken({
       if (
         !!token.match(/^([a-f0-9][a-f0-9])+$/i) &&
         !isNaN(numericalValue) &&
-        numericalValue < Math.pow(2, 32)
+        numericalValue < Math.pow(2, 64)
       ) {
         return (
           <span title={`0x${token} = ${numericalValue}`}>
