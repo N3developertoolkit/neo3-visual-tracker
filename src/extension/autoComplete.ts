@@ -233,21 +233,19 @@ export default class AutoComplete {
         for (const contractName of Object.keys(deployedContracts)) {
           const deployedContract = deployedContracts[contractName];
           const contractHash = deployedContract.hash;
-          const contractHashReversed = reverseBytes(contractHash);
-          if (!this.cachedManifests[contractHashReversed]) {
-            this.cachedManifests[contractHashReversed] =
-              await NeoExpressIo.contractGet(
-                this.neoExpress,
-                connection.blockchainIdentifier,
-                contractHash
-              );
+          if (!this.cachedManifests[contractHash]) {
+            this.cachedManifests[contractHash] = await NeoExpressIo.contractGet(
+              this.neoExpress,
+              connection.blockchainIdentifier,
+              contractHash
+            );
           }
           const manifest = this.cachedManifests[contractHash];
           if (manifest) {
-            newData.contractManifests[contractHashReversed] = manifest;
+            newData.contractManifests[contractHash] = manifest;
             newData.contractManifests[contractName] = manifest;
           }
-          newData.contractNames[contractHashReversed] = contractName;
+          newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
         Log.warn(
