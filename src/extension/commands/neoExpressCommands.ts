@@ -176,6 +176,7 @@ export default class NeoExpressCommands {
       return;
     }
     const output = await neoExpress.runUnsafe(
+      undefined,
       command,
       "-i",
       identifier.configPath

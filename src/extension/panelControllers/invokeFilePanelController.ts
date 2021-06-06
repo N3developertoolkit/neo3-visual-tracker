@@ -293,7 +293,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
     }
   }
 
-  private async runFile(path: string) {
+  private async runFile(filePath: string) {
     let connection = this.activeConnection.connection;
     if (!connection) {
       await this.activeConnection.connect();
@@ -330,14 +330,15 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       }
       await this.document.save();
       await this.updateViewState({ collapseTransactions: false });
-      const result = await this.neoExpress.run(
+      const result = await this.neoExpress.runInDirectory(
+        path.dirname(this.document.uri.fsPath),
         "contract",
         "invoke",
         "-w",
         witnessScope,
         "-i",
         connection.blockchainIdentifier.configPath,
-        path,
+        filePath,
         account
       );
       if (result.isError) {
