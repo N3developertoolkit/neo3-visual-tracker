@@ -4,6 +4,15 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Changed
+
+- C# sample contract now provides scaffolding for a ContractUpdate method
+- Fixed an issue where hashes were shown in an unintuitive byte order in some contexts
+- Updated Neo Express to latest RC3 build
+- Allow asset transfers to arbitrary wallets
+
 ## [2.1.45] - 2021-05-18
 
 ### Removed

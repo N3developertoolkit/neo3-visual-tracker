@@ -12,6 +12,7 @@ import Log from "../shared/log";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
+import reverseBytes from "../panel/components/tracker/reverseBytes";
 import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "AutoComplete";

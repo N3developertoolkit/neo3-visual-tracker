@@ -6,7 +6,6 @@ import Address from "../Address";
 import ApplicationLog from "../../../shared/applicationLog";
 import Hash from "../Hash";
 import MetadataBadge from "../MetadataBadge";
-import reverseBytes from "./reverseBytes";
 import Script from "./Script";
 import ScriptToken from "./ScriptToken";
 import TypedValueDisplay from "./TypedValueDisplay";
@@ -130,7 +129,7 @@ export default function TransactionDetails({
                   <>
                     <ScriptToken
                       autoCompleteData={autoCompleteData}
-                      token={reverseBytes(notification.contract.substring(2))}
+                      token={notification.contract.substring(2)}
                       selectAddress={selectAddress}
                     />
                     fired: <strong>{notification.eventname}</strong> with state:

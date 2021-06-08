@@ -59,17 +59,25 @@ export default class NeoExpress {
         }
       });
     });
-    
+
     terminal.show();
-    
+
     // Give the terminal a chance to get a lock on the blockchain before
     // starting to do any offline commands.
     await hasStarted;
-    
+
     return terminal;
   }
 
-  async run(
+  run(
+    command: Command,
+    ...options: string[]
+  ): Promise<{ message: string; isError?: boolean }> {
+    return this.runInDirectory(undefined, command, ...options);
+  }
+
+  async runInDirectory(
+    cwd: string | undefined,
     command: Command,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
@@ -78,7 +86,7 @@ export default class NeoExpress {
     const releaseLock = await this.getRunLock();
     try {
       const startedAtInternal = new Date().getTime();
-      const result = await this.runUnsafe(command, ...options);
+      const result = await this.runUnsafe(cwd, command, ...options);
       const endedAtInternal = new Date().getTime();
       durationInternal = endedAtInternal - startedAtInternal;
       return result;
@@ -98,6 +106,7 @@ export default class NeoExpress {
   }
 
   async runUnsafe(
+    cwd: string | undefined,
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
@@ -112,7 +121,9 @@ export default class NeoExpress {
     try {
       return new Promise((resolve, reject) => {
         const startedAt = new Date().getTime();
-        const process = childProcess.spawn(this.dotnetPath, dotNetArguments);
+        const process = childProcess.spawn(this.dotnetPath, dotNetArguments, {
+          cwd,
+        });
         let complete = false;
         const watchdog = () => {
           if (!complete && new Date().getTime() - startedAt > TIMEOUT_IN_MS) {

@@ -24,11 +24,9 @@ export default function ScriptToken({
     const contractHashes = Object.keys(autoCompleteData.contractNames);
     for (const contractHash of contractHashes) {
       const name = autoCompleteData.contractNames[contractHash] || "contract";
-      const contractHashRaw = reverseBytes(
-        contractHash.replace(/^0x/g, "").toLowerCase()
-      );
-      if (token === contractHashRaw) {
-        return (
+      const contractHashRaw = contractHash.replace(/^0x/g, "").toLowerCase();
+      if (reverseBytes(token) === contractHashRaw) {
+        return [
           <span title={`Contract:\n ${contractHashRaw}\n  (${name})`}>
             <strong>
               {contractHashRaw.substring(0, 4)}..
@@ -36,8 +34,9 @@ export default function ScriptToken({
             </strong>
             <i>{name}</i>
             <strong>)</strong>
-          </span>
-        );
+          </span>,
+          reverseBytes(token),
+        ];
       }
     }
 
@@ -47,7 +46,7 @@ export default function ScriptToken({
           reverseBytes(token)
         );
         if (address.startsWith("N")) {
-          return (
+          return [
             <>
               <strong title={token}>
                 {token.substring(0, 4)}..
@@ -58,8 +57,9 @@ export default function ScriptToken({
                 addressNames={autoCompleteData.addressNames}
                 onClick={selectAddress}
               />
-            </>
-          );
+            </>,
+            token,
+          ];
         }
       } catch {}
     }
@@ -77,7 +77,7 @@ export default function ScriptToken({
           printableAscii = printableAscii && c >= 32 && c <= 126;
         }
         if (printableAscii) {
-          return (
+          return [
             <span title={`Detected text:\n0x${token} =\n"${asText}"`}>
               <strong>
                 {" "}
@@ -93,8 +93,9 @@ export default function ScriptToken({
               </strong>
               <i>{asText}</i>
               <strong>")</strong>
-            </span>
-          );
+            </span>,
+            token,
+          ];
         }
       }
     } catch {}
@@ -104,9 +105,9 @@ export default function ScriptToken({
       if (
         !!token.match(/^([a-f0-9][a-f0-9])+$/i) &&
         !isNaN(numericalValue) &&
-        numericalValue < Math.pow(2, 32)
+        numericalValue < Math.pow(2, 64)
       ) {
-        return (
+        return [
           <span title={`0x${token} = ${numericalValue}`}>
             <strong>
               {" "}
@@ -122,16 +123,16 @@ export default function ScriptToken({
             </strong>
             <i>{numericalValue}</i>
             <strong>)</strong>
-          </span>
-        );
+          </span>,
+          token,
+        ];
       }
     } catch {}
 
-    return null;
+    return [null, token];
   };
 
-  const unabbreviated = token;
-  let innerElement = getAbbreviatedElement();
+  let [innerElement, unabbreviated] = getAbbreviatedElement();
   const isAbbreviated = innerElement !== null;
   innerElement = innerElement || <>{token}</>;
   return (
