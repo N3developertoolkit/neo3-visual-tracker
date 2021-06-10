@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ic64msuscqlWJBpkwM522Pbk4P4LA8Cs8eAboKDlYSPz4RiYnNYtwBksxtHPH2CUyWC/lOXJbemQvDPzGKbcWg==",
+  "dgSpecHash": "3FSf1S0DYKnVBGeFAulpT4vhdRihyFJviTb144mmYRqn2sFBhDjQcjb33n/RysgVAJyV1w2n0xnUuyXsLjcVWw==",
   "success": true,
   "projectFilePath": "/Users/david/github/@ngdseattle/neo3-visual-tracker/sample-workspaces/sample-workspace/Sample/SampleContract.csproj",
   "expectedPackageFiles": [

@@ -58,7 +58,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.102/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/Users/david/.vscode-dotnet-sdk/.dotnet/sdk/5.0.203/RuntimeIdentifierGraph.json"
         }
       }
     }
