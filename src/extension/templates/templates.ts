@@ -32,7 +32,7 @@ export default class Templates {
     }
 
     const contractName = parameters["$_CONTRACTNAME_$"];
-    const contractPath = posixPath(rootFolder, contractName);
+    const contractPath = posixPath(rootFolder, "contracts", contractName);
     const templatePath = posixPath(
       context.extensionPath,
       "resources",
@@ -91,7 +91,12 @@ export default class Templates {
     let autorunTaskLabels: string[] = [];
     for (const task of language.tasks) {
       const taskJson = {
-        options: { cwd: "${workspaceFolder}/" + contractName },
+        options: {
+          cwd:
+            "${workspaceFolder}/contracts/" +
+            contractName +
+            (task.relativeCwd ? "/" + task.relativeCwd : ""),
+        },
         label: `${contractName}: ${task.label}`,
         command: task.command,
         type: task.type,

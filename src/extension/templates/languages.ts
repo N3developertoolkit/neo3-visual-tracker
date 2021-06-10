@@ -3,7 +3,7 @@ import tryFetchJson from "../util/tryFetchJson";
 // Variable resolution procedure:
 // i)   The `eval` function is called (if-present) and its result is used as the
 //      variable value.
-// ii)  If a `prompt` is provided the user is allowed to optionally specify a 
+// ii)  If a `prompt` is provided the user is allowed to optionally specify a
 //      value (which will overwrite the result of `eval`, if any)
 // iii) If a `parse` function is present it will be called and can modify the
 //      user-provided value.
@@ -20,6 +20,7 @@ type Language = {
     [variableName in "CONTRACTNAME"]: VariableDeclaration;
   };
   tasks?: {
+    relativeCwd?: string;
     label: string;
     dependsOnLabel?: string;
     group: string;
@@ -50,10 +51,13 @@ const languages: { [code: string]: Language } = {
         },
       },
       CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract" },
-      MAINFILE: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract.cs" },
+      MAINFILE: {
+        eval: async ($) => "src/" + $["$_CONTRACTNAME_$"] + "Contract.cs",
+      },
     },
     tasks: [
       {
+        relativeCwd: "src",
         label: "restore",
         group: "build",
         type: "shell",
@@ -62,6 +66,7 @@ const languages: { [code: string]: Language } = {
         problemMatcher: [],
       },
       {
+        relativeCwd: "src",
         label: "build",
         dependsOnLabel: "restore",
         group: "build",
