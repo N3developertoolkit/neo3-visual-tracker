@@ -1,0 +1,23 @@
+﻿using System.Linq;
+
+using FluentAssertions;
+using Neo.Assertions;
+using Neo.BlockchainToolkit;
+using Neo.BlockchainToolkit.Models;
+using Neo.BlockchainToolkit.SmartContract;
+using Neo.SmartContract;
+using Neo.VM;
+using NeoTestHarness;
+using Xunit;
+
+namespace $_CONTRACTNAME_$Tests
+{
+    public class $_CLASSNAME_$Tests
+    {
+        [Fact]
+        public void Test_test()
+        {
+            true.Should().BeTrue();
+        }
+    }
+}

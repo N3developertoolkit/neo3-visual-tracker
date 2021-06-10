@@ -92,10 +92,7 @@ export default class Templates {
     for (const task of language.tasks) {
       const taskJson = {
         options: {
-          cwd:
-            "${workspaceFolder}/contracts/" +
-            contractName +
-            (task.relativeCwd ? "/" + task.relativeCwd : ""),
+          cwd: "${workspaceFolder}/contracts/" + contractName,
         },
         label: `${contractName}: ${task.label}`,
         command: task.command,

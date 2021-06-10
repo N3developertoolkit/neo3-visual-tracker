@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>$_CONTRACTNAME_$</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,7 +18,7 @@
       <_NccsDebugArguments Condition="'$(Configuration)'=='Debug'">--debug --no-optimize</_NccsDebugArguments>
       <_NccsDebugArguments Condition="'$(Configuration)'!='Debug'"></_NccsDebugArguments>
     </PropertyGroup>
-    <Exec WorkingDirectory="$(ProjectDir)" Command="nccs $(_NccsDebugArguments) $(MSBuildProjectFullPath)" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="nccs $(_NccsDebugArguments) &quot;$(MSBuildProjectFullPath)&quot;" />
   </Target>
 
 </Project>

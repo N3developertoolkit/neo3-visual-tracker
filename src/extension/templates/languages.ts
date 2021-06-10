@@ -20,7 +20,6 @@ type Language = {
     [variableName in "CONTRACTNAME"]: VariableDeclaration;
   };
   tasks?: {
-    relativeCwd?: string;
     label: string;
     dependsOnLabel?: string;
     group: string;
@@ -57,18 +56,7 @@ const languages: { [code: string]: Language } = {
     },
     tasks: [
       {
-        relativeCwd: "src",
-        label: "restore",
-        group: "build",
-        type: "shell",
-        command: "dotnet",
-        args: ["restore"],
-        problemMatcher: [],
-      },
-      {
-        relativeCwd: "src",
         label: "build",
-        dependsOnLabel: "restore",
         group: "build",
         type: "shell",
         command: "dotnet",

@@ -1,0 +1,54 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <NeoContractManifestPath>..\src\bin\sc\$_CLASSNAME_$.manifest.json</NeoContractManifestPath>
+    <NeoTestPackagesVersion>1.0.34-preview</NeoTestPackagesVersion>
+    <RootNamespace>$_CONTRACTNAME_$Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\$_CLASSNAME_$.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="3.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Neo.Assertions" Version="$(NeoTestPackagesVersion)" />
+    <PackageReference Include="Neo.BuildTasks" Version="$(NeoTestPackagesVersion)" PrivateAssets="All" />
+    <PackageReference Include="Neo.Test.Harness" Version="$(NeoTestPackagesVersion)" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <Target Name="ConfigureNeoContractInterface" BeforeTargets="ExecuteNeoContractInterface">
+    <PropertyGroup>
+      <_NeoContractManifestPath>$([MSBuild]::NormalizePath('$(MSBuildProjectDirectory)', '$(NeoContractManifestPath)'))</_NeoContractManifestPath>
+      <_NeoContractInterfacePath>$([MSBuild]::NormalizePath('$(IntermediateOutputPath)', 'contract-interface.cs'))</_NeoContractInterfacePath>
+    </PropertyGroup>
+    <ItemGroup>
+      <Compile Include="$(_NeoContractInterfacePath)" />
+    </ItemGroup>
+  </Target>
+
+  <Target 
+    Name="ExecuteNeoContractInterface" 
+    BeforeTargets="ResolveProjectReferences"
+    Inputs="$(_NeoContractManifestPath)"
+    Outputs="$(_NeoContractInterfacePath)">
+    <NeoContractInterface 
+      ManifestFile="$(_NeoContractManifestPath)" 
+      OutputFile="$(_NeoContractInterfacePath)" 
+      RootNamespace="$(RootNamespace)"/>
+  </Target>  
+
+</Project>
