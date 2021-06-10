@@ -8,6 +8,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
+- Fixed an issue preventing contracts from being deployed to TestNet.
+
+## [2.1.47] - 2021-06-08
+
+### Changed
+
 - C# sample contract now provides scaffolding for a ContractUpdate method
 - Fixed an issue where hashes were shown in an unintuitive byte order in some contexts
 - Updated Neo Express to latest RC3 build
