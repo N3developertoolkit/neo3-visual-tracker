@@ -67,6 +67,22 @@ export default class NeoCommands {
     if (!account) {
       return;
     }
+    try {
+      await account.decrypt("");
+    } catch (e) {
+      const password = await IoHelpers.enterPassword(
+        "Enter your wallet password"
+      );
+      if (!password) {
+        return;
+      }
+      try {
+        await account.decrypt(password);
+      } catch (e) {
+        vscode.window.showErrorMessage("Incorrect password");
+        return;
+      }
+    }
     const contracts = contractDetector.contracts;
     const contractFile =
       commandArguments.path ||
@@ -114,7 +130,7 @@ export default class NeoCommands {
         throw Error("Could not deploy the contract as manifest was incomplete");
       }
       const manifest = neonCore.sc.ContractManifest.fromJson(
-        (manifestJson as unknown) as neonCore.sc.ContractManifestJson
+        manifestJson as unknown as neonCore.sc.ContractManifestJson
       );
       const result = await neonExperimental.deployContract(
         neonCore.sc.NEF.fromBuffer(contractByteCode),
@@ -123,17 +139,13 @@ export default class NeoCommands {
           networkMagic: neonCore.CONST.MAGIC_NUMBER.TestNet,
           rpcAddress,
           account,
-          networkFeeOverride: neonCore.u.BigInteger.fromNumber(200),
-          systemFeeOverride: neonCore.u.BigInteger.fromNumber(200),
         }
       );
       vscode.window.showInformationMessage(result);
     } catch (e) {
-      // TODO: Debug why this is not currently working
       vscode.window.showErrorMessage(
         e.message || "Could not deploy contract: Unknown error"
       );
-      console.error(e);
     }
   }
 
