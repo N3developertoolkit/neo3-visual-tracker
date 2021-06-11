@@ -12,12 +12,31 @@ using Xunit;
 
 namespace $_CONTRACTNAME_$Tests
 {
-    public class $_CLASSNAME_$Tests
+    [CheckpointPath("test/bin/checkpoints/contract-deployed.neoxp-checkpoint")]
+    public class $_CLASSNAME_$Tests : IClassFixture<CheckpointFixture<$_CLASSNAME_$Tests>>
     {
-        [Fact]
-        public void Test_test()
+        readonly CheckpointFixture fixture;
+        readonly ExpressChain chain;
+
+        public $_CLASSNAME_$Tests(CheckpointFixture<$_CLASSNAME_$Tests> fixture)
         {
-            true.Should().BeTrue();
+            this.fixture = fixture;
+            this.chain = fixture.FindChain();
+        }
+
+        [Fact]
+        public void contract_owner_in_storage()
+        {
+            // var settings = chain.GetProtocolSettings();
+            // var owner = chain.GetDefaultAccount("owner").ToScriptHash(settings.AddressVersion);
+
+            // using var snapshot = fixture.GetSnapshot();
+
+            // // check to make sure contract owner stored in contract storage
+            // var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
+            // storages.Count().Should().Be(1);
+            // storages.TryGetValue("MetadataOwner", out var item).Should().BeTrue();
+            // item!.Should().Be(owner);
         }
     }
 }
