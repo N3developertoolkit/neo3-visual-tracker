@@ -18,7 +18,7 @@
       <_NccsDebugArguments Condition="'$(Configuration)'=='Debug'">--debug --no-optimize</_NccsDebugArguments>
       <_NccsDebugArguments Condition="'$(Configuration)'!='Debug'"></_NccsDebugArguments>
     </PropertyGroup>
-    <Exec WorkingDirectory="$(ProjectDir)" Command="nccs $(_NccsDebugArguments) &quot;$(MSBuildProjectFullPath)&quot;" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet nccs $(_NccsDebugArguments) &quot;$(MSBuildProjectFullPath)&quot;" />
   </Target>
 
 </Project>

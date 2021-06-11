@@ -22,7 +22,7 @@ type Language = {
   tasks?: {
     label: string;
     dependsOnLabel?: string;
-    group: string;
+    group?: string;
     type: string;
     command: string;
     args: string[];
@@ -58,7 +58,15 @@ const languages: { [code: string]: Language } = {
     },
     tasks: [
       {
+        label: "restore-tools",
+        command: "dotnet",
+        type: "shell",
+        args: ["tool", "restore"],
+        problemMatcher: [],
+      },
+      {
         label: "build",
+        dependsOnLabel: "restore-tools",
         group: "build",
         type: "shell",
         command: "dotnet",
