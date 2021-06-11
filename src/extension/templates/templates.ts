@@ -63,10 +63,41 @@ export default class Templates {
     }
 
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
-    if (language.settings || language.tasks) {
+    if (language.settings || language.tasks || language.extensions) {
       try {
         await fs.promises.mkdir(dotVsCodeFolderPath);
       } catch {}
+    }
+
+    if (language.extensions) {
+      const extensionsJsonPath = posixPath(
+        dotVsCodeFolderPath,
+        "extensions.json"
+      );
+      let extensionsJson: { recommendations: string[] } = {
+        recommendations: [],
+      };
+      try {
+        const extensionsJsonTxt = (
+          await fs.promises.readFile(extensionsJsonPath)
+        ).toString();
+        extensionsJson = JSONC.parse(extensionsJsonTxt);
+        if (
+          !extensionsJson.recommendations ||
+          !Array.isArray(extensionsJson.recommendations)
+        ) {
+          extensionsJson.recommendations = [];
+        }
+      } catch {}
+      for (const extension of language.extensions) {
+        if (extensionsJson.recommendations.indexOf(extension) === -1) {
+          extensionsJson.recommendations.push(extension);
+        }
+      }
+      await fs.promises.writeFile(
+        extensionsJsonPath,
+        JSONC.stringify(extensionsJson)
+      );
     }
 
     if (language.settings) {
@@ -98,15 +129,10 @@ export default class Templates {
           await fs.promises.readFile(tasksJsonPath)
         ).toString();
         tasksJson = JSONC.parse(tasksJsonTxt);
-        if (tasksJson.tasks) {
-          if (!Array.isArray(tasksJson.tasks)) {
-            return;
-          }
-        } else {
+        if (!tasksJson.tasks || !Array.isArray(tasksJson.tasks)) {
           tasksJson.tasks = [];
         }
       } catch {}
-
       let autorunTaskLabels: string[] = [];
       for (const task of language.tasks) {
         const taskJson = {

@@ -30,6 +30,7 @@ type Language = {
     autoRun?: boolean;
   }[];
   settings?: { [settingName: string]: string };
+  extensions?: string[];
 };
 
 const languages: { [code: string]: Language } = {
@@ -71,6 +72,7 @@ const languages: { [code: string]: Language } = {
       },
     ],
     settings: { "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj" },
+    extensions: ["ms-dotnettools.csharp", "formulahendry.dotnet-test-explorer"],
   },
   java: {
     variables: {
