@@ -29,6 +29,7 @@ type Language = {
     problemMatcher: string | any[];
     autoRun?: boolean;
   }[];
+  settings?: { [settingName: string]: string };
 };
 
 const languages: { [code: string]: Language } = {
@@ -69,6 +70,7 @@ const languages: { [code: string]: Language } = {
         autoRun: true,
       },
     ],
+    settings: { "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj" },
   },
   java: {
     variables: {

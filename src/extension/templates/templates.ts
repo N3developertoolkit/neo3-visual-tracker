@@ -62,63 +62,83 @@ export default class Templates {
       );
     }
 
-    if (!language.tasks) {
-      return;
-    }
-
     const dotVsCodeFolderPath = posixPath(rootFolder, ".vscode");
-    const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
-    try {
-      await fs.promises.mkdir(dotVsCodeFolderPath);
-    } catch {}
-    let tasksJsonTxt = "";
-    let tasksJson: { version: string; tasks: any } = {
-      version: "2.0.0",
-      tasks: [],
-    };
-    try {
-      tasksJsonTxt = (await fs.promises.readFile(tasksJsonPath)).toString();
-      tasksJson = JSONC.parse(tasksJsonTxt);
-      if (tasksJson.tasks) {
-        if (!Array.isArray(tasksJson.tasks)) {
-          return;
-        }
-      } else {
-        tasksJson.tasks = [];
-      }
-    } catch {}
-
-    let autorunTaskLabels: string[] = [];
-    for (const task of language.tasks) {
-      const taskJson = {
-        options: {
-          cwd: "${workspaceFolder}/contracts/" + contractName,
-        },
-        label: `${contractName}: ${task.label}`,
-        command: task.command,
-        type: task.type,
-        args: task.args,
-        group: task.group,
-        presentation: { reveal: "silent" },
-        problemMatcher: task.problemMatcher,
-        dependsOn: task.dependsOnLabel
-          ? `${contractName}: ${task.dependsOnLabel}`
-          : undefined,
-      };
-      (tasksJson.tasks as any[]).push(taskJson);
-      if (task.autoRun) {
-        autorunTaskLabels.push(taskJson.label);
-      }
+    if (language.settings || language.tasks) {
+      try {
+        await fs.promises.mkdir(dotVsCodeFolderPath);
+      } catch {}
     }
-    await fs.promises.writeFile(tasksJsonPath, JSONC.stringify(tasksJson));
-    // TODO: Investigate ways to remove this sleep hack
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const tasks = await vscode.tasks.fetchTasks();
-    const buildTasks = tasks.filter(
-      (_) => autorunTaskLabels.indexOf(_.name) !== -1
-    );
-    for (const buildTask of buildTasks) {
-      vscode.tasks.executeTask(buildTask);
+
+    if (language.settings) {
+      const settingsJsonPath = posixPath(dotVsCodeFolderPath, "settings.json");
+      let settingsJson: { [settingName: string]: string } = {};
+      try {
+        const settingsJsonTxt = (
+          await fs.promises.readFile(settingsJsonPath)
+        ).toString();
+        settingsJson = JSONC.parse(settingsJsonTxt);
+      } catch {}
+      for (const settingName of Object.keys(language.settings)) {
+        settingsJson[settingName] = language.settings[settingName];
+      }
+      await fs.promises.writeFile(
+        settingsJsonPath,
+        JSONC.stringify(settingsJson)
+      );
+    }
+
+    if (language.tasks) {
+      const tasksJsonPath = posixPath(dotVsCodeFolderPath, "tasks.json");
+      let tasksJson: { version: string; tasks: any } = {
+        version: "2.0.0",
+        tasks: [],
+      };
+      try {
+        const tasksJsonTxt = (
+          await fs.promises.readFile(tasksJsonPath)
+        ).toString();
+        tasksJson = JSONC.parse(tasksJsonTxt);
+        if (tasksJson.tasks) {
+          if (!Array.isArray(tasksJson.tasks)) {
+            return;
+          }
+        } else {
+          tasksJson.tasks = [];
+        }
+      } catch {}
+
+      let autorunTaskLabels: string[] = [];
+      for (const task of language.tasks) {
+        const taskJson = {
+          options: {
+            cwd: "${workspaceFolder}/contracts/" + contractName,
+          },
+          label: `${contractName}: ${task.label}`,
+          command: task.command,
+          type: task.type,
+          args: task.args,
+          group: task.group,
+          presentation: { reveal: "silent" },
+          problemMatcher: task.problemMatcher,
+          dependsOn: task.dependsOnLabel
+            ? `${contractName}: ${task.dependsOnLabel}`
+            : undefined,
+        };
+        (tasksJson.tasks as any[]).push(taskJson);
+        if (task.autoRun) {
+          autorunTaskLabels.push(taskJson.label);
+        }
+      }
+      await fs.promises.writeFile(tasksJsonPath, JSONC.stringify(tasksJson));
+      // TODO: Investigate ways to remove this sleep hack
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const tasks = await vscode.tasks.fetchTasks();
+      const buildTasks = tasks.filter(
+        (_) => autorunTaskLabels.indexOf(_.name) !== -1
+      );
+      for (const buildTask of buildTasks) {
+        vscode.tasks.executeTask(buildTask);
+      }
     }
   }
 
