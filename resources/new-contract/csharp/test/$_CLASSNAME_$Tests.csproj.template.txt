@@ -49,6 +49,14 @@
       ManifestFile="$(_NeoContractManifestPath)" 
       OutputFile="$(_NeoContractInterfacePath)" 
       RootNamespace="$(RootNamespace)"/>
-  </Target>  
+  </Target>
+
+  <Target 
+    Name="ExecuteCreateNeoExpressInstance" 
+    AfterTargets="Build" 
+    Inputs="$(MSBuildProjectFullPath);@(Compile);" 
+    Outputs="$(ProjectDir)/bin/$_CONTRACTNAME_$Tests.neo-express">
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp create -f bin/$_CONTRACTNAME_$Tests.neo-express" />
+  </Target>
 
 </Project>
