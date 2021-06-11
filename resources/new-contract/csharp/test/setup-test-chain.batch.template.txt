@@ -1,0 +1,3 @@
+transfer 10000 gas genesis owner
+contract deploy ../src/bin/sc/$_CLASSNAME_$.nef owner
+checkpoint create ./bin/checkpoints/contract-deployed -f
