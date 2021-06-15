@@ -21,22 +21,22 @@ namespace $_CONTRACTNAME_$Tests
         public $_CLASSNAME_$Tests(CheckpointFixture<$_CLASSNAME_$Tests> fixture)
         {
             this.fixture = fixture;
-            this.chain = fixture.FindChain();
+            this.chain = fixture.FindChain("$_CONTRACTNAME_$Tests.neo-express");
         }
 
         [Fact]
         public void contract_owner_in_storage()
         {
-            // var settings = chain.GetProtocolSettings();
-            // var owner = chain.GetDefaultAccount("owner").ToScriptHash(settings.AddressVersion);
+            var settings = chain.GetProtocolSettings();
+            var owner = chain.GetDefaultAccount("owner").ToScriptHash(settings.AddressVersion);
 
-            // using var snapshot = fixture.GetSnapshot();
+            using var snapshot = fixture.GetSnapshot();
 
-            // // check to make sure contract owner stored in contract storage
-            // var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
-            // storages.Count().Should().Be(1);
-            // storages.TryGetValue("MetadataOwner", out var item).Should().BeTrue();
-            // item!.Should().Be(owner);
+            // check to make sure contract owner stored in contract storage
+            var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
+            storages.Count().Should().Be(1);
+            storages.TryGetValue("MetadataOwner", out var item).Should().BeTrue();
+            item!.Should().Be(owner);
         }
     }
 }
