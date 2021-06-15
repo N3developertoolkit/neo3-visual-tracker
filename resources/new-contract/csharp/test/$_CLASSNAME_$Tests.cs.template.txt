@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 
 using FluentAssertions;
 using Neo.Assertions;
@@ -37,6 +38,31 @@ namespace $_CONTRACTNAME_$Tests
             storages.Count().Should().Be(1);
             storages.TryGetValue("MetadataOwner", out var item).Should().BeTrue();
             item!.Should().Be(owner);
+        }
+
+        [Fact]
+        public void can_change_number()
+        {
+            var settings = chain.GetProtocolSettings();
+            var alice = chain.GetDefaultAccount("alice").ToScriptHash(settings.AddressVersion);
+
+            using var snapshot = fixture.GetSnapshot();
+
+            // ExecuteScript converts the provided expression(s) into a Neo script
+            // loads them into the engine and executes it 
+            using var engine = new TestApplicationEngine(snapshot, settings, alice);
+
+            engine.ExecuteScript<$_CLASSNAME_$>(c => c.changeNumber(42));
+
+            engine.State.Should().Be(VMState.HALT);
+            engine.ResultStack.Should().HaveCount(1);
+            engine.ResultStack.Peek(0).Should().BeTrue();
+
+            // ensure correct storage item was created 
+            var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
+            var contractStorage = storages.StorageMap("$_CLASSNAME_$");
+            contractStorage.TryGetValue(alice, out var item).Should().BeTrue();
+            item!.Should().Be(42);
         }
     }
 }

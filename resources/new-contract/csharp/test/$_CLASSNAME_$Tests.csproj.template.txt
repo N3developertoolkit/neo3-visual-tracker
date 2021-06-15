@@ -58,6 +58,8 @@
     Outputs="$(ProjectDir)/bin/$_CONTRACTNAME_$Tests.neo-express">
     <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp create -f bin/$_CONTRACTNAME_$Tests.neo-express" />
     <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp wallet create -i bin/$_CONTRACTNAME_$Tests.neo-express owner" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp wallet create -i bin/$_CONTRACTNAME_$Tests.neo-express alice" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp wallet create -i bin/$_CONTRACTNAME_$Tests.neo-express bob" />
     <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet neoxp batch -i bin/$_CONTRACTNAME_$Tests.neo-express setup-test-chain.batch" />
   </Target>
 
