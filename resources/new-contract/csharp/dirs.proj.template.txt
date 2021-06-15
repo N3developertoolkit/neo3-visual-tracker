@@ -10,4 +10,7 @@
     <Target Name="restore">
         <MSBuild Projects="@(Projects)" Targets="restore"/>
     </Target>
+    <Target Name="VSTest">
+        <MSBuild Projects="@(Projects)" Targets="VSTest"/>
+    </Target>
 </Project>
