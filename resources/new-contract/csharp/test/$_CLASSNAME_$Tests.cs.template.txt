@@ -58,6 +58,12 @@ namespace $_CONTRACTNAME_$Tests
             engine.ResultStack.Should().HaveCount(1);
             engine.ResultStack.Peek(0).Should().BeTrue();
 
+            // ensure that notification is triggered
+            engine.Notifications.Should().HaveCount(1);
+            engine.Notifications[0].EventName.Should().Be("NumberChanged");
+            engine.Notifications[0].State[0].Should().BeEquivalentTo(alice);
+            engine.Notifications[0].State[1].Should().BeEquivalentTo(42);
+
             // ensure correct storage item was created 
             var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
             var contractStorage = storages.StorageMap("$_CLASSNAME_$");
