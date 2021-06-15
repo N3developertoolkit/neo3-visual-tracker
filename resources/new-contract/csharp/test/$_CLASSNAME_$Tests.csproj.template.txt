@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <NeoContractManifestPath>..\src\bin\sc\$_CLASSNAME_$.manifest.json</NeoContractManifestPath>
-    <NeoTestPackagesVersion>1.0.35-preview</NeoTestPackagesVersion>
+    <NeoTestPackagesVersion>1.0.37-preview</NeoTestPackagesVersion>
     <RootNamespace>$_CONTRACTNAME_$Tests</RootNamespace>
   </PropertyGroup>
 
