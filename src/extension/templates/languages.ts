@@ -3,7 +3,7 @@ import tryFetchJson from "../util/tryFetchJson";
 // Variable resolution procedure:
 // i)   The `eval` function is called (if-present) and its result is used as the
 //      variable value.
-// ii)  If a `prompt` is provided the user is allowed to optionally specify a 
+// ii)  If a `prompt` is provided the user is allowed to optionally specify a
 //      value (which will overwrite the result of `eval`, if any)
 // iii) If a `parse` function is present it will be called and can modify the
 //      user-provided value.
@@ -22,13 +22,15 @@ type Language = {
   tasks?: {
     label: string;
     dependsOnLabel?: string;
-    group: string;
+    group?: string;
     type: string;
     command: string;
     args: string[];
     problemMatcher: string | any[];
     autoRun?: boolean;
   }[];
+  settings?: { [settingName: string]: string };
+  extensions?: string[];
 };
 
 const languages: { [code: string]: Language } = {
@@ -50,20 +52,21 @@ const languages: { [code: string]: Language } = {
         },
       },
       CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract" },
-      MAINFILE: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract.cs" },
+      MAINFILE: {
+        eval: async ($) => "src/" + $["$_CONTRACTNAME_$"] + "Contract.cs",
+      },
     },
     tasks: [
       {
-        label: "restore",
-        group: "build",
-        type: "shell",
+        label: "restore-tools",
         command: "dotnet",
-        args: ["restore"],
+        type: "shell",
+        args: ["tool", "restore"],
         problemMatcher: [],
       },
       {
         label: "build",
-        dependsOnLabel: "restore",
+        dependsOnLabel: "restore-tools",
         group: "build",
         type: "shell",
         command: "dotnet",
@@ -76,6 +79,8 @@ const languages: { [code: string]: Language } = {
         autoRun: true,
       },
     ],
+    settings: { "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj" },
+    extensions: ["ms-dotnettools.csharp", "formulahendry.dotnet-test-explorer"],
   },
   java: {
     variables: {

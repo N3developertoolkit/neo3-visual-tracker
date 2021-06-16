@@ -8,7 +8,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Changed
 
+- Updated C# smart contract template to provide example unit tests
 - Fixed an issue preventing contracts from being deployed to TestNet.
+- Updated Neo Express to latest RC3 build
 
 ## [2.1.47] - 2021-06-08
 
