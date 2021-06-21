@@ -1,13 +1,13 @@
 {
   "NOTE_0": "                                                ",
   "NOTE_1": "    The password for this wallet file is:       ",
-  "NOTE_2": "        neo                                     ",
+  "NOTE_2": "        password                                ",
   "NOTE_3": "    (without any whitespace or punctuation)     ",
   "NOTE_4": "                                                ",
   "NOTE_5": "    DO NOT USE IN PRODUCTION!                   ",
   "NOTE_6": "                                                ",
 
-  "name": "v3-sample-wallet",
+  "name": "V3 wallet with password",
   "version": "1.0",
   "scrypt": {
     "n": 16384,
@@ -17,13 +17,13 @@
   },
   "accounts": [
     {
-      "address": "NdgggM4np84vmPYGS1K6rgYE8Tkowpn99R",
+      "address": "NUEUE6t4FsdUNXb4LgdGgxLSRm58nLjWai",
       "label": "V3 account with password",
-      "isdefault": true,
+      "isDefault": true,
       "lock": false,
-      "key": "6PYR8WK2NQx8CaATKfS19DNUu2Ln3sKfx2GhRVUKEfJ62a3cZ52o9ZEFMX",
+      "key": "6PYL9FNyJCTR8qiwatjvqEpDMmYLt1fVQkNsRUJxvRLmeoQPknZMbVkD5S",
       "contract": {
-        "script": "0c2103a390191d48753d5e30bdc936fa179ee3825280003b9260ca83c9014305f2854f0b4195440d78",
+        "script": "DCED5sSySGt+eXhYpZIRMr/Jp4Qvm0ABlBeE/zBg/IC8UvRBVuezJw==",
         "parameters": [
           {
             "name": "signature",

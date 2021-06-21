@@ -2,10 +2,11 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>$_CONTRACTNAME_$</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Neo.SmartContract.Framework" Version="3.0.0-rc2" />
+    <PackageReference Include="Neo.SmartContract.Framework" Version="3.0.0-rc3" />
   </ItemGroup>
 
   <Target 
@@ -17,7 +18,7 @@
       <_NccsDebugArguments Condition="'$(Configuration)'=='Debug'">--debug --no-optimize</_NccsDebugArguments>
       <_NccsDebugArguments Condition="'$(Configuration)'!='Debug'"></_NccsDebugArguments>
     </PropertyGroup>
-    <Exec WorkingDirectory="$(ProjectDir)" Command="nccs $(_NccsDebugArguments) $(MSBuildProjectFullPath)" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="dotnet nccs $(_NccsDebugArguments) &quot;$(MSBuildProjectFullPath)&quot;" />
   </Target>
 
 </Project>

@@ -4,6 +4,15 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Changed
+
+- Updated C# smart contract template to provide example unit tests
+- Fixed an issue preventing contracts from being deployed to TestNet.
+- Updated Neo Express to latest RC3 build
+- Enable limited support within untrusted VS Code workspaces
+
 ## [2.1.47] - 2021-06-08
 
 ### Changed
