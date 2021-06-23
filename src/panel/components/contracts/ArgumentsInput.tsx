@@ -5,12 +5,12 @@ import * as neonSc from "@cityofzion/neon-core/lib/sc";
 import ArgumentInput from "./ArgumentInput";
 
 type Props = {
-  args: (string | number)[];
+  args: any[];
   autoSuggestListId: string;
   isReadOnly: boolean;
   parameterDefinitions?: neonSc.ContractParameterDefinitionJson[];
   style?: React.CSSProperties;
-  setArguments: (newArguments: (string | number)[]) => void;
+  setArguments: (newArguments: any[]) => void;
 };
 
 export default function ArgumentsInput({
@@ -42,7 +42,7 @@ export default function ArgumentsInput({
           key={`${i}_${_}`}
           name={(parameterDefinitions || [])[i]?.name || `Argument #${i + 1}`}
           type={(parameterDefinitions || [])[i]?.type}
-          onUpdate={(arg: string | number) =>
+          onUpdate={(arg) =>
             setArguments(
               args
                 .map((__, j) => (i === j ? arg : __))
@@ -59,9 +59,7 @@ export default function ArgumentsInput({
           isReadOnly={isReadOnly}
           key={args.length}
           name={`Argument #${args.length + 1}`}
-          onUpdate={(arg: string | number) =>
-            setArguments(arg ? [...args, arg] : [...args])
-          }
+          onUpdate={(arg) => setArguments(arg ? [...args, arg] : [...args])}
         />
       )}
     </div>

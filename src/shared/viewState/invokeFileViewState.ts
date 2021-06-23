@@ -11,7 +11,7 @@ type InvokeFileViewState = {
   fileContents: {
     contract?: string;
     operation?: string;
-    args?: (string | number)[];
+    args?: any[];
   }[];
   fileContentsJson: string;
   isPartOfDiffView: boolean;
