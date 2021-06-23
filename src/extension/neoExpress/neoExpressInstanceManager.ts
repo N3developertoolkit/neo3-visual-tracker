@@ -4,7 +4,7 @@ import ActiveConnection from "../activeConnection";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainsTreeDataProvider from "../vscodeProviders/blockchainsTreeDataProvider";
 import { CommandArguments } from "../commands/commandArguments";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpress from "./neoExpress";
 import IoHelpers from "../util/ioHelpers";
 

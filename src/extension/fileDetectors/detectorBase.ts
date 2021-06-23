@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "DetectorBase";
@@ -28,9 +28,8 @@ export default abstract class DetectorBase {
     this.onChangeEmitter = new vscode.EventEmitter<void>();
     this.onChange = this.onChangeEmitter.event;
     this.refresh();
-    this.fileSystemWatcher = vscode.workspace.createFileSystemWatcher(
-      searchPattern
-    );
+    this.fileSystemWatcher =
+      vscode.workspace.createFileSystemWatcher(searchPattern);
     this.fileSystemWatcher.onDidChange(this.refresh, this);
     this.fileSystemWatcher.onDidCreate(this.refresh, this);
     this.fileSystemWatcher.onDidDelete(this.refresh, this);
@@ -46,9 +45,9 @@ export default abstract class DetectorBase {
 
   async refresh() {
     Log.log(LOG_PREFIX, "Refreshing file list...", this.searchPattern);
-    this.allFiles = (
-      await vscode.workspace.findFiles(this.searchPattern)
-    ).map((_) => posixPath(_.fsPath));
+    this.allFiles = (await vscode.workspace.findFiles(this.searchPattern)).map(
+      (_) => posixPath(_.fsPath)
+    );
     await this.processFiles();
     this.onChangeEmitter.fire();
   }

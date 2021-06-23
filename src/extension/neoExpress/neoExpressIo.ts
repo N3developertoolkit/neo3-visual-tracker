@@ -2,7 +2,7 @@ import * as neonSc from "@cityofzion/neon-core/lib/sc";
 
 import BlockchainIdentifier from "../blockchainIdentifier";
 import JSONC from "../util/JSONC";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpress from "./neoExpress";
 
 const LOG_PREFIX = "NeoExpressIo";

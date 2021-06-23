@@ -4,6 +4,10 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+- Extension logs are now also shown in the VS Code Output Panel
+
 ## [2.1.49] - 2021-06-21
 
 ### Changed

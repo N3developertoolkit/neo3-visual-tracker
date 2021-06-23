@@ -8,11 +8,10 @@ import AutoCompleteData from "../shared/autoCompleteData";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import ContractDetector from "./fileDetectors/contractDetector";
 import dedupeAndSort from "./util/dedupeAndSort";
-import Log from "../shared/log";
+import Log from "./util/log";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressDetector from "./fileDetectors/neoExpressDetector";
 import NeoExpressIo from "./neoExpress/neoExpressIo";
-import reverseBytes from "../panel/components/tracker/reverseBytes";
 import WalletDetector from "./fileDetectors/walletDetector";
 
 const LOG_PREFIX = "AutoComplete";
