@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import AutoComplete from "../autoComplete";
 import ContractDetector from "../fileDetectors/contractDetector";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "ContractsTreeDataProvider";
@@ -14,7 +14,8 @@ type ContractData = {
 };
 
 export default class ContractsTreeDataProvider
-  implements vscode.TreeDataProvider<ContractData> {
+  implements vscode.TreeDataProvider<ContractData>
+{
   onDidChangeTreeData: vscode.Event<void>;
 
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void>;

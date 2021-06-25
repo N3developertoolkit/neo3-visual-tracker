@@ -6,7 +6,7 @@ import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "ServerListDetector";

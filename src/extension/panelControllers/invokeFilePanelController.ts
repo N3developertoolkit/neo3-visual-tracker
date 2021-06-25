@@ -10,7 +10,7 @@ import InvokeFileViewRequest from "../../shared/messages/invokeFileViewRequest";
 import InvokeFileViewState from "../../shared/viewState/invokeFileViewState";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpress from "../neoExpress/neoExpress";
 import PanelControllerBase from "./panelControllerBase";
 import posixPath from "../util/posixPath";

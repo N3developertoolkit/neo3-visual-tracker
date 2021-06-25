@@ -6,7 +6,6 @@ import ControllerRequest from "../shared/messages/controllerRequest";
 import InvokeFile from "./components/views/InvokeFile";
 import InvokeFileViewState from "../shared/viewState/invokeFileViewState";
 import LoadingIndicator from "./components/LoadingIndicator";
-import Log from "../shared/log";
 import QuickStart from "./components/views/QuickStart";
 import QuickStartViewState from "../shared/viewState/quickStartViewState";
 import StorageExplorer from "./components/views/StorageExplorer";
@@ -27,11 +26,11 @@ export default function ViewRouter() {
   const [view, setView] = useState<View | null>(null);
   const [viewState, setViewState] = useState<ViewStateBase | null>(null);
   const postMessage = (request: ViewRequest) => {
-    Log.log("📤", request);
+    console.log("📤", request);
     vscode.postMessage(request);
   };
   const receiveMessage = (request: ControllerRequest) => {
-    Log.log("📬", request);
+    console.log("📬", request);
     if (request.viewState) {
       if (request.viewState.view !== view) {
         // Replace viewstate:

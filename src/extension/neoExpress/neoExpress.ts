@@ -2,7 +2,7 @@ import * as childProcess from "child_process";
 import * as vscode from "vscode";
 import * as which from "which";
 
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpressTerminal from "./neoExpressTerminal";
 import posixPath from "../util/posixPath";
 

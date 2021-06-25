@@ -1,7 +1,7 @@
 import * as wget from "wget-improved";
 
 import JSONC from "./JSONC";
-import Log from "../../shared/log";
+import Log from "./log";
 
 const LOG_PREFIX = "tryFetchJson";
 

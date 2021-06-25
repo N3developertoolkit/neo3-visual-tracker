@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ### Changed
 
 - The invoke file editor now supports editing invocation files that use arrays or objects as contract parameters
+- Extension logs are now also shown in the VS Code Output Panel
 
 ## [2.1.49] - 2021-06-21
 

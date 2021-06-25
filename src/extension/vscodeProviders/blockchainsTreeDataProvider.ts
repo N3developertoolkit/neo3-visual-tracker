@@ -3,14 +3,15 @@ import * as vscode from "vscode";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainType from "../blockchainType";
 import IoHelpers from "../util/ioHelpers";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpressDetector from "../fileDetectors/neoExpressDetector";
 import ServerListDetector from "../fileDetectors/serverListDetector";
 
 const LOG_PREFIX = "BlockchainsTreeDataProvider";
 
 export default class BlockchainsTreeDataProvider
-  implements vscode.TreeDataProvider<BlockchainIdentifier> {
+  implements vscode.TreeDataProvider<BlockchainIdentifier>
+{
   onDidChangeTreeData: vscode.Event<void>;
 
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void>;

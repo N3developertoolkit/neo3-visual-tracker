@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import PanelControllerBase from "./panelControllerBase";
 import WalletViewRequest from "../../shared/messages/walletViewRequest";
 import WalletViewState from "../../shared/viewState/walletViewState";
@@ -41,7 +41,7 @@ export default class WalletPanelController extends PanelControllerBase<
   onClose() {}
 
   protected async onRequest(request: WalletViewRequest) {
-    Log.log(LOG_PREFIX, `Request: ${JSON.stringify(request)}`);
+    Log.log(LOG_PREFIX, "Request:", request);
 
     if (request.copyAddress) {
       await vscode.env.clipboard.writeText(this.address);
@@ -56,8 +56,8 @@ export default class WalletPanelController extends PanelControllerBase<
   }
 
   private async updateBalances() {
-    const blockchainMonitor = this.activeConnection.connection
-      ?.blockchainMonitor;
+    const blockchainMonitor =
+      this.activeConnection.connection?.blockchainMonitor;
     if (blockchainMonitor) {
       const addressInfo = await blockchainMonitor.getAddress(
         this.address,
