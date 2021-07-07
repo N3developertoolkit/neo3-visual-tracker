@@ -4,6 +4,15 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Changed
+
+- The invoke file editor now supports editing invocation files that use arrays or objects as contract parameters
+- Extension logs are now also shown in the VS Code Output Panel
+- Fixed an issue that blocked deployment of contracts to Neo N3 TestNet
+- Removed "Invoke Contract" menu item for non Express blockchain networks as feature is not complete
+
 ## [2.1.49] - 2021-06-21
 
 ### Changed

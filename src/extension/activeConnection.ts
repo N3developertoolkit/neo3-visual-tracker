@@ -7,7 +7,7 @@ import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
 import BlockchainType from "./blockchainType";
 import BlockchainsTreeDataProvider from "./vscodeProviders/blockchainsTreeDataProvider";
 import IoHelpers from "./util/ioHelpers";
-import Log from "../shared/log";
+import Log from "./util/log";
 
 const LOG_PREFIX = "ActiveConnection";
 const STATUS_PREFIX = "Neo:";
@@ -31,7 +31,8 @@ export default class ActiveConnection {
     private readonly blockchainMonitorPool: BlockchainMonitorPool
   ) {
     this.connection = null;
-    this.onChangeEmitter = new vscode.EventEmitter<BlockchainIdentifier | null>();
+    this.onChangeEmitter =
+      new vscode.EventEmitter<BlockchainIdentifier | null>();
     this.onChange = this.onChangeEmitter.event;
     this.statusBarItem = vscode.window.createStatusBarItem();
   }

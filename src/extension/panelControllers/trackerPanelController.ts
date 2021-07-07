@@ -7,7 +7,7 @@ import ApplicationLog from "../../shared/applicationLog";
 import AutoComplete from "../autoComplete";
 import BlockchainMonitor from "../blockchainMonitor/blockchainMonitor";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import PanelControllerBase from "./panelControllerBase";
 import TrackerViewRequest from "../../shared/messages/trackerViewRequest";
 import TrackerViewState from "../../shared/viewState/trackerViewState";
@@ -215,14 +215,16 @@ export default class TrackerPanelController extends PanelControllerBase<
             this.viewState.startAtBlock,
             blockHeight
           ),
-          populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
+          populatedBlocksFilterSupported:
+            this.blockchainMonitor.isFilterAvailable(),
           searchHistory: await this.getSearchHistory(),
         });
       } else {
         await this.updateViewState({
           blockHeight,
           blocks: await this.getBlocks(-1, blockHeight),
-          populatedBlocksFilterSupported: this.blockchainMonitor.isFilterAvailable(),
+          populatedBlocksFilterSupported:
+            this.blockchainMonitor.isFilterAvailable(),
           searchHistory: await this.getSearchHistory(),
         });
       }

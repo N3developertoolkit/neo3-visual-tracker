@@ -2,7 +2,7 @@ import * as fs from "fs";
 import * as vscode from "vscode";
 
 import ControllerRequest from "../../shared/messages/controllerRequest";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 import ViewRequest from "../../shared/messages/viewRequest";
 import ViewStateBase from "../../shared/viewState/viewStateBase";
@@ -103,7 +103,7 @@ export default abstract class PanelControllerBase<
       LOG_PREFIX,
       "Update:",
       this.viewState.panelTitle,
-      JSON.stringify(Object.keys(updates))
+      Object.keys(updates)
     );
     if (updates.panelTitle) {
       this.setTitle(updates.panelTitle);
@@ -117,7 +117,7 @@ export default abstract class PanelControllerBase<
       LOG_PREFIX,
       "Received:",
       this.viewState.panelTitle,
-      JSON.stringify(Object.keys(request))
+      Object.keys(request)
     );
     if (request.retrieveViewState) {
       await this.sendRequest({ viewState: this.viewState });
@@ -137,7 +137,7 @@ export default abstract class PanelControllerBase<
       LOG_PREFIX,
       "Sent:",
       this.viewState.panelTitle,
-      JSON.stringify(Object.keys(request))
+      Object.keys(request)
     );
     await this.postMessage(request);
   }

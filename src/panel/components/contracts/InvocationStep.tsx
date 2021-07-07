@@ -12,7 +12,7 @@ type Props = {
   i: number;
   contract?: string;
   operation?: string;
-  args?: (string | number)[];
+  args?: any[];
   autoCompleteData: AutoCompleteData;
   argumentSuggestionListId: string;
   forceFocus?: boolean;
@@ -23,11 +23,7 @@ type Props = {
   onDragStart: () => void;
   onDragEnd: () => void;
   onRun: () => void;
-  onUpdate: (
-    contract?: string,
-    operation?: string,
-    args?: (string | number)[]
-  ) => void;
+  onUpdate: (contract?: string, operation?: string, args?: any[]) => void;
 };
 
 export default function InvocationStep({
@@ -124,7 +120,7 @@ export default function InvocationStep({
           operations.find((_) => _.name === operation)?.parameters
         }
         style={{ marginBottom: 10 }}
-        setArguments={(newArguments: (string | number)[]) =>
+        setArguments={(newArguments) =>
           onUpdate(contract, operation, newArguments)
         }
       />

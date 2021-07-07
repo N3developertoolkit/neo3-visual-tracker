@@ -13,7 +13,7 @@ type InvokeFileViewRequest = {
     i: number;
     contract?: string;
     operation?: string;
-    args?: (string | number)[];
+    args?: any[];
   };
   updateJson?: string;
 };

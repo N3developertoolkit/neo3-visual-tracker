@@ -7,7 +7,7 @@ import * as vscode from "vscode";
 import AddressInfo from "../../shared/addressInfo";
 import ApplicationLog from "../../shared/applicationLog";
 import BlockchainState from "./blockchainState";
-import Log from "../../shared/log";
+import Log from "../util/log";
 
 const APP_LOG_CACHE_SIZE = 1024;
 const BLOCK_CACHE_SIZE = 1024;
