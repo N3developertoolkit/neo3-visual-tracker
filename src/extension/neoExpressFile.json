@@ -1,0 +1,128 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://neo.org/schemas/neo-express-file.json",
+    "$defs": {
+        "neo-express-consensus-node": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "tcp-port",
+                "ws-port",
+                "rpc-port",
+                "wallet"
+            ],
+            "properties": {
+                "tcp-port": {
+                    "type": "integer"
+                },
+                "ws-port": {
+                    "type": "integer"
+                },
+                "rpc-port": {
+                    "type": "integer"
+                },
+                "wallet": {
+                    "$ref": "#/$defs/neo-express-wallet"
+                }
+            }
+        },
+        "neo-express-wallet": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "name",
+                "accounts"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "accounts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/$defs/neo-express-account"
+                    }
+                }
+            }
+        },
+        "neo-express-account": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "private-key"
+            ],
+            "properties": {
+                "private-key": {
+                    "type": "string"
+                },
+                "script-hash": {
+                    "type": "string"
+                },
+                "label": {
+                    "oneOf": [
+                        {
+                            "type": "null"
+                        },
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "is-default": {
+                    "type": "boolean"
+                },
+                "contract": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "script",
+                        "parameters"
+                    ],
+                    "properties": {
+                        "script": {
+                            "type": "string"
+                        },
+                        "parameters": {
+                            "type": "array",
+                            "minItems": 0,
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "magic",
+        "address-version",
+        "consensus-nodes"
+    ],
+    "properties": {
+        "magic": {
+            "type": "integer"
+        },
+        "address-version": {
+            "type": "integer"
+        },
+        "consensus-nodes": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+                "$ref": "#/$defs/neo-express-consensus-node"
+            }
+        },
+        "wallets": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/neo-express-wallet"
+            }
+        },
+        "settings": {
+            "type": "object"
+        }
+    }
+}
