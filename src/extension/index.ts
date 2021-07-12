@@ -322,7 +322,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand(
     context,
-    "neo3-visual-devtracker.neo.invokeContract",
+    "neo3-visual-devtracker.express.invokeContract",
     (commandArguments) =>
       NeoCommands.invokeContract(
         activeConnection,

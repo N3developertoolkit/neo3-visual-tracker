@@ -36,6 +36,7 @@
     "onCommand:neo3-visual-devtracker.express.create",
     "onCommand:neo3-visual-devtracker.express.createCheckpoint",
     "onCommand:neo3-visual-devtracker.express.exploreStorage",
+    "onCommand:neo3-visual-devtracker.express.invokeContract",
     "onCommand:neo3-visual-devtracker.express.reset",
     "onCommand:neo3-visual-devtracker.express.restoreCheckpoint",
     "onCommand:neo3-visual-devtracker.express.run",
@@ -43,7 +44,6 @@
     "onCommand:neo3-visual-devtracker.express.transfer",
     "onCommand:neo3-visual-devtracker.express.walletCreate",
     "onCommand:neo3-visual-devtracker.neo.contractDeploy",
-    "onCommand:neo3-visual-devtracker.neo.invokeContract",
     "onCommand:neo3-visual-devtracker.neo.newContract",
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openContract",
@@ -103,6 +103,11 @@
         "category": "Neo Express N3"
       },
       {
+        "command": "neo3-visual-devtracker.express.invokeContract",
+        "title": "Invoke contract",
+        "category": "Neo N3"
+      },
+      {
         "command": "neo3-visual-devtracker.express.reset",
         "title": "Reset blockchain",
         "category": "Neo Express N3"
@@ -144,11 +149,6 @@
       {
         "command": "neo3-visual-devtracker.neo.contractDeploy",
         "title": "Deploy contract",
-        "category": "Neo N3"
-      },
-      {
-        "command": "neo3-visual-devtracker.neo.invokeContract",
-        "title": "Invoke contract",
         "category": "Neo N3"
       },
       {
@@ -262,7 +262,7 @@
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem != express"
         },
         {
-          "command": "neo3-visual-devtracker.neo.invokeContract",
+          "command": "neo3-visual-devtracker.express.invokeContract",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
