@@ -30,6 +30,8 @@ const UNKNOWN_BLOCKCHAIN =
 // names the user has supplied through neo-servers.json file(s) in the
 // current workspace):
 const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
+  "0x1f4d1defa46faa5e7b9b8d3f79a06bec777d7c26c4aa5f6f5899a291daa87c15":
+    "Neo N3 MainNet",
   "0x614a807a3e545df0cb5c96d4d387e620e3e34d441f849b9a4033e0b4f906805d":
     "Neo N3 TestNet",
 };
@@ -38,8 +40,14 @@ const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
 // own neo-servers.json file(s) in their workspace:
 const SEED_URLS: { [url: string]: boolean } = {
   //
-  // TODO: Add MainNet URLs and alternative TestNet endpoints.
+  // TODO: Add alternative TestNet endpoints.
   //
+  // V3 MainNet:
+  "http://seed1.neo.org:10332": true,
+  "http://seed2.neo.org:10332": true,
+  "http://seed3.neo.org:10332": true,
+  "http://seed4.neo.org:10332": true,
+  "http://seed5.neo.org:10332": true,
   // V3 TestNet:
   "http://seed1t.neo.org:20332": true,
   "http://seed2t.neo.org:20332": true,
