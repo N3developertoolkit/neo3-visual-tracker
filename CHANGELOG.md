@@ -4,7 +4,19 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.0.8] - 2021-08-10
+
+### Added
+
+* Neo N3 MainNet genesis hash and known seed URLs
+
+### Changed
+
+* Update Neo Express to 3.0.5
+
 ## [3.0] - 2021-08-02
+
+### Changed
 
 * Neo N3 release support
 * Bumped major version to 3 for consistency with Neo N3 release
