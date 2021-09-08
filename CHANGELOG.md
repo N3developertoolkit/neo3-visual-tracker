@@ -4,7 +4,7 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [3.0.9] - 2021-09-08
+## [3.0.11] - 2021-09-08
 
 ### Changed
 
