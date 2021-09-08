@@ -4,6 +4,13 @@ All notable changes to the Neo N3 Visual DevTracker extension will be documented
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## [3.0.9] - 2021-09-08
+
+### Changed
+
+* Update Neo Express to 3.0.13
+* Update WELL_KNOWN_BLOCKCHAINS and SEED_URLS for RC4/Final TestNet nodes (#116)
+
 ## [3.0.8] - 2021-08-10
 
 ### Added
