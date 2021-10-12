@@ -10,6 +10,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 * Update Neo Express to 3.0.21
 
+### Removed
+
+* Contract Deployment support for Neo N3 MainNet
+
 ## [3.0.11] - 2021-09-08
 
 ### Changed
