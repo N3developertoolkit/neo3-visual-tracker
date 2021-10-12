@@ -27,6 +27,12 @@ export default class NeoCommands {
     if (!identifier) {
       return;
     }
+    if (identifier.name === "Neo N3 MainNet") {
+      vscode.window.showErrorMessage(
+        "Contract Deployment to Neo N3 MainNet is not supported."
+      );
+      return;
+    }
     const wallets = walletDetector.wallets;
     if (!wallets.length) {
       vscode.window.showErrorMessage(
