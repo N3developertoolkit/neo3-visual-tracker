@@ -148,7 +148,7 @@ export default class NeoCommands {
         }
       );
       vscode.window.showInformationMessage(result);
-    } catch (e) {
+    } catch (e: any) {
       vscode.window.showErrorMessage(
         e.message || "Could not deploy contract: Unknown error"
       );
