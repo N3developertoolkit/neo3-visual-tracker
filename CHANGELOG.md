@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Added
+
+* Python smart contract template
+
 ### Changed
 
 * Update Neo Express to 3.1.38
