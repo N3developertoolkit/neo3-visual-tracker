@@ -132,6 +132,85 @@ const languages: { [code: string]: Language } = {
       },
     },
   },
+  python: {
+    variables: {
+      CONTRACTNAME: {
+        prompt: "Enter name for your contract (e.g. TokenEscrow)",
+        parse: async (contractName) => {
+          if (contractName?.toLocaleLowerCase().endsWith("_contract")) {
+            contractName = contractName.replace(/_contract$/i, "");
+          }
+          if (!contractName) {
+            return undefined;
+          }
+          if (!contractName[0].match(/[a-z]/i)) {
+            contractName = "_" + contractName;
+          }
+          return contractName.replace(/[^a-z0-9]+/gi, "_") || undefined;
+        },
+      },
+      CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "_contract" },
+      MAINFILE: {
+        eval: async ($) => "src/" + $["$_CONTRACTNAME_$"] + "_contract.py",
+      },
+    },
+    tasks: [
+      {
+        label: "create-private-chain",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["create", "-f", "test/$_CONTRACTNAME_$Tests.neo-express"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-owner",
+        dependsOnLabel: "create-private-chain",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "owner"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-alice",
+        dependsOnLabel: "create-wallet-owner",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "alice"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-bob",
+        dependsOnLabel: "create-wallet-alice",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "bob"],
+        problemMatcher: [],
+      },
+      {
+        label: "transfer-gas-to-wallets",
+        dependsOnLabel: "create-wallet-bob",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["batch", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "test/setup-test-chain.batch"],
+        problemMatcher: [],
+      },
+      {
+        label: "build",
+        dependsOnLabel: "transfer-gas-to-wallets",
+        group: "build",
+        command: "neo3-boa",
+        type: "shell",
+        args: ["src/$_CONTRACTNAME_$_contract.py"],
+        problemMatcher: [],
+        autoRun: true,
+      },
+    ],
+  },
 };
 
 export { Language, languages };
