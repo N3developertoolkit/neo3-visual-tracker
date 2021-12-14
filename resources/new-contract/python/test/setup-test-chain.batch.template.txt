@@ -1,4 +1,3 @@
-:: This file is being use to give some GAS to these 3 accounts
-transfer 10000 gas genesis owner
-transfer 10000 gas genesis alice
-transfer 10000 gas genesis bob
+transfer 100000000 gas genesis owner
+transfer 100000000 gas genesis alice
+transfer 100000000 gas genesis bob
