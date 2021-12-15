@@ -13,11 +13,11 @@ jobs:
         with:
           fetch-depth: 0
       - name: 💿 Setup NodeJS
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 12.x
+          node-version: '16'
       - name: 💿 Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.7.2
+        uses: actions/setup-dotnet@v1.9.0
         with:
           dotnet-version: 3.1.x
       - name: 🚀 Build

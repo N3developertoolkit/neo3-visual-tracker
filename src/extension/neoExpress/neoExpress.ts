@@ -35,7 +35,7 @@ export default class NeoExpress {
       "deps",
       "nxp",
       "tools",
-      "net5.0",
+      "net6.0",
       "any",
       "neoxp.dll"
     );
