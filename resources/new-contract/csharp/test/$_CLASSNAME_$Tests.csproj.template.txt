@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <NeoContractManifestPath>..\src\bin\sc\$_CLASSNAME_$.manifest.json</NeoContractManifestPath>
-    <NeoTestPackagesVersion>1.0.40-preview</NeoTestPackagesVersion>
+    <NeoTestPackagesVersion>3.1.10</NeoTestPackagesVersion>
     <RootNamespace>$_CONTRACTNAME_$Tests</RootNamespace>
   </PropertyGroup>
 
