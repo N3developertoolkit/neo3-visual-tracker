@@ -15,8 +15,4 @@
     "statusBarItem.prominentForeground": "#55eb34",
 
     "statusBar.foreground": "#ce8416"
-  },
-
-  "workbench.editor.enablePreview": true,
-  "workbench.editor.revealIfOpen": true
-}
+  }
