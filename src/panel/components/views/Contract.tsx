@@ -24,11 +24,20 @@ export default function Contract({ viewState, postMessage }: Props) {
     viewState.autoCompleteData.contractPaths[name] ||
     [];
 
+  let statement;
+
+  if (name === "StdLib") {
+    statement = "Note- these contracts do not contain any storage";
+  } else {
+    statement = "";
+  }
+
   return (
     <div style={{ padding: 10 }}>
       <h1>{name}</h1>
       <button> Click to Delete </button>
-
+      <br></br>
+      <h2> {statement} </h2>
       {!!description && (
         <p style={{ paddingLeft: 20 }}>
           <div style={{ fontWeight: "bold", marginBottom: 10, marginTop: 15 }}>
