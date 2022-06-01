@@ -23,9 +23,12 @@ export default function Contract({ viewState, postMessage }: Props) {
     viewState.autoCompleteData.contractPaths[hash] ||
     viewState.autoCompleteData.contractPaths[name] ||
     [];
+
   return (
     <div style={{ padding: 10 }}>
       <h1>{name}</h1>
+      <button> Click to Delete </button>
+
       {!!description && (
         <p style={{ paddingLeft: 20 }}>
           <div style={{ fontWeight: "bold", marginBottom: 10, marginTop: 15 }}>
