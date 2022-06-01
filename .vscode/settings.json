@@ -5,5 +5,18 @@
 
   // Auto format files on save using Prettier:
   "editor.formatOnSave": true,
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  //Adding the following code allows us to change the colors on the status bar at the bottom of the VS Code border to whatever we like
+  "workbench.colorCustomizations": {
+    "statusBar.background": "#1A1A1A",
+    "statusBar.noFolderBackground": "#212121",
+    "statusBar.debuggingBackground": "#263238",
+    "statusBarItem.prominentForeground": "#55eb34",
+
+    "statusBar.foreground": "#ce8416"
+  },
+
+  "workbench.editor.enablePreview": true,
+  "workbench.editor.revealIfOpen": true
 }
