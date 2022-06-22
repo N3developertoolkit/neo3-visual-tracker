@@ -16,6 +16,13 @@ import StorageExplorerPanelController from "../panelControllers/storageExplorerP
 import TrackerPanelController from "../panelControllers/trackerPanelController";
 import workspaceFolder from "../util/workspaceFolder";
 
+//
+import {
+  useWalletConnect,
+  withWalletConnect,
+} from "@walletconnect/react-native-dapp";
+//
+
 export default class NeoExpressCommands {
   static async contractDeploy(
     neoExpress: NeoExpress,
@@ -391,5 +398,11 @@ export default class NeoExpressCommands {
         output.message || "Command succeeded"
       );
     }
+  }
+
+  //added 6/22/22-Rob
+  static async connectWallet() {
+    const connector = useWalletConnect();
+    connector.connect();
   }
 }

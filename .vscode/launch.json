@@ -11,8 +11,9 @@
         "${workspaceFolder}/sample-workspaces/sample-workspace",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      /*       "preLaunchTask": "${defaultBuildTask}"
+       */
     },
     {
       "name": "Run Extension (empty workspace)",
@@ -23,8 +24,9 @@
         "${workspaceFolder}/sample-workspaces/empty-workspace",
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      /*       "preLaunchTask": "${defaultBuildTask}"
+       */
     },
     {
       "name": "Run Extension (no workspace)",
@@ -32,8 +34,9 @@
       "request": "launch",
       "runtimeExecutable": "${execPath}",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
-      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}"
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"]
+      /*       "preLaunchTask": "${defaultBuildTask}"
+       */
     }
   ]
 }

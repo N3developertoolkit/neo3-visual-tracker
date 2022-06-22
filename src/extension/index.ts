@@ -171,6 +171,9 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommand(context, "neo3-visual-devtracker.neo.walletCreate", () =>
     NeoCommands.createWallet()
   );
+  registerCommand(context, "neo3-visual-devtracker.neo.walletConnect", () =>
+    NeoCommands.connectWallet()
+  );
 
   registerCommand(context, "neo3-visual-devtracker.connect", () =>
     activeConnection.connect()

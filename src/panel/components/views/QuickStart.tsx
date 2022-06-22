@@ -12,6 +12,10 @@ import QuickStartViewState from "../../../shared/viewState/quickStartViewState";
 import StartNeoExpress from "../quickStart/StartNeoExpress";
 import InvokeContract from "../quickStart/InvokeContract";
 
+//
+import ConnectWallet from "../quickStart/ConnectWallet";
+//Created on 6/22/2022- Rob
+
 type Props = {
   viewState: QuickStartViewState;
   postMessage: (message: QuickStartViewRequest) => void;
@@ -27,6 +31,16 @@ export default function QuickStart({ viewState, postMessage }: Props) {
             key="startNeoExpress"
             onStart={() =>
               postMessage({ command: "neo3-visual-devtracker.express.run" })
+            }
+          />
+        );
+        actions.push(
+          <ConnectWallet
+            key="connectWallet"
+            onConnectWallet={() =>
+              postMessage({
+                command: "neo3-visual-devtracker.neo.walletConnect",
+              })
             }
           />
         );
@@ -89,11 +103,21 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         );
       }
     } else {
-      actions.push(
+     /*  actions.push(
         <ConnectToBlockchain
           key="connectToBlockchain"
           onConnect={() =>
             postMessage({ command: "neo3-visual-devtracker.connect" })
+          }
+        />
+      ); */
+      actions.push(
+        <ConnectWallet
+          key="connectWallet"
+          onConnectWallet={() =>
+            postMessage({
+              command: "neo3-visual-devtracker.neo.walletConnect",
+            })
           }
         />
       );
@@ -105,6 +129,16 @@ export default function QuickStart({ viewState, postMessage }: Props) {
           onCreate={() =>
             postMessage({
               command: "neo3-visual-devtracker.neo.walletCreate",
+            })
+          }
+        />
+      );} else if (viewState.hasWallets) {
+      actions.push(
+        <ConnectWallet
+          key="connectWallet"
+          onConnectWallet={() =>
+            postMessage({
+              command: "neo3-visual-devtracker.neo.walletConnect",
             })
           }
         />

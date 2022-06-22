@@ -42,10 +42,12 @@
     "onCommand:neo3-visual-devtracker.express.runAdvanced",
     "onCommand:neo3-visual-devtracker.express.transfer",
     "onCommand:neo3-visual-devtracker.express.walletCreate",
+    "onCommand:neo3-visual-devtracker.express.walletConnect",
     "onCommand:neo3-visual-devtracker.neo.contractDeploy",
     "onCommand:neo3-visual-devtracker.neo.invokeContract",
     "onCommand:neo3-visual-devtracker.neo.newContract",
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
+    "onCommand:neo3-visual-devtracker.neo.walletConnect",
     "onCommand:neo3-visual-devtracker.tracker.openContract",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCommand:neo3-visual-devtracker.tracker.openWallet",
@@ -142,6 +144,11 @@
         "category": "Neo Express N3"
       },
       {
+        "command": "neo3-visual-devtracker.express.walletConnect",
+        "title": "Create wallet",
+        "category": "Neo Express N3"
+      },
+      {
         "command": "neo3-visual-devtracker.neo.contractDeploy",
         "title": "Deploy contract",
         "category": "Neo N3"
@@ -158,6 +165,11 @@
       },
       {
         "command": "neo3-visual-devtracker.neo.walletCreate",
+        "title": "Create wallet",
+        "category": "Neo N3"
+      },
+      {
+        "command": "neo3-visual-devtracker.neo.walletConnect",
         "title": "Create wallet",
         "category": "Neo N3"
       },
@@ -258,6 +270,10 @@
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
+          "command": "neo3-visual-devtracker.express.walletConnect",
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
+        },
+        {
           "command": "neo3-visual-devtracker.neo.contractDeploy",
           "when": "view == neo3-visual-devtracker.views.blockchains && viewItem != express"
         },
@@ -290,6 +306,10 @@
         },
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
+          "when": "view == neo3-visual-devtracker.views.wallets"
+        },
+        {
+          "command": "neo3-visual-devtracker.neo.walletConnect",
           "when": "view == neo3-visual-devtracker.views.wallets"
         }
       ]
@@ -370,13 +390,17 @@
     "shx": "^0.3.3",
     "stream-browserify": "^3.0.0",
     "temp": "^0.9.4",
-    "ts-loader": "^8.1.0",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.2.4",
+    "ts-loader": "^9.3.0",
+    "ts-node": "^10.8.1",
+    "typescript": "^4.7.4",
     "vsce": "^1.96.1",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "wget-improved": "^3.2.1",
     "which": "^2.0.2"
+  },
+  "dependencies": {
+    "@walletconnect/client": "^1.7.8",
+    "@walletconnect/react-native-dapp": "^1.7.8"
   }
 }

@@ -14,6 +14,13 @@ import posixPath from "../util/posixPath";
 import WalletDetector from "../fileDetectors/walletDetector";
 import workspaceFolder from "../util/workspaceFolder";
 
+//
+import {
+  useWalletConnect,
+  withWalletConnect,
+} from "@walletconnect/react-native-dapp";
+//
+
 export default class NeoCommands {
   static async contractDeploy(
     contractDetector: ContractDetector,
@@ -254,5 +261,10 @@ export default class NeoCommands {
       "vscode.open",
       vscode.Uri.file(filename)
     );
+  }
+  //added 6/22/22-Rob
+  static async connectWallet() {
+    const connector = useWalletConnect();
+    connector.connect();
   }
 }
