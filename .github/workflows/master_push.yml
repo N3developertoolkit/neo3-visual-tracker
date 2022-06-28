@@ -1,4 +1,4 @@
-name: Build
+name: Push
 
 on:
   push:
@@ -6,32 +6,22 @@ on:
 
 jobs:
   buildextension:
-    runs-on: ubuntu-18.04
+    uses: ./.github/workflows/pr.yml
+  publish:
+    runs-on: ubuntu-latest
+    needs: buildextension
     steps:
-      - name: ⏳ Checkout
-        uses: actions/checkout@v2
+      - name: Download Build Artifact
+        uses: actions/download-artifact@v2.1.0
         with:
-          fetch-depth: 0
-      - name: 💿 Setup NodeJS
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - name: 💿 Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.9.0
-        with:
-          dotnet-version: 3.1.x
-      - name: 🚀 Build
-        run: |
-          npm ci
-          npm run compile
-      - name: 🔢 Set version
-        run: npm run setversion
+          name: extension
+          path: ./artifacts
       - name: 🎁 Package
         id: package
         shell: bash
         run: |
           npm run package
-          cp *.vsix neo3-visual-tracker.vsix
+          cp ./artifacts/*.vsix ./neo3-visual-tracker.vsix
           echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
       - name: 🌎 Release
         uses: djnicholson/release-action@v2.10

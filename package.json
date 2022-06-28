@@ -3,7 +3,7 @@
   "publisher": "ngd-seattle",
   "displayName": "Neo N3 Visual DevTracker",
   "description": "A Neo N3 blockchain explorer that is directly available within Visual Studio Code",
-  "version": "0.0.0",
+  "version": "3.3.3-preview",
   "preview": true,
   "icon": "resources/neo-logo.png",
   "galleryBanner": {
@@ -326,6 +326,7 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run compile",
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
     "bundle-nxp-download": "shx rm -rf deps/nxp && shx mkdir -p deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/3.1.38/Neo.Express.3.1.38.nupkg\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg",
@@ -373,7 +374,7 @@
     "ts-loader": "^8.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "vsce": "^1.96.1",
+    "vsce": "^2.9.2",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "wget-improved": "^3.2.1",

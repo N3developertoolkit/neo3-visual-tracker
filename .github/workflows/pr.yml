@@ -3,10 +3,16 @@ name: Build
 on:
   pull_request:
     branches: [master]
+  workflow_call:
+    outputs:
+      extensionVersion:
+        value:  ${{ jobs.build.outputs.extensionVersion }}
 
 jobs:
   buildextension:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
+    outputs:
+      extensionVersion: ${{ steps.nbgv.outputs.NpmPackageVersion }}
     steps:
       - name: ⏳ Checkout
         uses: actions/checkout@v2
@@ -17,19 +23,22 @@ jobs:
         with:
           node-version: '16'
       - name: 💿 Setup .NET Core SDK
-        uses: actions/setup-dotnet@v1.9.0
+        uses: actions/setup-dotnet@v2.1.0
         with:
-          dotnet-version: 3.1.x
-      - name: 🚀 Build
-        run: |
-          npm ci
-          npm run compile
-      - name: 🔢 Set version
-        run: npm run setversion
-      - name: 🎁 Package
-        id: package
-        shell: bash
-        run: |
-          npm run package
-          cp *.vsix neo3-visual-tracker.vsix
-          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          dotnet-version: '6.0.x'
+      - name: Install dependencies
+        run: npm ci
+      - name: Build + Package extension 
+        uses: actions/github-script@v6.0.0
+        env:
+          EXTENSION_VERSION: ${{ steps.nbgv.outputs.NpmPackageVersion }}
+        with:
+          script: |
+            const { EXTENSION_VERSION } = process.env;
+            const args = ["vsce", "package", "--no-git-tag-version", EXTENSION_VERSION];
+            await exec.exec("npx", args);
+      - name: Upload extension artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: extension
+          path: ./neo3-visual-tracker-*.vsix
