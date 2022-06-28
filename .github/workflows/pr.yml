@@ -36,7 +36,7 @@ jobs:
           script: |
             const { EXTENSION_VERSION } = process.env;
             const args = ["vsce", "package", "--no-git-tag-version", EXTENSION_VERSION];
-            await exec.exec("npx", args, { cwd: './src/extension' });
+            await exec.exec("npx", args);
       - name: Upload extension artifact
         uses: actions/upload-artifact@v2
         with:
