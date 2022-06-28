@@ -26,12 +26,68 @@ import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
 
+import { useWalletConnect } from "@cityofzion/wallet-connect-sdk-react";
+
 const LOG_PREFIX = "index";
 
 function registerCommand(
   context: vscode.ExtensionContext,
   commandId: string,
   handler: (commandArguments: CommandArguments) => Promise<void>
+) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      commandId,
+      async (context?: BlockchainIdentifier | vscode.Uri | any) => {
+        let commandArguments: CommandArguments = {};
+        if (context && !!(context as vscode.Uri).fsPath) {
+          // Activation was by right-click on an item in the VS Code file explorer
+          commandArguments.path = (context as vscode.Uri).fsPath;
+        } else if (context && !!(context as BlockchainIdentifier).name) {
+          // Activation was by right-click on an item in the Blockchain explorer
+          commandArguments.blockchainIdentifier =
+            context as BlockchainIdentifier;
+        } else if (context) {
+          // Activation by command URI containing query string parameters
+          commandArguments = await sanitizeCommandArguments(context);
+        }
+        await handler(commandArguments);
+      }
+    )
+  );
+}
+
+function registerCommand_string(
+  context: vscode.ExtensionContext,
+  commandId: string,
+  handler: (commandArguments: CommandArguments) => Promise<string>
+) {
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      commandId,
+      async (context?: BlockchainIdentifier | vscode.Uri | any) => {
+        let commandArguments: CommandArguments = {};
+        if (context && !!(context as vscode.Uri).fsPath) {
+          // Activation was by right-click on an item in the VS Code file explorer
+          commandArguments.path = (context as vscode.Uri).fsPath;
+        } else if (context && !!(context as BlockchainIdentifier).name) {
+          // Activation was by right-click on an item in the Blockchain explorer
+          commandArguments.blockchainIdentifier =
+            context as BlockchainIdentifier;
+        } else if (context) {
+          // Activation by command URI containing query string parameters
+          commandArguments = await sanitizeCommandArguments(context);
+        }
+        await handler(commandArguments);
+      }
+    )
+  );
+}
+
+function registerCommand_webView(
+  context: vscode.ExtensionContext,
+  commandId: string,
+  handler: (commandArguments: CommandArguments) => void
 ) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -170,6 +226,19 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand(context, "neo3-visual-devtracker.neo.walletCreate", () =>
     NeoCommands.createWallet()
+  );
+
+  /*  registerCommand_string(
+    context,
+    "neo3-visual-devtracker.neo.walletConnect",
+    () => NeoCommands.connectWallet()
+  ); */
+  //commented out in favor of below on 6/24/22
+
+  registerCommand_webView(
+    context,
+    "neo3-visual-devtracker.neo.walletConnect",
+    () => NeoCommands.connectWallet()
   );
 
   registerCommand(context, "neo3-visual-devtracker.connect", () =>

@@ -14,6 +14,23 @@ import posixPath from "../util/posixPath";
 import WalletDetector from "../fileDetectors/walletDetector";
 import workspaceFolder from "../util/workspaceFolder";
 
+import { useWalletConnect } from "@cityofzion/wallet-connect-sdk-react";
+import { useEffect } from "react";
+
+const wcOptions = {
+  chains: ["neo3:testnet", "neo3:mainnet"], // the blockchains your dapp accepts to connect
+  logger: "debug", // use debug to show all log information on browser console
+  methods: ["invokeFunction"], // which RPC methods do you plan to call
+  relayServer: "wss://relay.walletconnect.org", // we are using walletconnect's official relay server,
+  qrCodeModal: true, // to show a QRCode modal when connecting. Another option would be to listen to proposal event and handle it manually, described later
+  appMetadata: {
+    name: "MyApplicationName", // your application name to be displayed on the wallet
+    description: "My Application description", // description to be shown on the wallet
+    url: "https://myapplicationdescription.app/", // url to be linked on the wallet
+    icons: ["https://myapplicationdescription.app/myappicon.png"], // icon to be shown on the wallet
+  },
+};
+
 export default class NeoCommands {
   static async contractDeploy(
     contractDetector: ContractDetector,
@@ -21,6 +38,11 @@ export default class NeoCommands {
     blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
     commandArguments: CommandArguments
   ) {
+    //Added by Rob 06/24/22
+    const walletConnectCtx = useWalletConnect();
+    walletConnectCtx.connect();
+    //Added by Rob 06/24/22
+
     const identifier =
       commandArguments?.blockchainIdentifier ||
       (await blockchainsTreeDataProvider.select());
@@ -150,7 +172,7 @@ export default class NeoCommands {
       vscode.window.showInformationMessage(result);
     } catch (e) {
       vscode.window.showErrorMessage(
-        e.message || "Could not deploy contract: Unknown error"
+        /*  e.message || */ "Could not deploy contract: Unknown error"
       );
     }
   }
@@ -254,5 +276,70 @@ export default class NeoCommands {
       "vscode.open",
       vscode.Uri.file(filename)
     );
+  }
+
+  //added 6/22/22-Rob
+  public static connectWallet() {
+    {
+      const panel = vscode.window.createWebviewPanel(
+        "walletConnect", // Identifies the type of the webview. Used internally
+        "Connect Wallet", //Title displayed to user
+        vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+        {
+          enableScripts: true,
+
+          //
+        }
+      );
+
+      NeoCommands.getWebviewContent().then((value) => {
+        panel.webview.html = value;
+      });
+    }
+  }
+  //
+
+  /*   const wallet = connectWallet();
+   */
+  static async getWebviewContent() {
+    const getWallet = async () => {
+      const walletConnectCtx = useWalletConnect();
+
+      /*  useEffect(() => {
+        if (walletConnectCtx.uri.length) {
+          window
+            .open(
+              `https://neon.coz.io/connect?uri=${walletConnectCtx.uri}`,
+              "_blank"
+            )
+            ?.focus();
+        }
+      }, [walletConnectCtx.uri]); */
+
+      /* await walletConnectCtx.connect(); */
+      // the wallet is connected after the promise is resolved
+
+      const result = await Promise.resolve(walletConnectCtx.connect());
+
+      /*       const greeting: string = result;
+       */
+      return result;
+    };
+
+    return `<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Cat Coding</title>
+  </head>
+  <body>
+      <script getWallet="${getWallet}"></script>
+    
+      <br>
+      <iframe width="100%" height=800 src='https://neon.coz.io/connect?uri=$%7BwalletConnectCtx.uri%7D'> </iframe>
+      <link rel="stylesheet" type="text/css" href="https://neon.coz.io/connect?uri=$%7BwalletConnectCtx.uri%7D">
+      </body>
+  </html>`;
   }
 }

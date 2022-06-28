@@ -46,6 +46,7 @@
     "onCommand:neo3-visual-devtracker.neo.invokeContract",
     "onCommand:neo3-visual-devtracker.neo.newContract",
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
+    "onCommand:neo3-visual-devtracker.neo.walletConnect",
     "onCommand:neo3-visual-devtracker.tracker.openContract",
     "onCommand:neo3-visual-devtracker.tracker.openTracker",
     "onCommand:neo3-visual-devtracker.tracker.openWallet",
@@ -159,6 +160,11 @@
       {
         "command": "neo3-visual-devtracker.neo.walletCreate",
         "title": "Create wallet",
+        "category": "Neo N3"
+      },
+      {
+        "command": "neo3-visual-devtracker.neo.walletConnect",
+        "title": "Connect wallet",
         "category": "Neo N3"
       },
       {
@@ -291,6 +297,10 @@
         {
           "command": "neo3-visual-devtracker.neo.walletCreate",
           "when": "view == neo3-visual-devtracker.views.wallets"
+        },
+        {
+          "command": "neo3-visual-devtracker.neo.walletConnect",
+          "when": "view == neo3-visual-devtracker.views.wallets"
         }
       ]
     },
@@ -344,11 +354,12 @@
   },
   "devDependencies": {
     "@cityofzion/neon-core": "^5.0.0-next.12",
+    "@cityofzion/wallet-connect-sdk-react": "^1.4.1",
     "@types/crypto-js": "^4.0.1",
     "@types/glob": "^7.1.3",
     "@types/gulp": "^4.0.7",
     "@types/node": "^14.14.39",
-    "@types/react": "^17.0.3",
+    "@types/react": "^17.0.47",
     "@types/react-dom": "^17.0.3",
     "@types/temp": "^0.9.0",
     "@types/vscode": "^1.51.0",
