@@ -2,14 +2,22 @@ name: Build
 
 on:
   pull_request:
-    branches: [master]
+    branches:
+      - master
+      - develop
+      - 'release/*'
+  push:
+    branches:
+      - master
+      - develop
+      - 'release/**'
   workflow_call:
     outputs:
       extensionVersion:
         value:  ${{ jobs.build.outputs.extensionVersion }}
 
 jobs:
-  buildextension:
+  build:
     runs-on: ubuntu-latest
     outputs:
       extensionVersion: ${{ steps.nbgv.outputs.NpmPackageVersion }}
@@ -18,14 +26,17 @@ jobs:
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: 💿 Setup NodeJS
-        uses: actions/setup-node@v2
-        with:
-          node-version: '16'
       - name: 💿 Setup .NET Core SDK
         uses: actions/setup-dotnet@v2.1.0
         with:
           dotnet-version: '6.0.x'
+      - id: nbgv
+        name: Setup Nerdbank.GitVersioning
+        uses: dotnet/nbgv@v0.4.0
+      - name: 💿 Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
       - name: Install dependencies
         run: npm ci
       - name: Build + Package extension 
@@ -42,3 +53,18 @@ jobs:
         with:
           name: extension
           path: ./neo3-visual-tracker-*.vsix
+      - name: 🎁 Package
+        id: package
+        shell: bash
+        run: |
+          cp *.vsix neo3-visual-tracker.vsix
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      - name: 🌎 Release Rolling build
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        uses: djnicholson/release-action@v2.10
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag-name: v0.0-${{ steps.package.outputs.branch }}
+          release-name: "Rolling build"
+          asset-name: "neo3-visual-tracker.vsix"
+          file: "neo3-visual-tracker.vsix"
