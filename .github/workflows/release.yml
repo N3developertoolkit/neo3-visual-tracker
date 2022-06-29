@@ -15,7 +15,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
-  build:
+  publish:
     if: startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-latest
     needs: build
@@ -36,4 +36,4 @@ jobs:
             *.vsix
       - name: Publish debug extension to VSCode Marketplace
         if: startsWith(github.ref, 'refs/heads/release/')
-        run: npx vsce publish -i ${{ format('./artifacts/neo-contract-debug-{0}.vsix', needs.build.outputs.extensionVersion) }} -p ${{ secrets.VSCODE_MARKETPLACE_TOKEN }}
+        run: npx vsce publish -i ${{ format('./artifacts/neo3-visual-tracker-{0}.vsix', needs.build.outputs.extensionVersion) }} -p ${{ secrets.VSCODE_MARKETPLACE_TOKEN }}
