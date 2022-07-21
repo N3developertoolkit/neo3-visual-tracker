@@ -340,13 +340,10 @@ export default class NeoCommands {
 
     const scriptUri = webview.asWebviewUri(scriptPathOnDisk); */
 
-    let count:any = 0;
+    let count: any = 0;
     const harry = harold(count);
 
-    function harold(count:any) {
-      
-    
-
+    function harold(count: any) {
       // Handle the message inside the webview
       window.addEventListener("message", (event) => {
         const message = event.data; // The JSON data our extension sent
@@ -383,7 +380,6 @@ export default class NeoCommands {
 
       <br>
       <br>
-      What the suck laudin mang!!!
       <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
       <h1 id="lines-of-code-counter">0</h1>
       <h1 id="lines-of-code-counter">0</h1>
