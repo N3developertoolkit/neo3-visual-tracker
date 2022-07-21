@@ -15,7 +15,6 @@ import WalletDetector from "../fileDetectors/walletDetector";
 import workspaceFolder from "../util/workspaceFolder";
 
 import { useWalletConnect } from "@cityofzion/wallet-connect-sdk-react";
-import { WalletConnectContextProvider } from "@cityofzion/wallet-connect-sdk-react";
 import { useEffect } from "react";
 
 import { WcSdk } from "@cityofzion/wallet-connect-sdk-core";
@@ -345,16 +344,6 @@ export default class NeoCommands {
 
     function harold(count: any) {
       // Handle the message inside the webview
-      window.addEventListener("message", (event) => {
-        const message = event.data; // The JSON data our extension sent
-
-        switch (message.command) {
-          case "refactor":
-            count = Math.ceil(count * 0.5);
-            counter.textContent = count;
-            break;
-        }
-      });
     }
 
     return `<!DOCTYPE html>
@@ -386,6 +375,17 @@ export default class NeoCommands {
 
       <script> 
       const counter: any = document.getElementById("lines-of-code-counter");
+
+      window.addEventListener("message", (event) => {
+        const message = event.data; // The JSON data our extension sent
+
+        switch (message.command) {
+          case "refactor":
+            count = Math.ceil(count * 0.5);
+            counter.textContent = count;
+            break;
+        }
+      });
       
       let count = 0;
       setInterval(() => {

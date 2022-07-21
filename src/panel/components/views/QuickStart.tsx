@@ -102,11 +102,21 @@ export default function QuickStart({ viewState, postMessage }: Props) {
         );
       }
     } else {
-      actions.push(
+      /*  actions.push(
         <ConnectToBlockchain
           key="connectToBlockchain"
           onConnect={() =>
             postMessage({ command: "neo3-visual-devtracker.connect" })
+          }
+        />
+      ); */
+      actions.push(
+        <ConnectWallet
+          key="connectWallet"
+          onConnectWallet={() =>
+            postMessage({
+              command: "neo3-visual-devtracker.neo.walletConnect",
+            })
           }
         />
       );
@@ -118,6 +128,17 @@ export default function QuickStart({ viewState, postMessage }: Props) {
           onCreate={() =>
             postMessage({
               command: "neo3-visual-devtracker.neo.walletCreate",
+            })
+          }
+        />
+      );
+    } else if (viewState.hasWallets) {
+      actions.push(
+        <ConnectWallet
+          key="connectWallet"
+          onConnectWallet={() =>
+            postMessage({
+              command: "neo3-visual-devtracker.neo.walletConnect",
             })
           }
         />
