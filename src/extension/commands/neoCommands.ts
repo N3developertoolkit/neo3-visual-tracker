@@ -15,8 +15,12 @@ import WalletDetector from "../fileDetectors/walletDetector";
 import workspaceFolder from "../util/workspaceFolder";
 
 import { useWalletConnect } from "@cityofzion/wallet-connect-sdk-react";
+import { WalletConnectContextProvider } from "@cityofzion/wallet-connect-sdk-react";
 import { useEffect } from "react";
 
+import { WcSdk } from "@cityofzion/wallet-connect-sdk-core";
+
+//added from https://github.com/CityOfZion/wallet-connect-sdk/blob/develop/packages/wallet-connect-sdk-react/README.md#handling-proposals-manually
 const wcOptions = {
   chains: ["neo3:testnet", "neo3:mainnet"], // the blockchains your dapp accepts to connect
   logger: "debug", // use debug to show all log information on browser console
@@ -32,6 +36,8 @@ const wcOptions = {
 };
 
 export default class NeoCommands {
+  static _extensionUri: vscode.Uri;
+  //above added by Rob on 7/12/22
   static async contractDeploy(
     contractDetector: ContractDetector,
     walletDetector: WalletDetector,
@@ -39,8 +45,8 @@ export default class NeoCommands {
     commandArguments: CommandArguments
   ) {
     //Added by Rob 06/24/22
-    const walletConnectCtx = useWalletConnect();
-    walletConnectCtx.connect();
+    /*   const walletConnectCtx = useWalletConnect();
+    walletConnectCtx.connect(); */
     //Added by Rob 06/24/22
 
     const identifier =
@@ -288,7 +294,7 @@ export default class NeoCommands {
         {
           enableScripts: true,
 
-          //
+          //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         }
       );
 
@@ -302,44 +308,159 @@ export default class NeoCommands {
   /*   const wallet = connectWallet();
    */
   static async getWebviewContent() {
-    const getWallet = async () => {
-      const walletConnectCtx = useWalletConnect();
+    /* const wcOptions = class {
+      chains: ["neo3:testnet", "neo3:mainnet"] | undefined; // the blockchains your dapp accepts to connect
+      logger: "debug" | undefined; // use debug to show all log information on browser console
+      methods: ["invokeFunction"] | undefined; // which RPC methods do you plan to call
+      relayServer: "wss://relay.walletconnect.org" | undefined; // we are using walletconnect's official relay server,
+      qrCodeModal: true | undefined; // to show a QRCode modal when connecting. Another option would be to listen to proposal event and handle it manually, described later
+      appMetadata:
+        | {
+            name: "MyApplicationName"; // your application name to be displayed on the wallet
+            description: "My Application description"; // description to be shown on the wallet
+            url: "https://myapplicationdescription.app/"; // url to be linked on the wallet
+            icons: ["https://myapplicationdescription.app/myappicon.png"]; // icon to be shown on the wallet
+          }
+        | undefined;
+    }; */
 
-      /*  useEffect(() => {
-        if (walletConnectCtx.uri.length) {
-          window
-            .open(
-              `https://neon.coz.io/connect?uri=${walletConnectCtx.uri}`,
-              "_blank"
-            )
-            ?.focus();
+    const nonce = getNonce();
+
+    function getNonce() {
+      let text = "hello!!";
+      const possible =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      return text;
+    }
+    /* 
+    const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, "main.js");
+
+    const scriptUri = webview.asWebviewUri(scriptPathOnDisk); */
+
+    let count:any = 0;
+    const harry = harold(count);
+
+    function harold(count:any) {
+      
+    
+
+      // Handle the message inside the webview
+      window.addEventListener("message", (event) => {
+        const message = event.data; // The JSON data our extension sent
+
+        switch (message.command) {
+          case "refactor":
+            count = Math.ceil(count * 0.5);
+            counter.textContent = count;
+            break;
         }
-      }, [walletConnectCtx.uri]); */
-
-      /* await walletConnectCtx.connect(); */
-      // the wallet is connected after the promise is resolved
-
-      const result = await Promise.resolve(walletConnectCtx.connect());
-
-      /*       const greeting: string = result;
-       */
-      return result;
-    };
+      });
+    }
 
     return `<!DOCTYPE html>
   <html lang="en">
+  <WalletConnectContextProvider options={wcOptions}>
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Cat Coding</title>
   </head>
   <body>
-      <script getWallet="${getWallet}"></script>
-    
+         
+
       <br>
-      <iframe width="100%" height=800 src='https://neon.coz.io/connect?uri=$%7BwalletConnectCtx.uri%7D'> </iframe>
-      <link rel="stylesheet" type="text/css" href="https://neon.coz.io/connect?uri=$%7BwalletConnectCtx.uri%7D">
-      </body>
+      <br>
+      <br>
+      <script nonce="${getNonce}" >
+      
+      
+      </script>
+      
+    
+
+      <br>
+      <br>
+      What the suck laudin mang!!!
+      <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
+      <h1 id="lines-of-code-counter">0</h1>
+      <h1 id="lines-of-code-counter">0</h1>
+
+      <script> 
+      const counter: any = document.getElementById("lines-of-code-counter");
+      
+      let count = 0;
+      setInterval(() => {
+        counter.textContent = count++;
+      }, 100);            
+      ${harry}          
+               
+      </script>
+      
+      <h1 id="butter">5</h1>
+
+      <script>
+
+      const counter0 = document.getElementById('butter');
+
+      const walletConnectCtx = useWalletConnect();
+      if (walletConnectCtx.uri.length) {
+        let text0 = walletConnectCtx.uri;
+    }
+      
+    
+
+      setInterval(() => {
+        counter0.textContent = text0;
+    });
+ 
+      </script>
+
+      <script>
+
+      const wcInstance = new WcSdk();
+
+      wcInstance.initClient(
+        "debug", // logger: use 'debug' to show all log information on browser console, use 'error' to show only errors
+        "wss://relay.walletconnect.org" // we are using walletconnect's official relay server
+      );
+
+      wcInstance.connect({
+        chains: ["neo3:testnet", "neo3:mainnet"], // the blockchains your dapp accepts to connect
+        methods: [ // which RPC methods do you plan to call
+          "invokeFunction",
+          "testInvoke",
+          "signMessage",
+          "verifyMessage"
+        ],
+        appMetadata: {
+          name: "MyApplicationName", // your application name to be displayed on the wallet
+          description: "My Application description", // description to be shown on the wallet
+          url: "https://myapplicationdescription.app/", // url to be linked on the wallet
+          icons: ["https://myapplicationdescription.app/myappicon.png"], // icon to be shown on the wallet
+        }
+      })
+
+      console.log(wcInstance.session ? 'Connected successfully' : 'Connection refused')
+
+      </script>
+
+      <br>
+
+     <br>
+
+     
+      <br>
+
+    
+      <iframe width="100%" height=800 src='https://algorand.github.io/walletconnect-example-dapp/'> </iframe>
+      <link rel="stylesheet" type="text/css" options={wcOptions} href="https://neon.coz.io/connect?uri=$%7BwalletConnectCtx.uri%7D">
+      
+      </body>       
+      </WalletConnectContextProvider>
+ 
   </html>`;
   }
 }

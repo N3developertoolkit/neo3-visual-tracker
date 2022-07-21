@@ -1,4 +1,5 @@
 type View =
+  | "connectWallet"
   | "contract"
   | "invokeFile"
   | "quickStart"

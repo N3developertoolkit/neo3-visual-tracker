@@ -4,7 +4,10 @@
     {
       "type": "npm",
       "script": "vscode-start",
-      "problemMatcher": ["$ts-webpack-watch", "$tslint-webpack-watch"],
+      "problemMatcher": [
+        "$ts-webpack-watch",
+        "$tslint-webpack-watch"
+      ],
       "presentation": {
         "reveal": "always"
       },
@@ -13,6 +16,124 @@
         "kind": "build",
         "isDefault": true
       }
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: create-private-chain",
+      "command": "neoxp",
+      "type": "shell",
+      "args": [
+        "create",
+        "-f",
+        "test/poTests.neo-express"
+      ],
+      "group": "set-private-chain",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": []
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: create-wallet-owner",
+      "command": "neoxp",
+      "type": "shell",
+      "args": [
+        "wallet",
+        "create",
+        "-i",
+        "test/poTests.neo-express",
+        "owner"
+      ],
+      "group": "set-private-chain",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "dependsOn": "po: create-private-chain"
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: create-wallet-alice",
+      "command": "neoxp",
+      "type": "shell",
+      "args": [
+        "wallet",
+        "create",
+        "-i",
+        "test/poTests.neo-express",
+        "alice"
+      ],
+      "group": "set-private-chain",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "dependsOn": "po: create-wallet-owner"
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: create-wallet-bob",
+      "command": "neoxp",
+      "type": "shell",
+      "args": [
+        "wallet",
+        "create",
+        "-i",
+        "test/poTests.neo-express",
+        "bob"
+      ],
+      "group": "set-private-chain",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "dependsOn": "po: create-wallet-alice"
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: transfer-gas-to-wallets",
+      "command": "neoxp",
+      "type": "shell",
+      "args": [
+        "batch",
+        "-i",
+        "test/poTests.neo-express",
+        "test/setup-test-chain.batch"
+      ],
+      "group": "set-private-chain",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "dependsOn": "po: create-wallet-bob"
+    },
+    {
+      "options": {
+        "cwd": "${workspaceFolder}/contracts/po"
+      },
+      "label": "po: build",
+      "command": "neo3-boa",
+      "type": "shell",
+      "args": [
+        "src/po_contract.py"
+      ],
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      },
+      "problemMatcher": [],
+      "dependsOn": "po: transfer-gas-to-wallets"
     }
   ]
 }

@@ -8,11 +8,15 @@
     "rootDir": "src",
     "outDir": "out",
     "strict": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
     "downlevelIteration": true
   },
-  "exclude": ["node_modules", "gulpfile.ts"]
+  "exclude": ["node_modules", "gulpfile.ts"],
+  "resolve": {
+    "extensions": [".js", ".jsx", ".ts", ".tsx", ".html", ".css"],
+    "modules": ["node_modules"]
+  }
 }

@@ -10,7 +10,7 @@ type Props = {
   viewState: WalletViewState;
   postMessage: (message: WalletViewRequest) => void;
 };
-
+  
 export default function Wallet({ viewState, postMessage }: Props) {
   const address = viewState.address;
   const name =

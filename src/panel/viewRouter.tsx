@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 
+import ConnectWallet from "./components/views/ConnectWallet";
+import ConnectWalletViewState from "../shared/viewState/connectWalletViewState";
 import Contract from "./components/views/Contract";
 import ContractViewState from "../shared/viewState/contractViewState";
 import ControllerRequest from "../shared/messages/controllerRequest";
@@ -55,6 +57,9 @@ export default function ViewRouter() {
   let panelContent = <div></div>;
   if (!!view && !!viewState) {
     switch (view) {
+      case "connectWallet":
+        panelContent = <ConnectWallet />;
+        break;
       case "contract":
         panelContent = (
           <Contract

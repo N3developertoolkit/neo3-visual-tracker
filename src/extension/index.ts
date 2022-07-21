@@ -1,6 +1,11 @@
 import * as vscode from "vscode";
 
 import ActiveConnection from "./activeConnection";
+
+//
+import TryConnectWallet from "./tryConnectWallet";
+//added by Rob 07-14-22
+
 import AutoComplete from "./autoComplete";
 import BlockchainIdentifier from "./blockchainIdentifier";
 import BlockchainMonitorPool from "./blockchainMonitor/blockchainMonitorPool";
@@ -116,6 +121,14 @@ export async function activate(context: vscode.ExtensionContext) {
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
+
+  //!!!
+  // ExtensionContext#
+  //An extension context is a collection of utilities private to an extension.
+
+  //An instance of an ExtensionContext is provided as the first parameter to the activate-call of an extension.
+  //!!!
+
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
   const blockchainsTreeDataProvider = await BlockchainsTreeDataProvider.create(
@@ -227,6 +240,10 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommand(context, "neo3-visual-devtracker.neo.walletCreate", () =>
     NeoCommands.createWallet()
   );
+  /*   registerCommand(context, "neo3-visual-devtracker.neo.walletConnect", () =>
+    ConnectWalletCommand.connectWallet()
+  ); */
+  //RL added above for webview (new) on 7/14/22
 
   /*  registerCommand_string(
     context,
@@ -238,7 +255,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommand_webView(
     context,
     "neo3-visual-devtracker.neo.walletConnect",
-    () => NeoCommands.connectWallet()
+    () => TryConnectWallet.ConnectWallet5()
   );
 
   registerCommand(context, "neo3-visual-devtracker.connect", () =>
@@ -436,4 +453,7 @@ export async function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
   Log.log(LOG_PREFIX, "Deactivating extension...");
   Log.close();
+}
+function webview(webview: any, Webview: any): any {
+  throw new Error("Function not implemented.");
 }
