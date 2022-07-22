@@ -17,7 +17,9 @@ import workspaceFolder from "../util/workspaceFolder";
 import { useWalletConnect } from "@cityofzion/wallet-connect-sdk-react";
 import { useEffect } from "react";
 
-import { WcSdk } from "@cityofzion/wallet-connect-sdk-core";
+import WcSdk from "@cityofzion/wallet-connect-sdk-core";
+
+import SignClient from "@walletconnect/sign-client";
 
 //added from https://github.com/CityOfZion/wallet-connect-sdk/blob/develop/packages/wallet-connect-sdk-react/README.md#handling-proposals-manually
 const wcOptions = {
@@ -284,30 +286,41 @@ export default class NeoCommands {
   }
 
   //added 6/22/22-Rob
-  public static connectWallet() {
-    {
-      const panel = vscode.window.createWebviewPanel(
-        "walletConnect", // Identifies the type of the webview. Used internally
-        "Connect Wallet", //Title displayed to user
-        vscode.ViewColumn.One, // Editor column to show the new webview panel in.
-        {
-          enableScripts: true,
+  public static async connectWallet() {
+    let wcSdk = new WcSdk(
+      await SignClient.init({
+        projectId: "<your wc project id>", // the ID of your project on Wallet Connect website
+        relayUrl: "wss://relay.walletconnect.com", // we are using walletconnect's official relay server
+        metadata: {
+          name: "MyApplicationName", // your application name to be displayed on the wallet
+          description: "My Application description", // description to be shown on the wallet
+          url: "https://myapplicationdescription.app/", // url to be linked on the wallet
+          icons: ["https://myapplicationdescription.app/myappicon.png"], // icon to be shown on the wallet
+        },
+      })
+    );
 
-          //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-        }
+    if (wcSdk.isConnected()) {
+      console.log(wcSdk.getAccountAddress()); // print the first connected account address
+      console.log(wcSdk.getChainId()); // print the first connected account chain info
+      console.log(wcSdk.session.namespaces); // print the blockchain dictionary with methods, accounts and events
+      console.log(wcSdk.session.peer.metadata); // print the wallet metadata
+    }
+
+    if (!wcSdk.isConnected()) {
+      await wcSdk.connect("neo3:testnet"); // choose between neo3:mainnet, neo3:testnet or neo3:private
+      // and check if there is a connection
+      console.log(
+        wcSdk.isConnected() ? "Connected successfully" : "Connection refused"
       );
-
-      NeoCommands.getWebviewContent().then((value) => {
-        panel.webview.html = value;
-      });
     }
   }
   //
 
   /*   const wallet = connectWallet();
-   */
+   
   static async getWebviewContent() {
-    /* const wcOptions = class {
+     const wcOptions = class {
       chains: ["neo3:testnet", "neo3:mainnet"] | undefined; // the blockchains your dapp accepts to connect
       logger: "debug" | undefined; // use debug to show all log information on browser console
       methods: ["invokeFunction"] | undefined; // which RPC methods do you plan to call
@@ -321,7 +334,7 @@ export default class NeoCommands {
             icons: ["https://myapplicationdescription.app/myappicon.png"]; // icon to be shown on the wallet
           }
         | undefined;
-    }; */
+    }; 
 
     const nonce = getNonce();
 
@@ -334,10 +347,10 @@ export default class NeoCommands {
       }
       return text;
     }
-    /* 
+    
     const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, "main.js");
 
-    const scriptUri = webview.asWebviewUri(scriptPathOnDisk); */
+    const scriptUri = webview.asWebviewUri(scriptPathOnDisk); 
 
     let count: any = 0;
     const harry = harold(count);
@@ -459,4 +472,6 @@ export default class NeoCommands {
  
   </html>`;
   }
+
+  */
 }

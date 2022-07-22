@@ -255,7 +255,7 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommand_webView(
     context,
     "neo3-visual-devtracker.neo.walletConnect",
-    () => TryConnectWallet.ConnectWallet5()
+    () => NeoCommands.connectWallet()
   );
 
   registerCommand(context, "neo3-visual-devtracker.connect", () =>
