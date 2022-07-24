@@ -19,10 +19,14 @@ namespace $_CONTRACTNAME_$Tests
         readonly CheckpointFixture fixture;
         readonly ExpressChain chain;
 
+        public const byte NUMBER_STORAGE_PREFIX = 0x00;
+        public const byte CONTRACT_OWNER_PREFIX = 0xff;
+
+
         public $_CLASSNAME_$Tests(CheckpointFixture<$_CLASSNAME_$Tests> fixture)
         {
             this.fixture = fixture;
-            this.chain = fixture.FindChain("$_CONTRACTNAME_$Tests.neo-express");
+            this.chain = fixture.FindChain();
         }
 
         [Fact]
@@ -36,7 +40,7 @@ namespace $_CONTRACTNAME_$Tests
             // check to make sure contract owner stored in contract storage
             var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
             storages.Count().Should().Be(1);
-            storages.TryGetValue("MetadataOwner", out var item).Should().BeTrue();
+            storages.TryGetValue(CONTRACT_OWNER_PREFIX, out var item).Should().BeTrue();
             item!.Should().Be(owner);
         }
 
@@ -66,7 +70,7 @@ namespace $_CONTRACTNAME_$Tests
 
             // ensure correct storage item was created 
             var storages = snapshot.GetContractStorages<$_CLASSNAME_$>();
-            var contractStorage = storages.StorageMap("$_CLASSNAME_$");
+            var contractStorage = storages.StorageMap(NUMBER_STORAGE_PREFIX);
             contractStorage.TryGetValue(alice, out var item).Should().BeTrue();
             item!.Should().Be(42);
         }
