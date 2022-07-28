@@ -408,7 +408,6 @@
     "which": "^2.0.2"
   },
   "dependencies": {
-    "@walletconnect/client": "^1.7.8",
-    "@walletconnect/react-native-dapp": "^1.7.8"
+    "@cityofzion/wallet-connect-sdk-react": "^1.4.1"
   }
 }
