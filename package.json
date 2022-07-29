@@ -43,6 +43,7 @@
     "onCommand:neo3-visual-devtracker.express.walletCreate",
     "onCommand:neo3-visual-devtracker.neo.contractDeploy",
     "onCommand:neo3-visual-devtracker.neo.invokeContract",
+    "onCommand:neo3-visual-devtracker.express.walletConnect",
     "onCommand:neo3-visual-devtracker.neo.newContract",
     "onCommand:neo3-visual-devtracker.neo.walletCreate",
     "onCommand:neo3-visual-devtracker.tracker.openContract",
@@ -137,6 +138,11 @@
       },
       {
         "command": "neo3-visual-devtracker.express.walletCreate",
+        "title": "Create wallet",
+        "category": "Neo Express N3"
+      },
+      {
+        "command": "neo3-visual-devtracker.express.walletConnect",
         "title": "Create wallet",
         "category": "Neo Express N3"
       },
@@ -378,5 +384,10 @@
     "webpack-cli": "^4.6.0",
     "wget-improved": "^3.2.1",
     "which": "^2.0.2"
+  },
+  "dependencies": {
+    "@cityofzion/wallet-connect-sdk-core": "^1.6.1",
+    "@cityofzion/wallet-connect-sdk-react": "^1.4.1",
+    "@walletconnect/sign-client": "^2.0.0-rc.1"
   }
 }
