@@ -154,7 +154,7 @@ export default class NeoCommands {
       vscode.window.showInformationMessage(result);
     } catch (e) {
       vscode.window.showErrorMessage(
-        e.message || "Could not deploy contract: Unknown error"
+        "Could not deploy contract: Unknown error"
       );
     }
   }
@@ -176,8 +176,8 @@ export default class NeoCommands {
     if (wcSdk.isConnected()) {
       console.log(wcSdk.getAccountAddress()); // print the first connected account address
       console.log(wcSdk.getChainId()); // print the first connected account chain info
-      console.log(wcSdk.session.namespaces); // print the blockchain dictionary with methods, accounts and events
-      console.log(wcSdk.session.peer.metadata); // print the wallet metadata
+      /*  console.log(wcSdk.session.namespaces); // print the blockchain dictionary with methods, accounts and events
+      console.log(wcSdk.session.peer.metadata); // print the wallet metadata */
     }
 
     if (!wcSdk.isConnected()) {
