@@ -376,7 +376,7 @@
     "vsce": "^2.9.2",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
-    "wget-improved": "^3.2.1",
+    "wget-improved": "^3.3.1",
     "which": "^2.0.2"
   }
 }
