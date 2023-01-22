@@ -325,19 +325,16 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile-prod && npm run bundle-nxp",
-    "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "shx rm -rf deps/nxp && shx mkdir -p deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/3.5.20/Neo.Express.3.5.20.nupkg\" -O deps/nxp/nxp.nupkg",
-    "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg",
+    "vscode:prepublish": "npm run compile-prod",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
     "compile-panel": "webpack --config src/panel/webpack.config.js --mode development",
     "compile-prod": "npm run compile-prod-ext && npm run compile-prod-panel",
     "compile-prod-ext": "webpack --config src/extension/webpack.config.js --mode production",
     "compile-prod-panel": "webpack --config src/panel/webpack.config.js --mode production",
-    "package": "npm run compile-prod && npm run bundle-nxp && vsce package",
+    "package": "npm run compile-prod && vsce package",
     "setversion": "gulp setversion",
-    "vscode-start": "npm install && npm run bundle-nxp && npm run watch",
+    "vscode-start": "npm install && npm run watch",
     "watch": "concurrently -r npm:watch-*",
     "watch-ext": "webpack --config src/extension/webpack.config.js --mode development --watch --stats-error-details",
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --stats-error-details"
@@ -378,5 +375,8 @@
     "webpack-cli": "^4.6.0",
     "wget-improved": "^3.2.1",
     "which": "^2.0.2"
+  },
+  "dependencies": {
+    "axios": "^1.2.3"
   }
 }
