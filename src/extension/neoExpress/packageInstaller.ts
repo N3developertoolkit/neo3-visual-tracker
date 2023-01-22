@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import * as fs from "fs";
 import PackageVersion from "./packageVersion";
 import workspaceFolder from "../util/workspaceFolder";
+import posixPath from "../util/posixPath";
 
 export type Package = {
   name: string;
@@ -26,41 +27,99 @@ export enum UpdateResult {
 export default class PackageInstaller {
   name: string;
   version: string;
+  rootFolder: string;
+  preferredLocation: PackageLocation;
+  targetPackage: Package;
 
   constructor(name: string, version: string) {
     this.name = name;
     this.version = version;
+    this.targetPackage = { name: this.name, version: PackageVersion.parse(this.version) };
+    this.rootFolder = workspaceFolder() || process.cwd();
+    this.preferredLocation = PackageLocation.local;
   }
-  async install() {
-    const rootFolder = workspaceFolder() || process.cwd();
-    const target: Package = { name: this.name, version: PackageVersion.parse(this.version) };
-    const localPackage = await this.findPackage(rootFolder, PackageLocation.local);
-    const globalPackage = await this.findPackage(rootFolder, PackageLocation.global);
 
-    let localUpdateResult = UpdateResult.notUpdated;
-    let globalUpdateResult = UpdateResult.notUpdated;
-    if (localPackage) {
-      localUpdateResult = await this.tryUpdateToLatest(rootFolder, localPackage, {
-        ...target,
-        location: PackageLocation.local,
+  async tryInstall() {
+    const hasRequired = await this.hasRequiredPacakge();
+    if (hasRequired) {
+      return;
+    }
+    const selected = await this.selectUserPreferredLocation();
+    if (!selected) {
+      return;
+    }
+    let currentPackage = await this.findPackage(this.rootFolder, this.preferredLocation);
+    if (currentPackage) {
+      const updateResult = await this.tryUpdateToLatest(this.rootFolder, currentPackage, {
+        ...this.targetPackage,
+        location: this.preferredLocation,
       });
+      if (updateResult === UpdateResult.currentPackageIsNewer) {
+        vscode.window.showInformationMessage(
+          `The Neo.express on your box is newer version than the required. Please consider updating the extension to the latest version.`
+        );
+      }
+    } else {
+      await this.installNew(this.rootFolder, { ...this.targetPackage, location: this.preferredLocation });
     }
+  }
+  async hasRequiredPacakge(): Promise<boolean> {
+    const localPackage = await this.findPackage(this.rootFolder, PackageLocation.local, this.version);
+    const globalPackage = await this.findPackage(this.rootFolder, PackageLocation.global, this.version);
+    return localPackage || globalPackage ? true : false;
+  }
 
-    if (globalPackage) {
-      globalUpdateResult = await this.tryUpdateToLatest(rootFolder, globalPackage, {
-        ...target,
-        location: PackageLocation.global,
-      });
-    } else if (
-      localUpdateResult === UpdateResult.currentPackageIsNewer ||
-      localUpdateResult === UpdateResult.declinedToUpdate
-    ) {
-      await this.installNew(rootFolder, { ...target, location: PackageLocation.local });
+  async selectUserPreferredLocation(): Promise<boolean> {
+    const localPackage = await this.findPackage(this.rootFolder, PackageLocation.local);
+    const globalPackage = await this.findPackage(this.rootFolder, PackageLocation.global);
+    let response: string | undefined;
+    if (localPackage && globalPackage) {
+      response = await vscode.window.showInformationMessage(
+        `Neo.express ${
+          this.version
+        } is required. We have found version ${localPackage.version.toString()} in local and version ${globalPackage.version.toString()} in global. Which one would you like to use?`,
+        "Local",
+        "Global",
+        "More info"
+      );
+      if (response === "Local") {
+        this.preferredLocation = PackageLocation.local;
+      } else if (response === "Global") {
+        this.preferredLocation = PackageLocation.global;
+      } else if (response === "More info") {
+        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
+      }
+    } else if (!localPackage && !globalPackage) {
+      response = await vscode.window.showInformationMessage(
+        `Neo.express ${this.version} is required. Where would you like to install it?`,
+        "Local",
+        "Global",
+        "More info"
+      );
+      if (response === "Local") {
+        this.preferredLocation = PackageLocation.local;
+      } else if (response === "Global") {
+        this.preferredLocation = PackageLocation.global;
+      } else if (response === "More info") {
+        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
+      }
+    } else if ((localPackage && !globalPackage) || (!localPackage && globalPackage)) {
+      const location = localPackage ? "Local" : "Global";
+      const altLocation = localPackage ? "Global" : "Local";
+      const version = localPackage?.version || globalPackage?.version;
+      const message = `Neo.express ${
+        this.version
+      } is required. We have found version ${version?.toString()} in ${location}. Would you like to use it or installed in ${altLocation}?`;
+      response = await vscode.window.showInformationMessage(message, location, altLocation, "More info");
+      if (response === "Local") {
+        this.preferredLocation = PackageLocation.local;
+      } else if (response === "Global") {
+        this.preferredLocation = PackageLocation.global;
+      } else if (response === "More info") {
+        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
+      }
     }
-
-    if (localUpdateResult === UpdateResult.notUpdated && globalUpdateResult === UpdateResult.notUpdated) {
-      await this.installNew(rootFolder, { ...target, location: PackageLocation.local });
-    }
+    return response === undefined || response === "More info" ? false : true;
   }
 
   async installNew(path: string, tool: Package): Promise<boolean> {
@@ -71,11 +130,14 @@ export default class PackageInstaller {
         await this.runCommand(`dotnet tool install --global ${tool.name} --version ${version}`, path);
       } else {
         let message;
-        if (!fs.existsSync(`${path}/.config/dotnet-tools.json`)) {
+        if (!fs.existsSync(posixPath(path, ".config", "dotnet-tools.json"))) {
           message = await this.runCommand(`dotnet new tool-manifest`, path);
         }
         message = await this.runCommand(`dotnet tool install --local ${tool.name} --version ${version}`, path);
       }
+      vscode.window.showInformationMessage(
+        `Neo.express installed to ${tool.location === PackageLocation.local ? "local" : "global"} successfully.`
+      );
       return true;
     } catch (error) {
       console.error(`error: ${error}`);

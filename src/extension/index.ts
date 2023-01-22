@@ -22,8 +22,7 @@ import Templates from "./templates/templates";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
-import PackageInstaller, { PackageLocation, Package } from "./neoExpress/packageInstaller";
-import PackageVersion from "./neoExpress/packageVersion";
+import PackageInstaller from "./neoExpress/packageInstaller";
 
 const LOG_PREFIX = "index";
 
@@ -53,7 +52,7 @@ function registerCommand(
 export async function activate(context: vscode.ExtensionContext) {
   Log.log(LOG_PREFIX, "Activating extension...");
   const installer = new PackageInstaller("neo.express", "3.5.20");
-  await installer.install();
+  await installer.tryInstall();
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
@@ -152,6 +151,8 @@ export async function activate(context: vscode.ExtensionContext) {
   registerCommand(context, "neo3-visual-devtracker.customizeServerList", () => serverListDetector.customize());
 
   registerCommand(context, "neo3-visual-devtracker.disconnect", () => activeConnection.disconnect());
+
+  registerCommand(context, "neo3-visual-devtracker.express.install", () => NeoExpressCommands.install());
 
   registerCommand(context, "neo3-visual-devtracker.express.contractDeploy", (commandArguments) =>
     NeoExpressCommands.contractDeploy(neoExpress, contractDetector, blockchainsTreeDataProvider, commandArguments)
