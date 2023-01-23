@@ -15,7 +15,7 @@ import posixPath from "../util/posixPath";
 import StorageExplorerPanelController from "../panelControllers/storageExplorerPanelController";
 import TrackerPanelController from "../panelControllers/trackerPanelController";
 import workspaceFolder from "../util/workspaceFolder";
-import PackageInstaller from "../neoExpress/packageInstaller";
+import NeoExpressInstaller from "../neoExpress/neoExpressInstaller";
 
 export default class NeoExpressCommands {
   static async contractDeploy(
@@ -385,7 +385,7 @@ export default class NeoExpressCommands {
   }
 
   static async install() {
-    const installer = new PackageInstaller("neo.express", "3.5.20");
+    const installer = new NeoExpressInstaller("neo.express", "3.5.20");
     await installer.tryInstall();
   }
 

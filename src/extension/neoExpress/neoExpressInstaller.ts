@@ -4,6 +4,7 @@ import * as fs from "fs";
 import PackageVersion from "./packageVersion";
 import workspaceFolder from "../util/workspaceFolder";
 import posixPath from "../util/posixPath";
+import Log from "../util/log";
 
 export type Package = {
   name: string;
@@ -24,7 +25,9 @@ export enum UpdateResult {
   currentPackageIsNewer,
 }
 
-export default class PackageInstaller {
+const LOG_PREFIX = "NeoExpress";
+
+export default class NeoExpressInstaller {
   name: string;
   version: string;
   rootFolder: string;
@@ -34,7 +37,10 @@ export default class PackageInstaller {
   constructor(name: string, version: string) {
     this.name = name;
     this.version = version;
-    this.targetPackage = { name: this.name, version: PackageVersion.parse(this.version) };
+    this.targetPackage = {
+      name: this.name,
+      version: PackageVersion.parse(this.version),
+    };
     this.rootFolder = workspaceFolder() || process.cwd();
     this.preferredLocation = PackageLocation.local;
   }
@@ -42,36 +48,74 @@ export default class PackageInstaller {
   async tryInstall() {
     const hasRequired = await this.hasRequiredPacakge();
     if (hasRequired) {
+      Log.log(
+        LOG_PREFIX,
+        `Already have neo.express with the correct version. No action needed.`
+      );
       return;
     }
     const selected = await this.selectUserPreferredLocation();
     if (!selected) {
+      Log.log(
+        LOG_PREFIX,
+        `User declined to install neo.express. No action needed.`
+      );
       return;
     }
-    let currentPackage = await this.findPackage(this.rootFolder, this.preferredLocation);
+    Log.log(
+      LOG_PREFIX,
+      `User selected ${this.preferredLocation} to install neo.express `
+    );
+    let currentPackage = await this.findPackage(
+      this.rootFolder,
+      this.preferredLocation
+    );
     if (currentPackage) {
-      const updateResult = await this.tryUpdateToLatest(this.rootFolder, currentPackage, {
-        ...this.targetPackage,
-        location: this.preferredLocation,
-      });
+      const updateResult = await this.tryUpdateToLatest(
+        this.rootFolder,
+        currentPackage,
+        {
+          ...this.targetPackage,
+          location: this.preferredLocation,
+        }
+      );
       if (updateResult === UpdateResult.currentPackageIsNewer) {
         vscode.window.showInformationMessage(
           `The Neo.express on your box is newer version than the required. Please consider updating the extension to the latest version.`
         );
       }
     } else {
-      await this.installNew(this.rootFolder, { ...this.targetPackage, location: this.preferredLocation });
+      await this.installNew(this.rootFolder, {
+        ...this.targetPackage,
+        location: this.preferredLocation,
+      });
     }
   }
   async hasRequiredPacakge(): Promise<boolean> {
-    const localPackage = await this.findPackage(this.rootFolder, PackageLocation.local, this.version);
-    const globalPackage = await this.findPackage(this.rootFolder, PackageLocation.global, this.version);
+    const localPackage = await this.findPackage(
+      this.rootFolder,
+      PackageLocation.local,
+      this.version
+    );
+    Log.log(LOG_PREFIX, `Local package ${localPackage?.version.toString()}`);
+    const globalPackage = await this.findPackage(
+      this.rootFolder,
+      PackageLocation.global,
+      this.version
+    );
+    Log.log(LOG_PREFIX, `Global package ${globalPackage?.version.toString()}`);
     return localPackage || globalPackage ? true : false;
   }
 
   async selectUserPreferredLocation(): Promise<boolean> {
-    const localPackage = await this.findPackage(this.rootFolder, PackageLocation.local);
-    const globalPackage = await this.findPackage(this.rootFolder, PackageLocation.global);
+    const localPackage = await this.findPackage(
+      this.rootFolder,
+      PackageLocation.local
+    );
+    const globalPackage = await this.findPackage(
+      this.rootFolder,
+      PackageLocation.global
+    );
     let response: string | undefined;
     if (localPackage && globalPackage) {
       response = await vscode.window.showInformationMessage(
@@ -82,13 +126,6 @@ export default class PackageInstaller {
         "Global",
         "More info"
       );
-      if (response === "Local") {
-        this.preferredLocation = PackageLocation.local;
-      } else if (response === "Global") {
-        this.preferredLocation = PackageLocation.global;
-      } else if (response === "More info") {
-        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
-      }
     } else if (!localPackage && !globalPackage) {
       response = await vscode.window.showInformationMessage(
         `Neo.express ${this.version} is required. Where would you like to install it?`,
@@ -96,28 +133,31 @@ export default class PackageInstaller {
         "Global",
         "More info"
       );
-      if (response === "Local") {
-        this.preferredLocation = PackageLocation.local;
-      } else if (response === "Global") {
-        this.preferredLocation = PackageLocation.global;
-      } else if (response === "More info") {
-        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
-      }
-    } else if ((localPackage && !globalPackage) || (!localPackage && globalPackage)) {
+    } else if (
+      (localPackage && !globalPackage) ||
+      (!localPackage && globalPackage)
+    ) {
       const location = localPackage ? "Local" : "Global";
       const altLocation = localPackage ? "Global" : "Local";
       const version = localPackage?.version || globalPackage?.version;
       const message = `Neo.express ${
         this.version
       } is required. We have found version ${version?.toString()} in ${location}. Would you like to use it or installed in ${altLocation}?`;
-      response = await vscode.window.showInformationMessage(message, location, altLocation, "More info");
-      if (response === "Local") {
-        this.preferredLocation = PackageLocation.local;
-      } else if (response === "Global") {
-        this.preferredLocation = PackageLocation.global;
-      } else if (response === "More info") {
-        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
-      }
+      response = await vscode.window.showInformationMessage(
+        message,
+        location,
+        altLocation,
+        "More info"
+      );
+    }
+    if (response === "Local") {
+      this.preferredLocation = PackageLocation.local;
+    } else if (response === "Global") {
+      this.preferredLocation = PackageLocation.global;
+    } else if (response === "More info") {
+      await vscode.env.openExternal(
+        vscode.Uri.parse("https://dotnet.microsoft.com/download")
+      );
     }
     return response === undefined || response === "More info" ? false : true;
   }
@@ -127,16 +167,29 @@ export default class PackageInstaller {
       const newPackage = await tool.version.latestPackageVersionFromNuget();
       const version = newPackage.toString();
       if (tool.location === PackageLocation.global) {
-        await this.runCommand(`dotnet tool install --global ${tool.name} --version ${version}`, path);
+        const output = await this.runCommand(
+          `dotnet tool install --global ${tool.name} --version ${version}`,
+          path
+        );
+        Log.log(LOG_PREFIX, `Install global tool ${tool.name}`);
+        Log.log(LOG_PREFIX, output);
       } else {
         let message;
         if (!fs.existsSync(posixPath(path, ".config", "dotnet-tools.json"))) {
           message = await this.runCommand(`dotnet new tool-manifest`, path);
+          Log.log(LOG_PREFIX, `Create new manifest file ${message}`);
         }
-        message = await this.runCommand(`dotnet tool install --local ${tool.name} --version ${version}`, path);
+        message = await this.runCommand(
+          `dotnet tool install --local ${tool.name} --version ${version}`,
+          path
+        );
+        Log.log(LOG_PREFIX, `Install local tool ${tool.name}`);
+        Log.log(LOG_PREFIX, message);
       }
       vscode.window.showInformationMessage(
-        `Neo.express installed to ${tool.location === PackageLocation.local ? "local" : "global"} successfully.`
+        `Neo.express installed to ${
+          tool.location === PackageLocation.local ? "local" : "global"
+        } successfully.`
       );
       return true;
     } catch (error) {
@@ -145,13 +198,19 @@ export default class PackageInstaller {
     }
   }
 
-  async tryUpdateToLatest(path: string, current: Package, target: Package): Promise<UpdateResult> {
+  async tryUpdateToLatest(
+    path: string,
+    current: Package,
+    target: Package
+  ): Promise<UpdateResult> {
     const versionCompareResult = current.version.compare(target.version);
     let updateResult = UpdateResult.notUpdated;
     // check if current version is older or newer than the target version. no action will be taken if current is already newer
     if (versionCompareResult === 0 || versionCompareResult === -1) {
-      const newPackageVersion = await current.version.latestPackageVersionFromNuget();
-      const location = current.location === PackageLocation.local ? "local" : "global";
+      const newPackageVersion =
+        await current.version.latestPackageVersionFromNuget();
+      const location =
+        current.location === PackageLocation.local ? "local" : "global";
       // check if there is a new matching update from nuget
       if (newPackageVersion.compare(current.version) < 0) {
         await vscode.window
@@ -184,8 +243,12 @@ export default class PackageInstaller {
   async update(path: string, tool: Package): Promise<boolean> {
     try {
       const version = tool.version.toString();
-      const locationSwitch = tool.location === PackageLocation.local ? "--local" : "--global";
-      await this.runCommand(`dotnet tool update ${locationSwitch} ${tool.name} --version ${version}`, path);
+      const locationSwitch =
+        tool.location === PackageLocation.local ? "--local" : "--global";
+      await this.runCommand(
+        `dotnet tool update ${locationSwitch} ${tool.name} --version ${version}`,
+        path
+      );
       return true;
     } catch (error) {
       console.error(`error: ${error}`);
@@ -193,24 +256,41 @@ export default class PackageInstaller {
     }
   }
 
-  async findPackage(path: string, location: PackageLocation, version?: string): Promise<Package | null> {
-    const locationSwitch = location === PackageLocation.local ? "--local" : "--global";
-    const stdout = await this.runCommand(`dotnet tool list ${locationSwitch}`, path);
+  async findPackage(
+    path: string,
+    location: PackageLocation,
+    version?: string
+  ): Promise<Package | null> {
+    const locationSwitch =
+      location === PackageLocation.local ? "--local" : "--global";
+    const stdout = await this.runCommand(
+      `dotnet tool list ${locationSwitch}`,
+      path
+    );
     const output = this.parseDotnetToolListOutput(stdout);
     let foundPackage = null;
-    const hasMatch = output.some((current: Package) => {
-      if (current.name === this.name) {
-        current.location = location;
-        foundPackage = current;
-        if (version) {
-          const targetVersion = PackageVersion.parse(version);
-          return current.version.equals(targetVersion) ? true : false;
-        }
-        return true;
+    output.forEach((current: Package) => {
+      if (current.name !== this.name) {
+        return;
       }
-      return null;
+      if (version) {
+        const targetVersion = PackageVersion.parse(version);
+        if (current.version.equals(targetVersion)) {
+          foundPackage = {
+            ...current,
+            location: location,
+            version: current.version,
+          };
+        }
+      } else {
+        foundPackage = {
+          ...current,
+          location: location,
+          version: current.version,
+        };
+      }
     });
-    return hasMatch ? foundPackage : null;
+    return foundPackage;
   }
 
   parseDotnetToolListOutput(output: string): Package[] {
@@ -240,12 +320,16 @@ export default class PackageInstaller {
       cwd: path || process.cwd(),
     };
     return new Promise((resolve, reject) => {
-      child_process.exec(command, options, (error: child_process.ExecException | null, stdout: string) => {
-        if (error) {
-          reject(error);
+      child_process.exec(
+        command,
+        options,
+        (error: child_process.ExecException | null, stdout: string) => {
+          if (error) {
+            reject(error);
+          }
+          resolve(stdout);
         }
-        resolve(stdout);
-      });
+      );
     });
   }
 }

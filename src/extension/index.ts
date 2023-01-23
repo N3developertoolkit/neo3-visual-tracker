@@ -22,7 +22,7 @@ import Templates from "./templates/templates";
 import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
-import PackageInstaller from "./neoExpress/packageInstaller";
+import NeoExpressInstaller from "./neoExpress/neoExpressInstaller";
 
 const LOG_PREFIX = "index";
 
@@ -51,7 +51,7 @@ function registerCommand(
 
 export async function activate(context: vscode.ExtensionContext) {
   Log.log(LOG_PREFIX, "Activating extension...");
-  const installer = new PackageInstaller("neo.express", "3.5.20");
+  const installer = new NeoExpressInstaller("neo.express", "3.5.20");
   await installer.tryInstall();
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
