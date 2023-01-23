@@ -385,8 +385,11 @@ export default class NeoExpressCommands {
   }
 
   static async install() {
-    const installer = new NeoExpressInstaller("neo.express", "3.5.20");
-    await installer.tryInstall();
+    const version = vscode.workspace.getConfiguration().get<string>("neo.express.version");
+    if (version) {
+      const installer = new NeoExpressInstaller("neo.express", version);
+      await installer.tryInstall();
+    }
   }
 
   private static showResult(output: { message: string; isError?: boolean }) {

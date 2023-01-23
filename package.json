@@ -328,6 +328,14 @@
           "icon": "resources/n3-logo.png"
         }
       ]
+    },
+    "configuration": {
+      "properties": {
+        "neo.express.version": {
+          "type": "string",
+          "default": "3.5.20"
+        }
+      }
     }
   },
   "scripts": {

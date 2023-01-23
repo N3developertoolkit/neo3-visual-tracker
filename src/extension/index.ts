@@ -49,10 +49,19 @@ function registerCommand(
   );
 }
 
+async function tryInstallNeoExpress() {
+  const version = vscode.workspace.getConfiguration().get<string>("neo.express.version");
+  if (version) {
+    const installer = new NeoExpressInstaller("neo.express", version);
+    await installer.tryInstall();
+  } else {
+    Log.log(LOG_PREFIX, "neo.express version is missing from variables section of package.json.");
+  }
+}
+
 export async function activate(context: vscode.ExtensionContext) {
   Log.log(LOG_PREFIX, "Activating extension...");
-  const installer = new NeoExpressInstaller("neo.express", "3.5.20");
-  await installer.tryInstall();
+  await tryInstallNeoExpress();
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
   const neoExpress = new NeoExpress(context);
