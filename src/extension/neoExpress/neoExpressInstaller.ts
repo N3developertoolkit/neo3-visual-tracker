@@ -1,12 +1,9 @@
-import * as child_process from "child_process";
 import * as vscode from "vscode";
-import * as fs from "fs";
 import PackageVersion from "./packageVersion";
 import workspaceFolder from "../util/workspaceFolder";
-import posixPath from "../util/posixPath";
 import Log from "../util/log";
-import { findPackage, DotNetPackage, VersionMatchCriteria, PackageLocation } from "./dotnetToolPackage";
-import { runCommand } from "./dotNetToolCommand";
+import { findPackage, DotNetPackage, VersionMatchCriteria, PackageLocation, locationString } from "./dotnetToolPackage";
+import { installCommand, updateCommand } from "./dotNetToolCommand";
 
 export enum UpdateResult {
   notUpdated,
@@ -14,18 +11,21 @@ export enum UpdateResult {
   declinedToUpdate,
   noNewVersionFromNuget,
   currentPackageIsNewer,
+  declinedToUpdateAndDontAskAgain,
 }
 
 const LOG_PREFIX = "NeoExpress";
 
 export default class NeoExpressInstaller {
-  name: string;
-  version: string;
-  rootFolder: string;
-  preferredLocation: PackageLocation;
-  targetPackage: DotNetPackage;
+  readonly name: string;
+  readonly version: string;
+  readonly rootFolder: string;
+  readonly targetPackage: DotNetPackage;
+  readonly context: vscode.ExtensionContext;
+  readonly neverShowAgainKey = "neverShowAgain";
 
-  constructor(version: string) {
+  constructor(context: vscode.ExtensionContext, version: string) {
+    this.context = context;
     this.name = "neo.express";
     this.version = version;
     this.targetPackage = {
@@ -33,149 +33,121 @@ export default class NeoExpressInstaller {
       version: PackageVersion.parse(this.version),
     };
     this.rootFolder = workspaceFolder() || process.cwd();
-    this.preferredLocation = PackageLocation.local;
   }
 
-  async tryInstall(): Promise<DotNetPackage | null> {
-    let currentPackage = await findPackage(this.targetPackage, VersionMatchCriteria.ignorePatch);
+  async run(): Promise<DotNetPackage | null> {
+    let currentPackage = await findPackage(this.targetPackage, VersionMatchCriteria.nameOnly);
     if (currentPackage) {
-      Log.log(
-        LOG_PREFIX,
-        `Already have ${currentPackage.name} with the correct version ${currentPackage.version.toString()}. ${
-          currentPackage.location
-        }.`
-      );
-      Log.log(LOG_PREFIX, `Offer to update ${currentPackage.name} if new version is available from nuget`);
-      const updateOutput = await this.tryUpdateToLatest(this.rootFolder, currentPackage, {
+      const updateOutput = await this.tryUpdate(currentPackage, {
         ...this.targetPackage,
-        location: this.preferredLocation,
+        location: currentPackage.location,
       });
       if (updateOutput.package) {
         currentPackage = updateOutput.package;
       }
     } else {
-      const selected = await this.selectUserPreferredLocation();
-      if (!selected) {
-        Log.log(LOG_PREFIX, `No package found but user declined to install ${this.name}. No action taken.`);
+      const selectedLocation = await this.selectUserPreferredLocation();
+      if (selectedLocation === null) {
         return null;
       }
-      Log.log(LOG_PREFIX, `User selected ${this.preferredLocation} to install ${this.name}`);
-      currentPackage = await this.installNew({
-        ...this.targetPackage,
-        location: this.preferredLocation,
-      });
+      this.targetPackage.location = selectedLocation;
+      await installCommand(this.rootFolder, this.targetPackage);
+      currentPackage = this.targetPackage;
+      vscode.window.showInformationMessage(
+        `${this.name} installed to ${locationString(currentPackage.location)} successfully.`
+      );
     }
     return currentPackage;
   }
 
-  async selectUserPreferredLocation(): Promise<boolean> {
-    let response = await vscode.window.showInformationMessage(
-      `${this.name} ${this.version} is required. Where would you like to install it?`,
-      "Local",
-      "Global",
-      "More info"
-    );
-
-    if (response === "Local") {
-      this.preferredLocation = PackageLocation.local;
-    } else if (response === "Global") {
-      this.preferredLocation = PackageLocation.global;
-    } else if (response === "More info") {
-      await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
-    }
-    return response === undefined || response === "More info" ? false : true;
-  }
-
-  async installNew(tool: DotNetPackage): Promise<DotNetPackage | null> {
-    try {
-      const newPackageVersion = await tool.version.latestPackageVersionFromNuget();
-      let newPackage = { name: tool.name, version: newPackageVersion, location: tool.location };
-      if (tool.location === PackageLocation.global) {
-        const output = await runCommand(
-          `dotnet tool install --global ${tool.name} --version ${newPackageVersion}`,
-          this.rootFolder
-        );
-        Log.log(LOG_PREFIX, `Install global tool ${tool.name}`);
-        Log.log(LOG_PREFIX, output);
-      } else {
-        let message;
-        if (!fs.existsSync(posixPath(this.rootFolder, ".config", "dotnet-tools.json"))) {
-          message = await runCommand(`dotnet new tool-manifest`, this.rootFolder);
-          Log.log(LOG_PREFIX, `Create new manifest file ${message}`);
-        }
-        message = await runCommand(
-          `dotnet tool install --local ${tool.name} --version ${newPackageVersion}`,
-          this.rootFolder
-        );
-        Log.log(LOG_PREFIX, `Install local tool ${tool.name}`);
-        Log.log(LOG_PREFIX, message);
-      }
-      vscode.window.showInformationMessage(
-        `${this.name} installed to ${tool.location === PackageLocation.local ? "local" : "global"} successfully.`
-      );
-      return newPackage;
-    } catch (error) {
-      console.error(`error: ${error}`);
-      return null;
-    }
-  }
-
-  async tryUpdateToLatest(
-    path: string,
+  async tryUpdate(
     current: DotNetPackage,
     target: DotNetPackage
   ): Promise<{ updateResult: UpdateResult; package: DotNetPackage | null }> {
-    const versionCompareResult = current.version.compare(target.version);
-    let updateResult = UpdateResult.notUpdated;
-    let updatedPackage: DotNetPackage | null = null;
-    // check if current version is older or newer than the target version. no action will be taken if current is already newer
-    if (versionCompareResult === 0 || versionCompareResult === -1) {
-      const newPackageVersion = await current.version.latestPackageVersionFromNuget();
-      const location = current.location === PackageLocation.local ? "local" : "global";
-      updatedPackage = current;
-      // check if there is a new matching update from nuget
-      if (newPackageVersion.compare(current.version) < 0) {
-        await vscode.window
-          .showInformationMessage(
-            `Version ${newPackageVersion.toString()} is available. Do you want to update ${location} to the new version?`,
-            "Yes",
-            "No"
-          )
-          .then(async (selection) => {
-            if (selection?.toLocaleLowerCase() === "yes") {
-              await this.update(path || process.cwd(), {
-                ...target,
-                version: newPackageVersion,
-              });
-              updateResult = UpdateResult.updated;
-              // @ts-ignore updatedPackage is already initialized
-              updatedPackage.version = newPackageVersion;
-            } else {
-              updateResult = UpdateResult.declinedToUpdate;
-            }
-          });
-        return { updateResult, package: updatedPackage };
-      } else {
-        updateResult = UpdateResult.noNewVersionFromNuget;
-      }
-    } else {
-      updateResult = UpdateResult.currentPackageIsNewer;
+    Log.log(
+      LOG_PREFIX,
+      `Already have ${current.name} with the correct version ${current.version.toString()}. ${current.location}.`
+    );
+    Log.log(LOG_PREFIX, `Offer to update ${current.name} if new version is available from nuget`);
+    if (current.version.compare(target.version) > 0) {
       vscode.window.showInformationMessage(
-        `The ${this.name} on your box is newer version than the required. Please consider updating the extension to the latest version.`
+        `The ${this.name} ${current.version} on your box is newer version than the required version:${target.version}. Please check if there is a newer extension.`
       );
+      return { updateResult: UpdateResult.currentPackageIsNewer, package: current };
     }
-    return { updateResult, package: updatedPackage };
+    if (current.version.compare(target.version) < 0 && current.version.isNewMajorOrMinorVersion(target.version)) {
+      this.context.workspaceState.update(this.neverShowAgainKey, false);
+    }
+    let neverShowAgain = this.context.workspaceState.get<boolean>(this.neverShowAgainKey);
+    if (neverShowAgain) {
+      return { updateResult: UpdateResult.declinedToUpdate, package: current };
+    }
+    return await this.handlePatchUpdate(current, target);
   }
 
-  async update(path: string, tool: DotNetPackage): Promise<boolean> {
-    try {
-      const version = tool.version.toString();
-      const locationSwitch = tool.location === PackageLocation.local ? "--local" : "--global";
-      await runCommand(`dotnet tool update ${locationSwitch} ${tool.name} --version ${version}`, path);
-      return true;
-    } catch (error) {
-      console.error(`error: ${error}`);
-      return false;
+  private async selectUserPreferredLocation(): Promise<PackageLocation | null> {
+    const moreInfoLink = new vscode.MarkdownString(`[More information](https://dotnet.microsoft.com/download)`);
+    moreInfoLink.isTrusted = true;
+    let response = await vscode.window.showInformationMessage(
+      `${this.name} ${this.version} is required. Where would you like to install it? ${moreInfoLink.value}`,
+      "Local",
+      "Global"
+    );
+    let preferredLocation = null;
+    if (response === "Local") {
+      preferredLocation = PackageLocation.local;
+      Log.log(LOG_PREFIX, `User selected local to install ${this.name}`);
+    } else if (response === "Global") {
+      preferredLocation = PackageLocation.global;
+      Log.log(LOG_PREFIX, `User selected global to install ${this.name}`);
+    } else {
+      Log.log(LOG_PREFIX, `User declined to install ${this.name}. No action taken.`);
     }
+    return preferredLocation;
+  }
+
+  private async handlePatchUpdate(
+    current: DotNetPackage,
+    target: DotNetPackage
+  ): Promise<{ updateResult: UpdateResult; package: DotNetPackage | null }> {
+    let updatedPackage = current;
+    let updateResult = UpdateResult.notUpdated;
+    // check if required is newer than current
+    const newPackageVersion = await target.version.findLatestPatchVersionFromNuget();
+    if (current.version.compare(newPackageVersion) >= 0) {
+      return { updateResult: UpdateResult.noNewVersionFromNuget, package: updatedPackage };
+    }
+    // handle update to new version
+    const moreInfoLink = new vscode.MarkdownString(`[More information](https://dotnet.microsoft.com/download)`);
+    moreInfoLink.isTrusted = true;
+    const dontAskAgain = "Dont't ask again";
+    const selection = await vscode.window.showInformationMessage(
+      `Version ${newPackageVersion.toString()} is available. Do you want to update ${locationString(
+        current.location
+      )} to the new version? ${moreInfoLink.value}`,
+      "Yes",
+      "No",
+      dontAskAgain
+    );
+    if (selection === "Yes") {
+      await updateCommand(this.rootFolder, {
+        ...target,
+        version: newPackageVersion,
+      });
+      updateResult = UpdateResult.updated;
+      // @ts-ignore updatedPackage is already initialized
+      updatedPackage.version = newPackageVersion;
+      await vscode.window.showInformationMessage(
+        `Successfully updated ${updatedPackage.name} at ${locationString(updatedPackage.location)} to ${
+          updatedPackage.version
+        }`
+      );
+    } else if (selection === "No") {
+      updateResult = UpdateResult.declinedToUpdate;
+    } else if (selection === dontAskAgain) {
+      updateResult = UpdateResult.declinedToUpdateAndDontAskAgain;
+      this.context.workspaceState.update(this.neverShowAgainKey, true);
+    }
+    return { updateResult, package: updatedPackage };
   }
 }

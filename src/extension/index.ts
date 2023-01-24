@@ -52,8 +52,8 @@ function registerCommand(
 }
 
 async function tryInstallNeoExpress(context: vscode.ExtensionContext): Promise<DotNetPackage | null> {
-  const installer = new NeoExpressInstaller(getPackageVersion(context));
-  return await installer.tryInstall();
+  const installer = new NeoExpressInstaller(context, getPackageVersion(context));
+  return await installer.run();
 }
 
 export async function activate(context: vscode.ExtensionContext) {

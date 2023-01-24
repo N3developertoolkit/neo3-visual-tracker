@@ -18,6 +18,10 @@ export type DotNetPackage = {
   location?: PackageLocation;
 };
 
+export function locationString(location: PackageLocation | undefined, prefix: string = ""): string {
+  return location && location === PackageLocation.global ? `${prefix}global` : `${prefix}local`;
+}
+
 export async function findPackage(
   targetPackage: DotNetPackage,
   matchCriteria: VersionMatchCriteria

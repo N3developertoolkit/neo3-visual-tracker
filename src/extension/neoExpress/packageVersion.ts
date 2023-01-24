@@ -1,9 +1,11 @@
-import axios from "axios";
+import tryFetchJson from "../util/tryFetchJson";
 
 export default class PackageVersion {
   major: number;
   minor: number;
   patch: number;
+  private allLatestVersions: PackageVersion[] = [];
+
   constructor(major: number, minor: number, patch: number) {
     this.major = major;
     this.minor = minor;
@@ -18,10 +20,12 @@ export default class PackageVersion {
     return new PackageVersion(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
   }
 
-  async latestPackageVersionFromNuget(): Promise<PackageVersion> {
-    let response = await axios.get("https://api.nuget.org/v3-flatcontainer/neo.express/index.json");
-    let json = await response.data;
-    return this.findLastestVersion(this, json?.versions);
+  async findLatestPatchVersionFromNuget(): Promise<PackageVersion> {
+    return (
+      (await this.getLatestVersionsFromNuget())
+        .filter((target) => this.compare(target) < 0 && !this.isNewMajorOrMinorVersion(target))
+        .pop() || this
+    );
   }
 
   toString() {
@@ -29,10 +33,14 @@ export default class PackageVersion {
   }
 
   equals(other: PackageVersion, ignorePatchVersion: boolean = false) {
-    if(ignorePatchVersion){
+    if (ignorePatchVersion) {
       return this.compare(other) === 0;
     }
     return this.major === other.major && this.minor === other.minor;
+  }
+
+  isNewMajorOrMinorVersion(other: PackageVersion) {
+    return this.compare(other) < 0 && (this.major !== other.major || this.minor !== other.minor);
   }
 
   compare(other: PackageVersion) {
@@ -52,9 +60,24 @@ export default class PackageVersion {
     return 0;
   }
 
+  private async getLatestVersionsFromNuget(): Promise<PackageVersion[]> {
+    if (this.allLatestVersions.length > 0) {
+      return this.allLatestVersions;
+    }
+    let response = await tryFetchJson("https", "api.nuget.org", "/v3-flatcontainer/neo.express/index.json");
+    this.allLatestVersions = response?.versions
+      ?.filter((v: string) => !v.includes("preview"))
+      .map((version: string) => PackageVersion.parse(version));
+    return this.allLatestVersions;
+  }
+
   private findLastestVersion(currentVersion: PackageVersion, targetVersions: [string]): PackageVersion {
     let newVersion = currentVersion;
     targetVersions.forEach((targetVersion) => {
+      if (targetVersion.includes("-preview")) {
+        // skip preview versions for now
+        return;
+      }
       const target = PackageVersion.parse(targetVersion);
       if (currentVersion.compare(target) < 0) {
         newVersion = target;
