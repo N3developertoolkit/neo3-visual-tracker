@@ -1,15 +1,19 @@
 import * as child_process from "child_process";
 import { DotNetPackage, PackageLocation } from "./dotnetToolPackage";
 import PackageVersion from "./packageVersion";
+import workspaceFolder from "../util/workspaceFolder";
 
-export async function listPackages(packageLocation: PackageLocation): Promise<DotNetPackage[]> {
+export async function listPackages(
+  packageLocation: PackageLocation,
+  path: string = workspaceFolder() || process.cwd()
+): Promise<DotNetPackage[]> {
   const locationSwitch = packageLocation === PackageLocation.local ? "--local" : "--global";
-  const stdout = await runCommand(`dotnet tool list ${locationSwitch}`);
+  const stdout = await runCommand(`dotnet tool list ${locationSwitch}`, path);
   const output = parseDotnetToolListOutput(stdout);
   return output;
 }
 
-export async function runCommand(command: string, path: string = process.cwd()): Promise<string> {
+export async function runCommand(command: string, path: string = workspaceFolder() || process.cwd()): Promise<string> {
   const options: child_process.ExecOptions = {
     cwd: path,
   };

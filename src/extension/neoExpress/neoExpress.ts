@@ -4,6 +4,7 @@ import * as vscode from "vscode";
 import Log from "../util/log";
 import NeoExpressTerminal from "./neoExpressTerminal";
 import { DotNetPackage, PackageLocation } from "./dotnetToolPackage";
+import workspaceFolder from "../util/workspaceFolder";
 
 type Command = "checkpoint" | "contract" | "create" | "reset" | "run" | "show" | "transfer" | "wallet" | "-v";
 
@@ -61,7 +62,7 @@ export default class NeoExpress {
   }
 
   run(command: Command, ...options: string[]): Promise<{ message: string; isError?: boolean }> {
-    return this.runInDirectory(undefined, command, ...options);
+    return this.runInDirectory(workspaceFolder() || process.cwd(), command, ...options);
   }
 
   async runInDirectory(
@@ -107,6 +108,7 @@ export default class NeoExpress {
         const startedAt = new Date().getTime();
         const process = childProcess.spawn(this.dotnetPath, dotNetArguments, {
           cwd,
+          shell: true,
         });
         let complete = false;
         const watchdog = () => {
