@@ -28,8 +28,11 @@ export default class PackageVersion {
     return `${this.major}.${this.minor}.${this.patch}`;
   }
 
-  equals(other: PackageVersion) {
-    return this.compare(other) === 0;
+  equals(other: PackageVersion, ignorePatchVersion: boolean = false) {
+    if(ignorePatchVersion){
+      return this.compare(other) === 0;
+    }
+    return this.major === other.major && this.minor === other.minor;
   }
 
   compare(other: PackageVersion) {

@@ -23,6 +23,8 @@ import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
 import NeoExpressInstaller from "./neoExpress/neoExpressInstaller";
+import { getPackageVersion } from "./util/packageJsonHelper";
+import { DotNetPackage } from "./neoExpress/dotnetToolPackage";
 
 const LOG_PREFIX = "index";
 
@@ -49,22 +51,17 @@ function registerCommand(
   );
 }
 
-async function tryInstallNeoExpress() {
-  const version = vscode.workspace.getConfiguration().get<string>("neo.express.version");
-  if (version) {
-    const installer = new NeoExpressInstaller("neo.express", version);
-    await installer.tryInstall();
-  } else {
-    Log.log(LOG_PREFIX, "neo.express version is missing from variables section of package.json.");
-  }
+async function tryInstallNeoExpress(context: vscode.ExtensionContext): Promise<DotNetPackage | null> {
+  const installer = new NeoExpressInstaller(getPackageVersion(context));
+  return await installer.tryInstall();
 }
 
 export async function activate(context: vscode.ExtensionContext) {
   Log.log(LOG_PREFIX, "Activating extension...");
-  await tryInstallNeoExpress();
+  const neoExpressPackage = await tryInstallNeoExpress(context);
   const blockchainMonitorPool = new BlockchainMonitorPool();
   const walletDetector = new WalletDetector();
-  const neoExpress = new NeoExpress(context);
+  const neoExpress = new NeoExpress(context, neoExpressPackage);
   const serverListDetector = new ServerListDetector(context.extensionPath);
   const neoExpressDetector = new NeoExpressDetector(context.extensionPath);
   const blockchainsTreeDataProvider = await BlockchainsTreeDataProvider.create(neoExpressDetector, serverListDetector);
@@ -161,7 +158,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   registerCommand(context, "neo3-visual-devtracker.disconnect", () => activeConnection.disconnect());
 
-  registerCommand(context, "neo3-visual-devtracker.express.install", () => NeoExpressCommands.install());
+  registerCommand(context, "neo3-visual-devtracker.express.install", () => NeoExpressCommands.install(context));
 
   registerCommand(context, "neo3-visual-devtracker.express.contractDeploy", (commandArguments) =>
     NeoExpressCommands.contractDeploy(neoExpress, contractDetector, blockchainsTreeDataProvider, commandArguments)
