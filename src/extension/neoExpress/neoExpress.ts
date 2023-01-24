@@ -116,7 +116,7 @@ export default class NeoExpress {
             complete = true;
             try {
               process.kill();
-            } catch (e) {
+            } catch (e: any) {
               Log.error(LOG_PREFIX, `Could not kill timed out neoxp command: ${command} (${e.message})`);
             }
             reject("Operation timed out");
@@ -137,7 +137,7 @@ export default class NeoExpress {
           reject();
         });
       });
-    } catch (e) {
+    } catch (e: any) {
       return {
         isError: true,
         message: e.stderr?.toString() || e.stdout?.toString() || e.message || "Unknown failure",
@@ -155,7 +155,7 @@ export default class NeoExpress {
     let ok = false;
     try {
       ok = parseInt(childProcess.execFileSync("dotnet", ["--version"]).toString()) >= 5;
-    } catch (e) {
+    } catch (e: any) {
       Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
       ok = false;
     }
