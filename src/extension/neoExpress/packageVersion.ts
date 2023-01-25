@@ -70,19 +70,4 @@ export default class PackageVersion {
       .map((version: string) => PackageVersion.parse(version));
     return this.allLatestVersions;
   }
-
-  private findLastestVersion(currentVersion: PackageVersion, targetVersions: [string]): PackageVersion {
-    let newVersion = currentVersion;
-    targetVersions.forEach((targetVersion) => {
-      if (targetVersion.includes("-preview")) {
-        // skip preview versions for now
-        return;
-      }
-      const target = PackageVersion.parse(targetVersion);
-      if (currentVersion.compare(target) < 0) {
-        newVersion = target;
-      }
-    });
-    return newVersion;
-  }
 }
