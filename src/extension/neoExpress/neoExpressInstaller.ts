@@ -46,18 +46,30 @@ export default class NeoExpressInstaller {
         currentPackage = updateOutput.package;
       }
     } else {
+      currentPackage = await this.tryInstall();
+    }
+    return currentPackage;
+  }
+
+  async tryInstall(): Promise<DotNetPackage | null> {
+    let installedPackage = null;
+    try {
       const selectedLocation = await this.selectUserPreferredLocation();
       if (selectedLocation === null) {
         return null;
       }
-      this.targetPackage.location = selectedLocation;
-      await installCommand(this.rootFolder, this.targetPackage);
-      currentPackage = this.targetPackage;
+      installedPackage = { ...this.targetPackage, location: selectedLocation };
+      await installCommand(this.rootFolder, installedPackage);
       vscode.window.showInformationMessage(
-        `${this.name} installed to ${locationString(currentPackage.location)} successfully.`
+        `${this.name} installed to ${locationString(selectedLocation)} successfully.`
       );
+      return installedPackage;
+    } catch (error) {
+      Log.log(LOG_PREFIX, `Failed to install ${this.name}. ${error}`);
+      vscode.window.showErrorMessage(`Failed to install ${this.name}. ${error}`);
+      installedPackage = null;
     }
-    return currentPackage;
+    return installedPackage;
   }
 
   async tryUpdate(
@@ -130,18 +142,26 @@ export default class NeoExpressInstaller {
       dontAskAgain
     );
     if (selection === "Yes") {
-      await updateCommand(this.rootFolder, {
-        ...target,
-        version: newPackageVersion,
-      });
-      updateResult = UpdateResult.updated;
-      // @ts-ignore updatedPackage is already initialized
-      updatedPackage.version = newPackageVersion;
-      await vscode.window.showInformationMessage(
-        `Successfully updated ${updatedPackage.name} at ${locationString(updatedPackage.location)} to ${
-          updatedPackage.version
-        }`
-      );
+      try {
+        await updateCommand(this.rootFolder, {
+          ...target,
+          version: newPackageVersion,
+        });
+        updateResult = UpdateResult.updated;
+        // @ts-ignore updatedPackage is already initialized
+        updatedPackage.version = newPackageVersion;
+        await vscode.window.showInformationMessage(
+          `Successfully updated ${updatedPackage.name} at ${locationString(updatedPackage.location)} to ${
+            updatedPackage.version
+          }`
+        );
+      } catch (error) {
+        Log.log(LOG_PREFIX, `Failed to update ${this.name} to ${newPackageVersion.toString()}. ${error}`);
+        await vscode.window.showErrorMessage(
+          `Failed to update ${this.name} to ${newPackageVersion.toString()}. ${error}`
+        );
+        updateResult = UpdateResult.notUpdated;
+      }
     } else if (selection === "No") {
       updateResult = UpdateResult.declinedToUpdate;
     } else if (selection === dontAskAgain) {

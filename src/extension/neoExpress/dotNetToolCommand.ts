@@ -32,6 +32,7 @@ export async function updateCommand(path: string, tool: DotNetPackage): Promise<
     return output;
   } catch (error) {
     Log.error(`error: ${error}`);
+    throw error;
   }
   return null;
 }
@@ -54,6 +55,7 @@ export async function installCommand(path: string, target: DotNetPackage): Promi
     }
   } catch (error) {
     Log.error(`error: ${error}`);
+    throw error;
   }
   return output;
 }
