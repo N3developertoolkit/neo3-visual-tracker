@@ -1,12 +1,6 @@
 import PackageVersion from "../src/extension/neoExpress/packageVersion";
 
-declare namespace NodeJS {
-  export interface Process {
-    vscode?: any;
-  }
-}
-
-describe("test add function", () => {
+describe("Package version", () => {
   it("Can check if two versions are equal", () => {
     const version1 = new PackageVersion(1, 2, 1);
     const version2 = new PackageVersion(1, 2, 1);

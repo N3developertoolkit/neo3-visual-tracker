@@ -1,3 +1,6 @@
+//Instructions from https://www.richardkotze.com/coding/unit-test-mock-vs-code-extension-api-jest
+//code from https://github.com/rkotze/git-mob-vs-code
+
 const languages = {
   createDiagnosticCollection: jest.fn(),
 };

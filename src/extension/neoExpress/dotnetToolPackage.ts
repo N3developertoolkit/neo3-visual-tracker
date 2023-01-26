@@ -38,7 +38,7 @@ export async function findPackage(
   return null;
 }
 
-async function findPackageByLocation(
+export async function findPackageByLocation(
   targetPackage: DotNetPackage,
   matchCriteria: VersionMatchCriteria,
   location: PackageLocation
