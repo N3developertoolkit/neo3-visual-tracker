@@ -18,6 +18,30 @@ const NugetResponse = {
   ],
 };
 
+const BuildServerResponse = {
+  versions: [
+    "3.6.4-preview",
+    "3.6.3-preview",
+    "3.6.2-preview",
+    "3.5.20",
+    "3.5.19",
+    "3.5.17-preview",
+    "3.5.16-preview",
+    "3.5.11-preview",
+    "3.5.10-preview",
+    "3.5.9-preview",
+    "3.5.8-preview",
+    "3.5.5-preview",
+    "3.5.4-preview",
+    "3.5.3-preview",
+    "3.5.2-preview",
+    "3.4.18",
+    "3.4.15",
+    "3.4.14-preview",
+    "3.4.12-preview",
+    "3.3.26",
+  ],
+};
 describe("Package version", () => {
   it("Can check if two versions are equal", () => {
     const version1 = new PackageVersion(1, 2, 1);
@@ -124,5 +148,19 @@ describe("Package version", () => {
       )
     ).toBe(true);
     expect(tryFetchJsonMock).toBeCalled();
+  });
+
+  it("Can get latest patch version from nuget with preview label plus build server feed", async () => {
+    const tryFetchJsonMock = tryFetchJson as jest.MockedFunction<typeof tryFetchJson>;
+    tryFetchJsonMock.mockResolvedValueOnce(NugetResponse).mockResolvedValueOnce(BuildServerResponse);
+    const latest = await PackageVersion.parse("3.6.2-preview").findLatestPatchVersionFromNuget(true, true);
+    expect(latest.equals(PackageVersion.parse("3.6.4-preview"))).toBe(true);
+    expect(tryFetchJsonMock).toBeCalled();
+  });
+
+  it("To string should include label", async () => {
+    expect(PackageVersion.parse("3.6.4-preview").toString()).toBe("3.6.4-preview");
+    expect(PackageVersion.parse("3.6.4-previewalpha").toString()).toBe("3.6.4-previewalpha");
+    expect(PackageVersion.parse("3.6.4").toString()).toBe("3.6.4");
   });
 });

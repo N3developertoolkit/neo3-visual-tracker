@@ -4,6 +4,7 @@ import workspaceFolder from "../util/workspaceFolder";
 import Log from "../util/log";
 import { findPackage, DotNetPackage, VersionMatchCriteria, PackageLocation, locationString } from "./dotnetToolPackage";
 import { installCommand, updateCommand } from "./dotNetToolCommand";
+import { getIncludeBuildServerFeed, getIncludePreviewReleases } from "../util/packageJsonHelper";
 
 export enum UpdateResult {
   notUpdated,
@@ -59,7 +60,7 @@ export default class NeoExpressInstaller {
         return null;
       }
       installedPackage = { ...this.targetPackage, location: selectedLocation };
-      await installCommand(this.rootFolder, installedPackage);
+      await installCommand(this.rootFolder, installedPackage, getIncludeBuildServerFeed());
       vscode.window.showInformationMessage(
         `${this.name} installed to ${locationString(selectedLocation)} successfully.`
       );
@@ -125,9 +126,10 @@ export default class NeoExpressInstaller {
     let updatedPackage = current;
     let updateResult = UpdateResult.notUpdated;
     // check if required is newer than current
-    const config = vscode.workspace.getConfiguration("neo3-visual-tracker");
-    const includePreviewReleases = config.get("includePreviewReleases", false);
-    const newPackageVersion = await target.version.findLatestPatchVersionFromNuget(includePreviewReleases);
+    const newPackageVersion = await target.version.findLatestPatchVersionFromNuget(
+      getIncludePreviewReleases(),
+      getIncludeBuildServerFeed()
+    );
     if (current.version.compare(newPackageVersion) >= 0) {
       return { updateResult: UpdateResult.noNewVersionFromNuget, package: updatedPackage };
     }
@@ -145,10 +147,14 @@ export default class NeoExpressInstaller {
     );
     if (selection === "Yes") {
       try {
-        await updateCommand(this.rootFolder, {
-          ...target,
-          version: newPackageVersion,
-        });
+        await updateCommand(
+          this.rootFolder,
+          {
+            ...target,
+            version: newPackageVersion,
+          },
+          getIncludeBuildServerFeed()
+        );
         updateResult = UpdateResult.updated;
         // @ts-ignore updatedPackage is already initialized
         updatedPackage.version = newPackageVersion;

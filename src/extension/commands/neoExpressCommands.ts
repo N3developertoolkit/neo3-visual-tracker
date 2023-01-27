@@ -16,7 +16,7 @@ import StorageExplorerPanelController from "../panelControllers/storageExplorerP
 import TrackerPanelController from "../panelControllers/trackerPanelController";
 import workspaceFolder from "../util/workspaceFolder";
 import NeoExpressInstaller from "../neoExpress/neoExpressInstaller";
-import { getPackageVersion } from "../util/packageJsonHelper";
+import { getTargetNeoExpressVersion } from "../util/packageJsonHelper";
 
 export default class NeoExpressCommands {
   static async contractDeploy(
@@ -295,7 +295,7 @@ export default class NeoExpressCommands {
   }
 
   static async install(context: vscode.ExtensionContext) {
-    const installer = new NeoExpressInstaller(context, getPackageVersion(context));
+    const installer = new NeoExpressInstaller(context, getTargetNeoExpressVersion(context));
     await installer.run();
   }
 

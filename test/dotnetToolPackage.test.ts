@@ -25,6 +25,22 @@ describe("Dotnet tool package functions", () => {
     expect(listPackageMock).toBeCalledWith(PackageLocation.local);
   });
 
+  it("Should return null if name only match is not found", async () => {
+    // setup mock
+    const listPackageMock = listPackages as jest.MockedFunction<typeof listPackages>;
+    listPackageMock.mockResolvedValue([targetPackage, { ...targetPackage, version: new PackageVersion(3, 1, 2) }]);
+
+    const dotnetPackage = await findPackageByLocation(
+      { ...targetPackage, name: "nopack" },
+      VersionMatchCriteria.nameOnly,
+      PackageLocation.local
+    );
+    expect(dotnetPackage).toBeNull();
+
+    // verify mock
+    expect(listPackageMock).toBeCalledWith(PackageLocation.local);
+  });
+
   it("Should return local package if exact match is found", async () => {
     // setup mock
     const listPackageMock = listPackages as jest.MockedFunction<typeof listPackages>;
@@ -49,6 +65,24 @@ describe("Dotnet tool package functions", () => {
       PackageLocation.local
     );
     expect(dotnetPackage).toBeNull();
+
+    // verify mock
+    expect(listPackageMock).toBeCalledWith(PackageLocation.local);
+  });
+
+  it("Should return local package that ignores patch version", async () => {
+    // setup mock
+    const listPackageMock = listPackages as jest.MockedFunction<typeof listPackages>;
+    listPackageMock.mockResolvedValue([{ ...targetPackage, version: new PackageVersion(13, 11, 12) }]);
+
+    const dotnetPackage = await findPackageByLocation(
+      { ...targetPackage, version: new PackageVersion(13, 11, 15) },
+      VersionMatchCriteria.ignorePatch,
+      PackageLocation.local
+    );
+    expect(dotnetPackage).not.toBeNull();
+    expect(dotnetPackage?.version.equals(targetPackage.version)).not.toBe(true);
+    expect(dotnetPackage?.name).toBe(targetPackage.name);
 
     // verify mock
     expect(listPackageMock).toBeCalledWith(PackageLocation.local);

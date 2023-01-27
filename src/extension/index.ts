@@ -23,7 +23,7 @@ import TrackerCommands from "./commands/trackerCommands";
 import WalletDetector from "./fileDetectors/walletDetector";
 import WalletsTreeDataProvider from "./vscodeProviders/walletsTreeDataProvider";
 import NeoExpressInstaller from "./neoExpress/neoExpressInstaller";
-import { getPackageVersion } from "./util/packageJsonHelper";
+import { getTargetNeoExpressVersion } from "./util/packageJsonHelper";
 import { DotNetPackage } from "./neoExpress/dotnetToolPackage";
 
 const LOG_PREFIX = "index";
@@ -52,7 +52,7 @@ function registerCommand(
 }
 
 async function tryInstallNeoExpress(context: vscode.ExtensionContext): Promise<DotNetPackage | null> {
-  const installer = new NeoExpressInstaller(context, getPackageVersion(context));
+  const installer = new NeoExpressInstaller(context, getTargetNeoExpressVersion(context));
   return await installer.run();
 }
 

@@ -336,6 +336,16 @@
           "type": "boolean",
           "default": false,
           "description": "Include install/update preview releases of neo.express"
+        },
+        "neo3-visual-tracker.includeBuildServerFeed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include packages from the build server feed"
+        },
+        "neo3-visual-tracker.neoExpressVersion": {
+          "type": "string",
+          "default": "",
+          "description": "Neo Express version to install. Leave the field empty for the default version."
         }
       }
     }

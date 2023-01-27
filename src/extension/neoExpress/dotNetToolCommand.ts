@@ -22,11 +22,18 @@ export async function listPackages(
   return output;
 }
 
-export async function updateCommand(path: string, tool: DotNetPackage): Promise<string | null> {
+export async function updateCommand(
+  path: string,
+  tool: DotNetPackage,
+  includeBuildServerFeed: boolean = false
+): Promise<string | null> {
   try {
     const version = tool.version.toString();
+    const additionalFeed = includeBuildServerFeed
+      ? "--add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public/nuget/v3/index.json"
+      : "";
     const output = await runCommand(
-      `dotnet tool update ${locationString(tool.location, "--")} ${tool.name} --version ${version}`,
+      `dotnet tool update ${locationString(tool.location, "--")} ${tool.name} --version ${version} ${additionalFeed}`,
       path
     );
     return output;
@@ -37,11 +44,21 @@ export async function updateCommand(path: string, tool: DotNetPackage): Promise<
   return null;
 }
 
-export async function installCommand(path: string, target: DotNetPackage): Promise<string | null> {
+export async function installCommand(
+  path: string,
+  target: DotNetPackage,
+  includeBuildServerFeed: boolean = false
+): Promise<string | null> {
   let output = null;
+  const additionalFeed = includeBuildServerFeed
+    ? "--add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public/nuget/v3/index.json"
+    : "";
   try {
     if (target.location === PackageLocation.global) {
-      output = await runCommand(`dotnet tool install --global ${target.name} --version ${target.version}`, path);
+      output = await runCommand(
+        `dotnet tool install --global ${target.name} --version ${target.version} ${additionalFeed}`,
+        path
+      );
       Log.log(LOG_PREFIX, `Install global tool ${target.name}`);
       Log.log(LOG_PREFIX, output);
     } else {
@@ -49,7 +66,10 @@ export async function installCommand(path: string, target: DotNetPackage): Promi
         output = await runCommand(`dotnet new tool-manifest`, path);
         Log.log(LOG_PREFIX, `Create new manifest file ${output}`);
       }
-      output = await runCommand(`dotnet tool install --local ${target.name} --version ${target.version}`, path);
+      output = await runCommand(
+        `dotnet tool install --local ${target.name} --version ${target.version} ${additionalFeed}`,
+        path
+      );
       Log.log(LOG_PREFIX, `Install local tool ${target.name}`);
       Log.log(LOG_PREFIX, output);
     }
