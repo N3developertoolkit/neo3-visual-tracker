@@ -330,7 +330,7 @@
       ]
     },
     "configuration": {
-      "title": "neo3-visual-tracker",
+      "title": "NEO N3 Visual DevTracker",
       "properties": {
         "neo3-visual-tracker.includePreviewReleases": {
           "type": "boolean",
