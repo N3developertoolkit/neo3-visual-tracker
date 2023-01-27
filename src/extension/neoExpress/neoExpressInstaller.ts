@@ -125,7 +125,9 @@ export default class NeoExpressInstaller {
     let updatedPackage = current;
     let updateResult = UpdateResult.notUpdated;
     // check if required is newer than current
-    const newPackageVersion = await target.version.findLatestPatchVersionFromNuget();
+    const config = vscode.workspace.getConfiguration("neo3-visual-tracker");
+    const includePreviewReleases = config.get("includePreviewReleases", false);
+    const newPackageVersion = await target.version.findLatestPatchVersionFromNuget(includePreviewReleases);
     if (current.version.compare(newPackageVersion) >= 0) {
       return { updateResult: UpdateResult.noNewVersionFromNuget, package: updatedPackage };
     }

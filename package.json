@@ -79,7 +79,7 @@
     "commands": [
       {
         "command": "neo3-visual-devtracker.express.install",
-        "title": "Install Neo Express",
+        "title": "Install/Update Neo Express",
         "category": "Neo Express N3"
       },
       {
@@ -328,6 +328,16 @@
           "icon": "resources/n3-logo.png"
         }
       ]
+    },
+    "configuration": {
+      "title": "neo3-visual-tracker",
+      "properties": {
+        "neo3-visual-tracker.includePreviewReleases": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include install/update preview releases of neo.express"
+        }
+      }
     }
   },
   "scripts": {
