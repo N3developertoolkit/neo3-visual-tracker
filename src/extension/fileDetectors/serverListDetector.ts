@@ -147,12 +147,14 @@ export default class ServerListDetector extends DetectorBase {
           }
         }
       } catch (e) {
-        Log.log(
-          LOG_PREFIX,
-          "Error parsing Neo Express config",
-          file,
-          e.message
-        );
+        if (e instanceof Error) {
+          Log.log(
+            LOG_PREFIX,
+            "Error parsing Neo Express config",
+            file,
+            e.message
+          );
+        }
       }
     }
     const uniqueUrls = Object.getOwnPropertyNames(rpcUrls);
@@ -188,12 +190,14 @@ export default class ServerListDetector extends DetectorBase {
       const genesisBlock = await rpcClient.getBlock(0, true);
       return genesisBlock.hash;
     } catch (e) {
-      Log.log(
-        LOG_PREFIX,
-        "Could not get genesis blockhash from",
-        rpcUrl,
-        e.message
-      );
+      if (e instanceof Error) {
+        Log.log(
+          LOG_PREFIX,
+          "Could not get genesis blockhash from",
+          rpcUrl,
+          e.message
+        );
+      }
       return UNKNOWN_BLOCKCHAIN;
     }
   }

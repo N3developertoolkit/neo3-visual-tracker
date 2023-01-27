@@ -229,12 +229,14 @@ export default class TrackerPanelController extends PanelControllerBase<
         });
       }
     } catch (e) {
-      Log.error(
-        LOG_PREFIX,
-        "Unexpected error processing blockchain update",
-        blockHeight,
-        e.message
-      );
+      if (e instanceof Error) {
+        Log.error(
+          LOG_PREFIX,
+          "Unexpected error processing blockchain update",
+          blockHeight,
+          e.message
+        );
+      }
     }
   }
 

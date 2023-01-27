@@ -153,11 +153,13 @@ export default class AutoComplete {
           wellKnownContract.manifest;
       }
     } catch (e) {
-      Log.error(
-        LOG_PREFIX,
-        "Error initializing well-known manifests...",
-        e.message
-      );
+      if (e instanceof Error) {
+        Log.error(
+          LOG_PREFIX,
+          "Error initializing well-known manifests...",
+          e.message
+        );
+      }
     } finally {
       try {
         await fs.promises.unlink(tempFile.path);
@@ -247,12 +249,14 @@ export default class AutoComplete {
           newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
-        Log.warn(
-          LOG_PREFIX,
-          "Could not list neo-express contracts",
-          connection.blockchainIdentifier.configPath,
-          e.message
-        );
+        if (e instanceof Error) {
+          Log.warn(
+            LOG_PREFIX,
+            "Could not list neo-express contracts",
+            connection.blockchainIdentifier.configPath,
+            e.message
+          );
+        }
       }
     }
 

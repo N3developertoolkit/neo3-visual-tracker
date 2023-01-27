@@ -23,7 +23,9 @@ export default class Wallet {
       await result.tryUnlockWithoutPassword();
       return result;
     } catch (e) {
-      Log.debug(LOG_PREFIX, "Not a wallet", e.message, path);
+      if (e instanceof Error) {
+        Log.debug(LOG_PREFIX, "Not a wallet", e.message, path);
+      }
       return undefined;
     }
   }
@@ -56,22 +58,24 @@ export default class Wallet {
           );
         }
       } catch (e) {
-        if (`${e.message}`.toLowerCase().indexOf("wrong password") !== -1) {
-          Log.log(
-            LOG_PREFIX,
-            this.wallet.name,
-            "Account is password protected:",
-            this.wallet.accounts[i].label,
-            e.message
-          );
-        } else {
-          Log.warn(
-            LOG_PREFIX,
-            this.wallet.name,
-            "Unexpected error decrypting account",
-            this.wallet.accounts[i].label,
-            e.message
-          );
+        if (e instanceof Error) {
+          if (`${e.message}`.toLowerCase().indexOf("wrong password") !== -1) {
+            Log.log(
+              LOG_PREFIX,
+              this.wallet.name,
+              "Account is password protected:",
+              this.wallet.accounts[i].label,
+              e.message
+            );
+          } else {
+            Log.warn(
+              LOG_PREFIX,
+              this.wallet.name,
+              "Unexpected error decrypting account",
+              this.wallet.accounts[i].label,
+              e.message
+            );
+          }
         }
       }
     }

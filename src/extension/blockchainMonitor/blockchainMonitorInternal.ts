@@ -84,12 +84,14 @@ export default class BlockchainMonitorInternal {
           neoBalance: allBalances[SCRIPTHASH_NEO] || 0,
         };
       } catch (e) {
-        Log.warn(
-          LOG_PREFIX,
-          `Error retrieving address ${address} (${
-            e.message || "Unknown error"
-          })`
-        );
+        if (e instanceof Error) {
+          Log.warn(
+            LOG_PREFIX,
+            `Error retrieving address ${address} (${
+              e.message || "Unknown error"
+            })`
+          );
+        }
         if (retryOnFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -124,12 +126,14 @@ export default class BlockchainMonitorInternal {
         this.state.cachedLogs.push(result);
         return result;
       } catch (e) {
-        Log.warn(
-          LOG_PREFIX,
-          `Error retrieving app logs for ${txid}: ${
-            e.message || "Unknown error"
-          }`
-        );
+        if (e instanceof Error) {
+          Log.warn(
+            LOG_PREFIX,
+            `Error retrieving app logs for ${txid}: ${
+              e.message || "Unknown error"
+            }`
+          );
+        }
         if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -167,12 +171,14 @@ export default class BlockchainMonitorInternal {
         }
         return block;
       } catch (e) {
-        Log.warn(
-          LOG_PREFIX,
-          `Error retrieving block ${indexOrHash}: ${
-            e.message || "Unknown error"
-          }`
-        );
+        if (e instanceof Error) {
+          Log.warn(
+            LOG_PREFIX,
+            `Error retrieving block ${indexOrHash}: ${
+              e.message || "Unknown error"
+            }`
+          );
+        }
         if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -207,10 +213,12 @@ export default class BlockchainMonitorInternal {
         }
         return transaction;
       } catch (e) {
-        Log.warn(
-          LOG_PREFIX,
-          `Error retrieving tx ${hash}: ${e.message || "Unknown error"}`
-        );
+        if (e instanceof Error) {
+          Log.warn(
+            LOG_PREFIX,
+            `Error retrieving tx ${hash}: ${e.message || "Unknown error"}`
+          );
+        }
         if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -239,7 +247,9 @@ export default class BlockchainMonitorInternal {
     try {
       await this.updateState();
     } catch (e) {
-      Log.error(LOG_PREFIX, "Unexpected error", e.message);
+      if (e instanceof Error) {
+        Log.error(LOG_PREFIX, "Unexpected error", e.message);
+      }
     } finally {
       const refreshInterval = this.state.currentRefreshInterval();
       setTimeout(() => this.refreshLoop(), refreshInterval);
@@ -306,7 +316,7 @@ export default class BlockchainMonitorInternal {
           mayBeMoreResults = result.blocks.length >= count;
         } while (mayBeMoreResults);
       } catch (e) {
-        if (e.message?.indexOf("Method not found") !== -1) {
+        if (e instanceof Error && e.message?.indexOf("Method not found") !== -1) {
           this.tryGetPopulatedBlocks = false;
         } else {
           throw e;

@@ -29,8 +29,11 @@ export default class NeoExpressIo {
     try {
       return JSONC.parse(output.message) as neonSc.ContractManifestJson;
     } catch (e) {
-      throw Error(`Get contract error: ${e.message}`);
+      if (e instanceof Error) {
+        throw Error(`Get contract error: ${e.message}`);
+      }
     }
+    return null;
   }
 
   static async contractList(
@@ -64,8 +67,11 @@ export default class NeoExpressIo {
       }
       return result;
     } catch (e) {
-      throw Error(`List contract parse error: ${e.message}`);
+      if (e instanceof Error) {
+        throw Error(`List contract parse error: ${e.message}`);
+      }
     }
+    return {};
   }
 
   static async contractStorage(
@@ -97,7 +103,10 @@ export default class NeoExpressIo {
         }[]) || []
       );
     } catch (e) {
-      throw Error(`Contract storage parse error: ${e.message}`);
+      if (e instanceof Error) {
+        throw Error(`Contract storage parse error: ${e.message}`);
+      }
     }
+    return [];
   }
 }

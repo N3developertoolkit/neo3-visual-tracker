@@ -61,10 +61,12 @@ export default abstract class PanelControllerBase<
       try {
         await panel?.webview.postMessage(message);
       } catch (e) {
-        Log.error(
-          LOG_PREFIX,
-          `Could not post message: ${e.message || "Unknown error"}`
-        );
+        if (e instanceof Error) {
+          Log.error(
+            LOG_PREFIX,
+            `Could not post message: ${e.message || "Unknown error"}`
+          );
+        }
       }
     };
     this.setTitle = (newTitle) => {
