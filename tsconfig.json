@@ -15,5 +15,5 @@
     "downlevelIteration": true,
     "skipLibCheck": true
   },
-  "exclude": ["node_modules", "gulpfile.ts"]
+  "exclude": ["node_modules", "gulpfile.ts", "test", "__mocks__"]
 }
