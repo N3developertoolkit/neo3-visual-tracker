@@ -99,7 +99,9 @@ export default class NeoExpressInstaller {
   }
 
   private async selectUserPreferredLocation(): Promise<PackageLocation | null> {
-    const moreInfoLink = new vscode.MarkdownString(`[More information](https://dotnet.microsoft.com/download)`);
+    const moreInfoLink = new vscode.MarkdownString(
+      `[More information](https://github.com/neo-project/neo-express/blob/master/docs/installation.md )`
+    );
     moreInfoLink.isTrusted = true;
     let response = await vscode.window.showInformationMessage(
       `${this.name} ${this.version} is required. Where would you like to install it? ${moreInfoLink.value}`,
@@ -134,7 +136,9 @@ export default class NeoExpressInstaller {
       return { updateResult: UpdateResult.noNewVersionFromNuget, package: updatedPackage };
     }
     // handle update to new version
-    const moreInfoLink = new vscode.MarkdownString(`[More information](https://dotnet.microsoft.com/download)`);
+    const moreInfoLink = new vscode.MarkdownString(
+      `[More information](https://github.com/neo-project/neo-express/blob/master/docs/installation.md )`
+    );
     moreInfoLink.isTrusted = true;
     const dontAskAgain = "Dont't ask again";
     const selection = await vscode.window.showInformationMessage(
