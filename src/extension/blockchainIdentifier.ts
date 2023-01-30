@@ -130,14 +130,12 @@ export default class BlockchainIdentifier {
         }
       }
     } catch (e) {
-      if (e instanceof Error) {
-        Log.log(
-          LOG_PREFIX,
-          "Error parsing neo-express wallets",
-          this.configPath,
-          e.message
-        );
-      }
+      Log.log(
+        LOG_PREFIX,
+        "Error parsing neo-express wallets",
+        this.configPath,
+        e
+      );
     }
     return result;
   }

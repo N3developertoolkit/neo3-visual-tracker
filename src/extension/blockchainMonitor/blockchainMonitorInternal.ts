@@ -84,14 +84,9 @@ export default class BlockchainMonitorInternal {
           neoBalance: allBalances[SCRIPTHASH_NEO] || 0,
         };
       } catch (e) {
-        if (e instanceof Error) {
           Log.warn(
             LOG_PREFIX,
-            `Error retrieving address ${address} (${
-              e.message || "Unknown error"
-            })`
-          );
-        }
+            `Error retrieving address ${address}`, e);
         if (retryOnFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -171,14 +166,10 @@ export default class BlockchainMonitorInternal {
         }
         return block;
       } catch (e) {
-        if (e instanceof Error) {
-          Log.warn(
-            LOG_PREFIX,
-            `Error retrieving block ${indexOrHash}: ${
-              e.message || "Unknown error"
-            }`
-          );
-        }
+        Log.warn(
+          LOG_PREFIX,
+          `Error retrieving block ${indexOrHash}`, e
+        );
         if (retryonFailure && retry < MAX_RETRIES) {
           await this.sleepBetweenRetries();
         } else {
@@ -247,9 +238,7 @@ export default class BlockchainMonitorInternal {
     try {
       await this.updateState();
     } catch (e) {
-      if (e instanceof Error) {
-        Log.error(LOG_PREFIX, "Unexpected error", e.message);
-      }
+      Log.error(LOG_PREFIX, "Unexpected error", e);
     } finally {
       const refreshInterval = this.state.currentRefreshInterval();
       setTimeout(() => this.refreshLoop(), refreshInterval);

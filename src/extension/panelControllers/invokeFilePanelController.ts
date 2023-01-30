@@ -379,27 +379,24 @@ export default class InvokeFilePanelController extends PanelControllerBase<
       fs.writeFileSync(tempFile, JSONC.stringify([fragment]));
       await this.runFile(tempFile);
     } catch (e) {
-      if (e instanceof Error) {
-        Log.warn(
-          LOG_PREFIX,
-          "Error running fragment",
-          tempFile,
-          fragment,
-          e.message
-        );
-      }
+      Log.warn(
+        LOG_PREFIX,
+        "Error running fragment",
+        tempFile,
+        fragment,
+        e
+      );
+  
     } finally {
       try {
         fs.unlinkSync(tempFile);
       } catch (e) {
-        if (e instanceof Error) {
-          Log.warn(
-            LOG_PREFIX,
-            "Could not delete temporary file",
-            tempFile,
-            e.message
-          );
-        }
+        Log.warn(
+          LOG_PREFIX,
+          "Could not delete temporary file",
+          tempFile,
+          e
+        );
       }
     }
   }

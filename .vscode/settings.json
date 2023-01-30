@@ -4,6 +4,6 @@
   "typescript.tsc.autoDetect": "off",
 
   // Auto format files on save using Prettier:
-  "editor.formatOnSave": true,
+  "editor.formatOnSave": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode"
 }

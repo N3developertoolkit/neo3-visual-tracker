@@ -9,10 +9,7 @@ import ViewStateBase from "../../shared/viewState/viewStateBase";
 
 const LOG_PREFIX = "PanelControllerBase";
 
-export default abstract class PanelControllerBase<
-  TViewState extends ViewStateBase,
-  TViewRequest
-> {
+export default abstract class PanelControllerBase<TViewState extends ViewStateBase, TViewRequest> {
   protected get isClosed() {
     return this.closed;
   }
@@ -49,24 +46,13 @@ export default abstract class PanelControllerBase<
       null,
       context.subscriptions
     );
-    (panel as any).iconPath = vscode.Uri.file(
-      posixPath(context.extensionPath, "resources", "neo-logo.png")
-    );
-    panel.webview.onDidReceiveMessage(
-      this.recieveRequest,
-      this,
-      context.subscriptions
-    );
+    (panel as any).iconPath = vscode.Uri.file(posixPath(context.extensionPath, "resources", "neo-logo.png"));
+    panel.webview.onDidReceiveMessage(this.recieveRequest, this, context.subscriptions);
     this.postMessage = async (message) => {
       try {
         await panel?.webview.postMessage(message);
       } catch (e) {
-        if (e instanceof Error) {
-          Log.error(
-            LOG_PREFIX,
-            `Could not post message: ${e.message || "Unknown error"}`
-          );
-        }
+        Log.error(LOG_PREFIX, `Could not post message:`, e);
       }
     };
     this.setTitle = (newTitle) => {
@@ -75,17 +61,11 @@ export default abstract class PanelControllerBase<
       }
     };
     panel.webview.html = fs
-      .readFileSync(
-        posixPath(context.extensionPath, "dist", "panel", "index.html")
-      )
+      .readFileSync(posixPath(context.extensionPath, "dist", "panel", "index.html"))
       .toString()
       .replace(
         "[BASE_HREF]",
-        panel.webview
-          .asWebviewUri(
-            vscode.Uri.file(posixPath(context.extensionPath, "dist", "panel"))
-          )
-          .toString() + "/"
+        panel.webview.asWebviewUri(vscode.Uri.file(posixPath(context.extensionPath, "dist", "panel"))).toString() + "/"
       );
   }
 
@@ -101,12 +81,7 @@ export default abstract class PanelControllerBase<
     if (JSON.stringify(mergedViewState) === JSON.stringify(this.viewState)) {
       return;
     }
-    Log.log(
-      LOG_PREFIX,
-      "Update:",
-      this.viewState.panelTitle,
-      Object.keys(updates)
-    );
+    Log.log(LOG_PREFIX, "Update:", this.viewState.panelTitle, Object.keys(updates));
     if (updates.panelTitle) {
       this.setTitle(updates.panelTitle);
     }
@@ -115,12 +90,7 @@ export default abstract class PanelControllerBase<
   }
 
   private async recieveRequest(request: ViewRequest) {
-    Log.log(
-      LOG_PREFIX,
-      "Received:",
-      this.viewState.panelTitle,
-      Object.keys(request)
-    );
+    Log.log(LOG_PREFIX, "Received:", this.viewState.panelTitle, Object.keys(request));
     if (request.retrieveViewState) {
       await this.sendRequest({ viewState: this.viewState });
     }
@@ -135,12 +105,7 @@ export default abstract class PanelControllerBase<
   }
 
   private async sendRequest(request: ControllerRequest) {
-    Log.log(
-      LOG_PREFIX,
-      "Sent:",
-      this.viewState.panelTitle,
-      Object.keys(request)
-    );
+    Log.log(LOG_PREFIX, "Sent:", this.viewState.panelTitle, Object.keys(request));
     await this.postMessage(request);
   }
 }

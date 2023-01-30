@@ -147,14 +147,12 @@ export default class ServerListDetector extends DetectorBase {
           }
         }
       } catch (e) {
-        if (e instanceof Error) {
-          Log.log(
-            LOG_PREFIX,
-            "Error parsing Neo Express config",
-            file,
-            e.message
-          );
-        }
+        Log.log(
+          LOG_PREFIX,
+          "Error parsing Neo Express config",
+          file,
+          e
+        );
       }
     }
     const uniqueUrls = Object.getOwnPropertyNames(rpcUrls);

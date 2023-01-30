@@ -82,16 +82,14 @@ export default class ContractDetector extends DetectorBase {
               deploymentRequired = true;
             }
           } catch (e) {
-            if (e instanceof Error) {
-              Log.warn(
-                LOG_PREFIX,
-                "Could not query for contract",
-                contractName,
-                absolutePathToNef,
-                "Error:",
-                e.message
-              );
-            }
+            Log.warn(
+              LOG_PREFIX,
+              "Could not query for contract",
+              contractName,
+              absolutePathToNef,
+              "Error:",
+              e
+            );
           }
         }
         if (
@@ -124,9 +122,7 @@ export default class ContractDetector extends DetectorBase {
         (await fs.promises.readFile(fullPathToManifest)).toString()
       ) as Partial<neonSc.ContractManifestJson>;
     } catch (e) {
-      if (e instanceof Error) {
-        Log.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e.message);
-      }
+      Log.warn(LOG_PREFIX, "Error parsing", fullPathToNef, e);
       return undefined;
     }
   }
@@ -137,9 +133,7 @@ export default class ContractDetector extends DetectorBase {
         this.onChangeEmitter.fire();
       }
     } catch (e) {
-      if (e instanceof Error) {
-        Log.error(LOG_PREFIX, "Unexpected error", e.message);
-      }
+      Log.error(LOG_PREFIX, "Unexpected error", e);
     }
   }
 }

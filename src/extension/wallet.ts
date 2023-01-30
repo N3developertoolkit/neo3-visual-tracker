@@ -23,9 +23,7 @@ export default class Wallet {
       await result.tryUnlockWithoutPassword();
       return result;
     } catch (e) {
-      if (e instanceof Error) {
-        Log.debug(LOG_PREFIX, "Not a wallet", e.message, path);
-      }
+      Log.debug(LOG_PREFIX, "Not a wallet", e, path);
       return undefined;
     }
   }

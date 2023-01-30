@@ -153,13 +153,10 @@ export default class AutoComplete {
           wellKnownContract.manifest;
       }
     } catch (e) {
-      if (e instanceof Error) {
-        Log.error(
-          LOG_PREFIX,
-          "Error initializing well-known manifests...",
-          e.message
-        );
-      }
+      Log.error(
+        LOG_PREFIX,
+        "Error initializing well-known manifests...",
+        e);
     } finally {
       try {
         await fs.promises.unlink(tempFile.path);
