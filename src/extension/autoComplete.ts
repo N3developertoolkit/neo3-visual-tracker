@@ -249,14 +249,12 @@ export default class AutoComplete {
           newData.contractNames[contractHash] = contractName;
         }
       } catch (e) {
-        if (e instanceof Error) {
-          Log.warn(
-            LOG_PREFIX,
-            "Could not list neo-express contracts",
-            connection.blockchainIdentifier.configPath,
-            e.message
-          );
-        }
+        Log.warn(
+          LOG_PREFIX,
+          "Could not list neo-express contracts",
+          connection.blockchainIdentifier.configPath,
+          e
+        );
       }
     }
 
