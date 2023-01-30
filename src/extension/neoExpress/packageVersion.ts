@@ -98,7 +98,7 @@ export default class PackageVersion {
     if (!includesPreview) {
       all = all?.filter((v: string) => !v.includes("-"));
     }
-    this.allLatestVersions = all.map((version: string) => PackageVersion.parse(version));
+    this.allLatestVersions = all?.map((version: string) => PackageVersion.parse(version)) || [];
     return this.allLatestVersions;
   }
 }

@@ -118,6 +118,15 @@ describe("Package version", () => {
     expect(tryFetchJsonMock).toBeCalled();
   });
 
+  it("Should return itself if there are no versions from nuget", async () => {
+    const tryFetchJsonMock = tryFetchJson as jest.MockedFunction<typeof tryFetchJson>;
+    tryFetchJsonMock.mockResolvedValue({});
+    const version1 = PackageVersion.parse("13.0.21");
+    const latest = await version1.findLatestPatchVersionFromNuget();
+    expect(latest.equals(PackageVersion.parse("13.0.21"))).toBe(true);
+    expect(tryFetchJsonMock).toBeCalled();
+  });
+
   it("Can get latest patch version from nuget with preview label", async () => {
     const tryFetchJsonMock = tryFetchJson as jest.MockedFunction<typeof tryFetchJson>;
     tryFetchJsonMock.mockResolvedValue(NugetResponse);
