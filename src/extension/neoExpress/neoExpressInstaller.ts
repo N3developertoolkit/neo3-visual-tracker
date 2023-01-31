@@ -16,6 +16,9 @@ export enum UpdateResult {
 }
 
 const LOG_PREFIX = "NeoExpress";
+const DONT_ASK_AGAIN = "Don't ask again";
+const NEVER_SHOW_LOCATION_PROMPT_AGAIN_KEY = "neverShowLocationPromptAgain";
+const NEVER_SHOW_UPDATE_AGAIN_KEY = "neverShowUpdateAgain";
 
 export default class NeoExpressInstaller {
   readonly name: string;
@@ -23,7 +26,6 @@ export default class NeoExpressInstaller {
   readonly rootFolder: string;
   readonly targetPackage: DotNetPackage;
   readonly context: vscode.ExtensionContext;
-  readonly neverShowAgainKey = "neverShowAgain";
 
   constructor(context: vscode.ExtensionContext, version: string) {
     this.context = context;
@@ -36,46 +38,61 @@ export default class NeoExpressInstaller {
     this.rootFolder = workspaceFolder() || process.cwd();
   }
 
-  async run(): Promise<DotNetPackage | null> {
+  // forceCheck is used to force a check for installation/updates even if the user has previously declined to updat
+  // This is used when the user has manually triggered install from the command palette
+  async run(forceCheck: boolean = false): Promise<DotNetPackage | null> {
     let currentPackage = await findPackage(this.targetPackage, VersionMatchCriteria.nameOnly);
     if (currentPackage) {
       const updateOutput = await this.tryUpdate(currentPackage, {
         ...this.targetPackage,
         location: currentPackage.location,
-      });
+      }, forceCheck);
       if (updateOutput.package) {
         currentPackage = updateOutput.package;
       }
     } else {
-      currentPackage = await this.tryInstall();
+      currentPackage = await this.tryInstall(forceCheck);
     }
     return currentPackage;
   }
 
-  async tryInstall(): Promise<DotNetPackage | null> {
-    let installedPackage = null;
+  async tryInstall(forceCheck: boolean = false): Promise<DotNetPackage | null> {
+    let installedPackage: DotNetPackage;
     try {
-      const selectedLocation = await this.selectUserPreferredLocation();
+      const selectedLocation = await this.selectUserPreferredLocation(forceCheck);
       if (selectedLocation === null) {
         return null;
       }
-      installedPackage = { ...this.targetPackage, location: selectedLocation };
-      await installCommand(this.rootFolder, installedPackage, getIncludeBuildServerFeed());
-      vscode.window.showInformationMessage(
-        `${this.name} installed to ${locationString(selectedLocation)} successfully.`
+      const newPackageVersion = await this.targetPackage.version.findLatestPatchVersionFromNuget(
+        getIncludePreviewReleases(),
+        getIncludeBuildServerFeed()
+      );
+      installedPackage = { ...this.targetPackage, location: selectedLocation, version: newPackageVersion };
+      await vscode.window.withProgress(
+        {
+          location: vscode.ProgressLocation.Notification,
+          title: `Installing ${this.name} ${installedPackage.version} to ${locationString(selectedLocation)}`,
+        },
+        async () => {
+          await installCommand(this.rootFolder, installedPackage, getIncludeBuildServerFeed());
+          vscode.window.showInformationMessage(
+            `${this.name} installed to ${locationString(selectedLocation)} successfully.`
+          );
+          return true;
+        }
       );
       return installedPackage;
     } catch (error) {
       Log.log(LOG_PREFIX, `Failed to install ${this.name}. ${error}`);
       vscode.window.showErrorMessage(`Failed to install ${this.name}. ${error}`);
-      installedPackage = null;
+      return null;
     }
-    return installedPackage;
   }
 
   async tryUpdate(
     current: DotNetPackage,
-    target: DotNetPackage
+    target: DotNetPackage,
+    forceCheck: boolean = false
   ): Promise<{ updateResult: UpdateResult; package: DotNetPackage | null }> {
     Log.log(
       LOG_PREFIX,
@@ -89,24 +106,26 @@ export default class NeoExpressInstaller {
       return { updateResult: UpdateResult.currentPackageIsNewer, package: current };
     }
     if (current.version.compare(target.version) < 0 && current.version.isNewMajorOrMinorVersion(target.version)) {
-      this.context.workspaceState.update(this.neverShowAgainKey, false);
+      this.context.workspaceState.update(NEVER_SHOW_UPDATE_AGAIN_KEY, false);
     }
-    let neverShowAgain = this.context.workspaceState.get<boolean>(this.neverShowAgainKey);
-    if (neverShowAgain) {
+    let neverShowAgain = this.context.workspaceState.get<boolean>(NEVER_SHOW_UPDATE_AGAIN_KEY);
+    if (neverShowAgain && !forceCheck) {
       return { updateResult: UpdateResult.declinedToUpdate, package: current };
     }
     return await this.handlePatchUpdate(current, target);
   }
 
-  private async selectUserPreferredLocation(): Promise<PackageLocation | null> {
-    const moreInfoLink = new vscode.MarkdownString(
-      `[More information](https://github.com/neo-project/neo-express/blob/master/docs/installation.md )`
-    );
-    moreInfoLink.isTrusted = true;
+  private async selectUserPreferredLocation(forceCheck:boolean = false): Promise<PackageLocation | null> {
+    const neverShowAgain = this.context.workspaceState.get<boolean>(NEVER_SHOW_LOCATION_PROMPT_AGAIN_KEY, false);
+    if (neverShowAgain && !forceCheck) {
+      return null;
+    }
+    const moreInfoLink = this.getMoreInfoLink();
     let response = await vscode.window.showInformationMessage(
-      `${this.name} ${this.version} is required. Where would you like to install it? ${moreInfoLink.value}`,
+      `The Neo.Express tool package is not installed. Would you like to install it? ${moreInfoLink.value}`,
       "Local",
-      "Global"
+      "Global",
+      DONT_ASK_AGAIN
     );
     let preferredLocation = null;
     if (response === "Local") {
@@ -115,6 +134,8 @@ export default class NeoExpressInstaller {
     } else if (response === "Global") {
       preferredLocation = PackageLocation.global;
       Log.log(LOG_PREFIX, `User selected global to install ${this.name}`);
+    } else if (response === DONT_ASK_AGAIN) {
+      this.context.workspaceState.update(NEVER_SHOW_LOCATION_PROMPT_AGAIN_KEY, true);
     } else {
       Log.log(LOG_PREFIX, `User declined to install ${this.name}. No action taken.`);
     }
@@ -136,36 +157,41 @@ export default class NeoExpressInstaller {
       return { updateResult: UpdateResult.noNewVersionFromNuget, package: updatedPackage };
     }
     // handle update to new version
-    const moreInfoLink = new vscode.MarkdownString(
-      `[More information](https://github.com/neo-project/neo-express/blob/master/docs/installation.md )`
-    );
-    moreInfoLink.isTrusted = true;
-    const dontAskAgain = "Dont't ask again";
+    const moreInfoLink = this.getMoreInfoLink();
     const selection = await vscode.window.showInformationMessage(
       `Version ${newPackageVersion.toString()} is available. Do you want to update ${locationString(
         current.location
       )} to the new version? ${moreInfoLink.value}`,
       "Yes",
       "No",
-      dontAskAgain
+      DONT_ASK_AGAIN
     );
     if (selection === "Yes") {
       try {
-        await updateCommand(
-          this.rootFolder,
+        await vscode.window.withProgress(
           {
-            ...target,
-            version: newPackageVersion,
+            location: vscode.ProgressLocation.Notification,
+            title: `Updating ${this.name} ${newPackageVersion} at ${locationString(updatedPackage.location)}`,
           },
-          getIncludeBuildServerFeed()
-        );
-        updateResult = UpdateResult.updated;
-        // @ts-ignore updatedPackage is already initialized
-        updatedPackage.version = newPackageVersion;
-        await vscode.window.showInformationMessage(
-          `Successfully updated ${updatedPackage.name} at ${locationString(updatedPackage.location)} to ${
-            updatedPackage.version
-          }`
+          async () => {
+            await updateCommand(
+              this.rootFolder,
+              {
+                ...target,
+                version: newPackageVersion,
+              },
+              getIncludeBuildServerFeed()
+            );
+            updateResult = UpdateResult.updated;
+            // @ts-ignore updatedPackage is already initialized
+            updatedPackage.version = newPackageVersion;
+            vscode.window.showInformationMessage(
+              `Successfully updated ${updatedPackage.name} at ${locationString(updatedPackage.location)} to ${
+                updatedPackage.version
+              }`
+            );
+            return true;
+          }
         );
       } catch (error) {
         Log.log(LOG_PREFIX, `Failed to update ${this.name} to ${newPackageVersion.toString()}. ${error}`);
@@ -176,10 +202,18 @@ export default class NeoExpressInstaller {
       }
     } else if (selection === "No") {
       updateResult = UpdateResult.declinedToUpdate;
-    } else if (selection === dontAskAgain) {
+    } else if (selection === DONT_ASK_AGAIN) {
       updateResult = UpdateResult.declinedToUpdateAndDontAskAgain;
-      this.context.workspaceState.update(this.neverShowAgainKey, true);
+      this.context.workspaceState.update(NEVER_SHOW_UPDATE_AGAIN_KEY, true);
     }
     return { updateResult, package: updatedPackage };
+  }
+
+  private getMoreInfoLink() {
+    const moreInfoLink = new vscode.MarkdownString(
+      `[More information](https://github.com/neo-project/neo-express/blob/master/docs/installation.md)`
+    );
+    moreInfoLink.isTrusted = true;
+    return moreInfoLink;
   }
 }

@@ -7,6 +7,7 @@ import posixPath from "../util/posixPath";
 import * as fs from "fs";
 
 const LOG_PREFIX = "NeoExpress";
+const BUILD_SERVER_SOURCE = "https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public/nuget/v3/index.json"
 
 export async function listPackages(
   packageLocation: PackageLocation,
@@ -27,21 +28,21 @@ export async function updateCommand(
   tool: DotNetPackage,
   includeBuildServerFeed: boolean = false
 ): Promise<string | null> {
+  let output = null;
   try {
     const version = tool.version.toString();
     const additionalFeed = includeBuildServerFeed
-      ? "--add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public/nuget/v3/index.json"
+      ? `--add-source ${BUILD_SERVER_SOURCE}`
       : "";
-    const output = await runCommand(
+    output = await runCommand(
       `dotnet tool update ${locationString(tool.location, "--")} ${tool.name} --version ${version} ${additionalFeed}`,
       path
     );
-    return output;
   } catch (error) {
     Log.error(`error: ${error}`);
     throw error;
   }
-  return null;
+  return output;
 }
 
 export async function installCommand(
@@ -51,7 +52,7 @@ export async function installCommand(
 ): Promise<string | null> {
   let output = null;
   const additionalFeed = includeBuildServerFeed
-    ? "--add-source https://pkgs.dev.azure.com/ngdenterprise/Build/_packaging/public/nuget/v3/index.json"
+    ? `--add-source ${BUILD_SERVER_SOURCE}`
     : "";
   try {
     if (target.location === PackageLocation.global) {

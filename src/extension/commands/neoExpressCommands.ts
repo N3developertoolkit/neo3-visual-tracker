@@ -296,7 +296,7 @@ export default class NeoExpressCommands {
 
   static async install(context: vscode.ExtensionContext) {
     const installer = new NeoExpressInstaller(context, getTargetNeoExpressVersion(context));
-    await installer.run();
+    await installer.run(true);
   }
 
   private static showResult(output: { message: string; isError?: boolean }) {
