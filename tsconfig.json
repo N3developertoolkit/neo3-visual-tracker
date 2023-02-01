@@ -12,7 +12,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "noUnusedParameters": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "skipLibCheck": true
   },
-  "exclude": ["node_modules", "gulpfile.ts"]
+  "exclude": ["node_modules", "gulpfile.ts", "test", "__mocks__"]
 }

@@ -19,10 +19,7 @@
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
-      "args": [
-        "${workspaceFolder}/sample-workspaces/empty-workspace",
-        "--extensionDevelopmentPath=${workspaceFolder}"
-      ],
+      "args": ["${workspaceFolder}/sample-workspaces/empty-workspace", "--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
       "preLaunchTask": "${defaultBuildTask}"
     },

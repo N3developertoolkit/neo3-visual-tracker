@@ -81,12 +81,12 @@ export default class StorageExplorerPanelController extends PanelControllerBase<
         updates.selectedContract = null;
       }
     } catch (e) {
-      await this.updateViewState({
-        contracts: [],
-        error: e.message || "Unknown error",
-        selectedContract: null,
-        storage: [],
-      });
+        await this.updateViewState({
+          contracts: [],
+          error: e instanceof Error && e.message || "Unknown error",
+          selectedContract: null,
+          storage: [],
+        });
       return;
     }
 
@@ -105,7 +105,7 @@ export default class StorageExplorerPanelController extends PanelControllerBase<
             selectedContract
           );
         } catch (e) {
-          updates.error = e.message || "Unknown error";
+          updates.error = e instanceof Error && e.message || "Unknown error";
           updates.storage = [];
         }
       } else {

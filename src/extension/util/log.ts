@@ -32,6 +32,7 @@ function log(
       "Neo N3 Visual DevTracker"
     );
   }
+  args = args.map(a=> a instanceof Error ? a.message : a);
   outputChannel.appendLine(
     `${level} ${prefix} ${args.map((_) => JSON.stringify(_)).join(" ")}`
   );

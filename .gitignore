@@ -7,3 +7,5 @@ deps
 .DS_Store
 .tools/
 obj
+.vscode-test
+coverage

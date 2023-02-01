@@ -233,7 +233,7 @@ export default class TrackerPanelController extends PanelControllerBase<
         LOG_PREFIX,
         "Unexpected error processing blockchain update",
         blockHeight,
-        e.message
+        e
       );
     }
   }

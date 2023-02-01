@@ -25,10 +25,7 @@ export default class NeoExpressInstanceManager {
   private running: BlockchainIdentifier | null;
   private terminals: vscode.Terminal[];
 
-  constructor(
-    private readonly neoExpress: NeoExpress,
-    private readonly activeConnection: ActiveConnection
-  ) {
+  constructor(private readonly neoExpress: NeoExpress, private readonly activeConnection: ActiveConnection) {
     this.disposed = false;
     this.running = null;
     this.terminals = [];
@@ -41,13 +38,8 @@ export default class NeoExpressInstanceManager {
     this.disposed = true;
   }
 
-  async run(
-    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
-    commandArguments: CommandArguments
-  ) {
-    const identifier =
-      commandArguments?.blockchainIdentifier ||
-      (await blockchainsTreeDataProvider.select("express"));
+  async run(blockchainsTreeDataProvider: BlockchainsTreeDataProvider, commandArguments: CommandArguments) {
+    const identifier = commandArguments?.blockchainIdentifier || (await blockchainsTreeDataProvider.select("express"));
     if (identifier?.blockchainType !== "express") {
       return;
     }
@@ -58,10 +50,7 @@ export default class NeoExpressInstanceManager {
     await this.stopAll();
 
     const connectedTo = this.activeConnection.connection?.blockchainIdentifier;
-    if (
-      connectedTo?.blockchainType === "express" &&
-      connectedTo?.configPath === runningPreviously?.configPath
-    ) {
+    if (connectedTo?.blockchainType === "express" && connectedTo?.configPath === runningPreviously?.configPath) {
       await this.activeConnection.disconnect(true);
     }
 
@@ -105,35 +94,21 @@ export default class NeoExpressInstanceManager {
     this.onChangeEmitter.fire();
   }
 
-  async runAdvanced(
-    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
-    commandArguments: CommandArguments
-  ) {
+  async runAdvanced(blockchainsTreeDataProvider: BlockchainsTreeDataProvider, commandArguments: CommandArguments) {
     commandArguments.secondsPerBlock = await IoHelpers.enterNumber(
       "How often (in seconds) should new blocks be produced?",
       15,
-      (n) =>
-        Math.round(n) === n && n > 0 && n <= 3600
-          ? null
-          : "Enter a whole number between 1 and 3600"
+      (n) => (Math.round(n) === n && n > 0 && n <= 3600 ? null : "Enter a whole number between 1 and 3600")
     );
     await this.run(blockchainsTreeDataProvider, commandArguments);
   }
 
-  async stop(
-    blockchainsTreeDataProvider: BlockchainsTreeDataProvider,
-    commandArguments: CommandArguments
-  ) {
-    const identifier =
-      commandArguments?.blockchainIdentifier ||
-      (await blockchainsTreeDataProvider.select("express"));
+  async stop(blockchainsTreeDataProvider: BlockchainsTreeDataProvider, commandArguments: CommandArguments) {
+    const identifier = commandArguments?.blockchainIdentifier || (await blockchainsTreeDataProvider.select("express"));
     if (identifier?.blockchainType !== "express") {
       return;
     }
-    if (
-      this.activeConnection.connection?.blockchainIdentifier.configPath ===
-      identifier.configPath
-    ) {
+    if (this.activeConnection.connection?.blockchainIdentifier.configPath === identifier.configPath) {
       await this.activeConnection.disconnect(true);
     }
     if (this.runningInstance?.configPath === identifier.configPath) {
@@ -152,13 +127,8 @@ export default class NeoExpressInstanceManager {
           }
         }
       }
-    } catch (e) {
-      Log.warn(
-        LOG_PREFIX,
-        "Could not stop",
-        this.running?.name || "unknown",
-        e.message
-      );
+    } catch (e: any) {
+      Log.warn(LOG_PREFIX, "Could not stop", this.running?.name || "unknown", e.message);
     } finally {
       this.terminals = [];
       this.running = null;

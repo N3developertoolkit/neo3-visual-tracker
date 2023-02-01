@@ -156,8 +156,7 @@ export default class AutoComplete {
       Log.error(
         LOG_PREFIX,
         "Error initializing well-known manifests...",
-        e.message
-      );
+        e);
     } finally {
       try {
         await fs.promises.unlink(tempFile.path);
@@ -251,7 +250,7 @@ export default class AutoComplete {
           LOG_PREFIX,
           "Could not list neo-express contracts",
           connection.blockchainIdentifier.configPath,
-          e.message
+          e
         );
       }
     }

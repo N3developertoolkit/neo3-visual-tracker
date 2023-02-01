@@ -278,7 +278,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         });
       } catch (e) {
         await this.updateViewState({
-          errorText: e.message || "Unknown error",
+          errorText: e instanceof Error && e.message || "Unknown error",
           fileContentsJson,
         });
         return;
@@ -384,8 +384,9 @@ export default class InvokeFilePanelController extends PanelControllerBase<
         "Error running fragment",
         tempFile,
         fragment,
-        e.message
+        e
       );
+  
     } finally {
       try {
         fs.unlinkSync(tempFile);
@@ -394,7 +395,7 @@ export default class InvokeFilePanelController extends PanelControllerBase<
           LOG_PREFIX,
           "Could not delete temporary file",
           tempFile,
-          e.message
+          e
         );
       }
     }

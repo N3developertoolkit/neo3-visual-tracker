@@ -1,21 +1,12 @@
 import * as childProcess from "child_process";
 import * as vscode from "vscode";
-import * as which from "which";
 
 import Log from "../util/log";
 import NeoExpressTerminal from "./neoExpressTerminal";
-import posixPath from "../util/posixPath";
+import { DotNetPackage, PackageLocation } from "./dotnetToolPackage";
+import workspaceFolder from "../util/workspaceFolder";
 
-type Command =
-  | "checkpoint"
-  | "contract"
-  | "create"
-  | "reset"
-  | "run"
-  | "show"
-  | "transfer"
-  | "wallet"
-  | "-v";
+type Command = "checkpoint" | "contract" | "create" | "reset" | "run" | "show" | "transfer" | "wallet" | "-v";
 
 const DOTNET_CHECK_EXPIRY_IN_MS = 60000;
 const LOG_PREFIX = "NeoExpress";
@@ -25,27 +16,28 @@ const TIMEOUT_POLLING_INTERVAL_IN_MS = 2000;
 export default class NeoExpress {
   private readonly binaryPath: string;
   private readonly dotnetPath: string;
-
+  private readonly neoExpressPackage: DotNetPackage | null;
   private runLock: boolean;
   private checkForDotNetPassedAt: number;
 
-  constructor(private readonly context: vscode.ExtensionContext) {
-    this.binaryPath = posixPath(
-      this.context.extensionPath,
-      "deps",
-      "nxp",
-      "tools",
-      "net6.0",
-      "any",
-      "neoxp.dll"
-    );
-    this.dotnetPath = which.sync("dotnet", { nothrow: true }) || "dotnet";
+  constructor(
+    private readonly context: vscode.ExtensionContext,
+    private readonly expressPackage: DotNetPackage | null
+  ) {
+    this.neoExpressPackage = expressPackage;
     this.runLock = false;
     this.checkForDotNetPassedAt = 0;
+    if (expressPackage) {
+      this.dotnetPath = expressPackage.location === PackageLocation.local ? "dotnet" : "neoxp";
+      this.binaryPath = expressPackage.location === PackageLocation.local ? "neoxp" : "";
+    } else {
+      this.dotnetPath = "";
+      this.binaryPath = "";
+    }
   }
 
   async runInTerminal(name: string, command: Command, ...options: string[]) {
-    if (!this.checkForDotNet()) {
+    if (!this.checkForDotNet() || !this.neoExpressPackage) {
       return null;
     }
     const dotNetArguments = [this.binaryPath, command, ...options];
@@ -69,11 +61,8 @@ export default class NeoExpress {
     return terminal;
   }
 
-  run(
-    command: Command,
-    ...options: string[]
-  ): Promise<{ message: string; isError?: boolean }> {
-    return this.runInDirectory(undefined, command, ...options);
+  run(command: Command, ...options: string[]): Promise<{ message: string; isError?: boolean }> {
+    return this.runInDirectory(workspaceFolder() || process.cwd(), command, ...options);
   }
 
   async runInDirectory(
@@ -110,19 +99,16 @@ export default class NeoExpress {
     command: string,
     ...options: string[]
   ): Promise<{ message: string; isError?: boolean }> {
-    if (!this.checkForDotNet()) {
+    if (!this.checkForDotNet() || !this.neoExpressPackage) {
       return { message: "Could not launch Neo Express", isError: true };
     }
-    const dotNetArguments = [
-      this.binaryPath,
-      ...command.split(/\s/),
-      ...options,
-    ];
+    const dotNetArguments = [this.binaryPath, ...command.split(/\s/), ...options];
     try {
       return new Promise((resolve, reject) => {
         const startedAt = new Date().getTime();
         const process = childProcess.spawn(this.dotnetPath, dotNetArguments, {
           cwd,
+          shell: true,
         });
         let complete = false;
         const watchdog = () => {
@@ -130,11 +116,8 @@ export default class NeoExpress {
             complete = true;
             try {
               process.kill();
-            } catch (e) {
-              Log.error(
-                LOG_PREFIX,
-                `Could not kill timed out neoxp command: ${command} (${e.message})`
-              );
+            } catch (e: any) {
+              Log.error(LOG_PREFIX, `Could not kill timed out neoxp command: ${command} (${e.message})`);
             }
             reject("Operation timed out");
           } else if (!complete) {
@@ -143,14 +126,8 @@ export default class NeoExpress {
         };
         watchdog();
         let message = "";
-        process.stdout.on(
-          "data",
-          (d) => (message = `${message}${d.toString()}`)
-        );
-        process.stderr.on(
-          "data",
-          (d) => (message = `${message}${d.toString()}`)
-        );
+        process.stdout.on("data", (d) => (message = `${message}${d.toString()}`));
+        process.stderr.on("data", (d) => (message = `${message}${d.toString()}`));
         process.on("close", (code) => {
           complete = true;
           resolve({ message, isError: code !== 0 });
@@ -160,14 +137,10 @@ export default class NeoExpress {
           reject();
         });
       });
-    } catch (e) {
+    } catch (e: any) {
       return {
         isError: true,
-        message:
-          e.stderr?.toString() ||
-          e.stdout?.toString() ||
-          e.message ||
-          "Unknown failure",
+        message: e.stderr?.toString() || e.stdout?.toString() || e.message || "Unknown failure",
       };
     }
   }
@@ -181,11 +154,8 @@ export default class NeoExpress {
     Log.log(LOG_PREFIX, `Checking for dotnet...`);
     let ok = false;
     try {
-      ok =
-        parseInt(
-          childProcess.execFileSync(this.dotnetPath, ["--version"]).toString()
-        ) >= 5;
-    } catch (e) {
+      ok = parseInt(childProcess.execFileSync("dotnet", ["--version"]).toString()) >= 5;
+    } catch (e: any) {
       Log.error(LOG_PREFIX, "checkForDotNet error:", e.message);
       ok = false;
     }
@@ -198,9 +168,7 @@ export default class NeoExpress {
         "More info"
       );
       if (response === "More info") {
-        await vscode.env.openExternal(
-          vscode.Uri.parse("https://dotnet.microsoft.com/download")
-        );
+        await vscode.env.openExternal(vscode.Uri.parse("https://dotnet.microsoft.com/download"));
       }
     }
     Log.log(LOG_PREFIX, `Checking for dotnet ${ok ? "succeeded" : "failed"}`);
