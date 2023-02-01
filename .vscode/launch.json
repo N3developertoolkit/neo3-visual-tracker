@@ -12,10 +12,7 @@
         "--extensionDevelopmentPath=${workspaceFolder}"
       ],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}",
-      "env": {
-        "NEO3_VISUAL_TRACKER_VERSION": "3.5.20"
-      }
+      "preLaunchTask": "${defaultBuildTask}"
     },
     {
       "name": "Run Extension (empty workspace)",
@@ -24,10 +21,7 @@
       "runtimeExecutable": "${execPath}",
       "args": ["${workspaceFolder}/sample-workspaces/empty-workspace", "--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}",
-      "env": {
-        "NEO3_VISUAL_TRACKER_VERSION": "3.5.20"
-      }
+      "preLaunchTask": "${defaultBuildTask}"
     },
     {
       "name": "Run Extension (no workspace)",
@@ -36,10 +30,7 @@
       "runtimeExecutable": "${execPath}",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}"],
       "outFiles": ["${workspaceFolder}/dist/**/*.js"],
-      "preLaunchTask": "${defaultBuildTask}",
-      "env": {
-        "NEO3_VISUAL_TRACKER_VERSION": "3.5.20"
-      }
+      "preLaunchTask": "${defaultBuildTask}"
     }
   ]
 }
