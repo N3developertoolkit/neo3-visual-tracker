@@ -1,10 +1,12 @@
+import { reverseHex } from "@cityofzion/neon-core/lib/u";
 import React from "react";
 
 type Props = {
   hash: string;
+  reverse?: boolean;
 };
 
-export default function Hash({ hash }: Props) {
+export default function Hash({ hash, reverse }: Props) {
   return (
     <span
       style={{
@@ -12,7 +14,7 @@ export default function Hash({ hash }: Props) {
         wordBreak: "break-all",
       }}
     >
-      {hash}
+      { (!reverse) ? hash : `0x${reverseHex(hash.substring(2))}`}
     </span>
   );
 }

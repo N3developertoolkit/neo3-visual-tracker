@@ -5,6 +5,7 @@ import ContractViewRequest from "../../shared/messages/contractViewRequest";
 import ContractViewState from "../../shared/viewState/contractViewState";
 import Log from "../../shared/log";
 import PanelControllerBase from "./panelControllerBase";
+import { reverseHex } from "@cityofzion/neon-core/lib/u";
 
 const LOG_PREFIX = "ContractPanelController";
 
@@ -38,9 +39,13 @@ export default class ContractPanelController extends PanelControllerBase<
   protected async onRequest(request: ContractViewRequest) {
     Log.log(LOG_PREFIX, `Request: ${JSON.stringify(request)}`);
     if (request.copyHash) {
-      await vscode.env.clipboard.writeText(this.contractHash);
+      let scriptHash = this.contractHash;
+      if (request.reverse) {
+        scriptHash = `0x${reverseHex(scriptHash.substring(2))}`;
+      }
+      await vscode.env.clipboard.writeText(scriptHash);
       vscode.window.showInformationMessage(
-        `Contract hash copied to clipboard: ${this.contractHash}`
+        `Contract hash copied to clipboard: ${scriptHash}`
       );
     }
   }
