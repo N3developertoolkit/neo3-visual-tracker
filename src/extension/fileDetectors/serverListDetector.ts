@@ -6,7 +6,7 @@ import BlockchainIdentifier from "../blockchainIdentifier";
 import DetectorBase from "./detectorBase";
 import IoHelpers from "../util/ioHelpers";
 import JSONC from "../util/JSONC";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 
 const LOG_PREFIX = "ServerListDetector";
@@ -30,7 +30,9 @@ const UNKNOWN_BLOCKCHAIN =
 // names the user has supplied through neo-servers.json file(s) in the
 // current workspace):
 const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
-  "0x614a807a3e545df0cb5c96d4d387e620e3e34d441f849b9a4033e0b4f906805d":
+  "0x1f4d1defa46faa5e7b9b8d3f79a06bec777d7c26c4aa5f6f5899a291daa87c15":
+    "Neo N3 MainNet",
+  "0x9d3276785e7306daf59a3f3b9e31912c095598bbfb8a4476b821b0e59be4c57a":
     "Neo N3 TestNet",
 };
 
@@ -38,14 +40,20 @@ const WELL_KNOWN_BLOCKCHAINS: { [genesisHash: string]: string } = {
 // own neo-servers.json file(s) in their workspace:
 const SEED_URLS: { [url: string]: boolean } = {
   //
-  // TODO: Add MainNet URLs and alternative TestNet endpoints.
+  // TODO: Add alternative TestNet endpoints.
   //
+  // V3 MainNet:
+  "http://seed1.neo.org:10332": true,
+  "http://seed2.neo.org:10332": true,
+  "http://seed3.neo.org:10332": true,
+  "http://seed4.neo.org:10332": true,
+  "http://seed5.neo.org:10332": true,
   // V3 TestNet:
-  "http://seed1t.neo.org:20332": true,
-  "http://seed2t.neo.org:20332": true,
-  "http://seed3t.neo.org:20332": true,
-  "http://seed4t.neo.org:20332": true,
-  "http://seed5t.neo.org:20332": true,
+  "http://seed1t4.neo.org:20332": true,
+  "http://seed2t4.neo.org:20332": true,
+  "http://seed3t4.neo.org:20332": true,
+  "http://seed4t4.neo.org:20332": true,
+  "http://seed5t4.neo.org:20332": true,
 };
 
 export default class ServerListDetector extends DetectorBase {

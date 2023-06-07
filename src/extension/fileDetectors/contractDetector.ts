@@ -5,7 +5,7 @@ import * as neonSc from "@cityofzion/neon-core/lib/sc";
 import ActiveConnection from "../activeConnection";
 import DetectorBase from "./detectorBase";
 import JSONC from "../util/JSONC";
-import Log from "../../shared/log";
+import Log from "../util/log";
 
 const LOG_PREFIX = "ContractDetector";
 const SEARCH_PATTERN = "**/*.nef";

@@ -6,9 +6,74 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Added
+
+* Python smart contract template
+
+### Changed
+
+* Update Neo Express to 3.1.38
+
+## [3.0.12] - 2021-09-08
+
+### Changed
+
+* Update Neo Express to 3.0.21
+
+### Removed
+
+* Contract Deployment support for Neo N3 MainNet
+
+## [3.0.11] - 2021-09-08
+
+### Changed
+
+* Update Neo Express to 3.0.13
+* Update WELL_KNOWN_BLOCKCHAINS and SEED_URLS for RC4/Final TestNet nodes (#116)
+
+## [3.0.8] - 2021-08-10
+
+### Added
+
+* Neo N3 MainNet genesis hash and known seed URLs
+
+### Changed
+
+* Update Neo Express to 3.0.5
+
+## [3.0] - 2021-08-02
+
+### Changed
+
+* Neo N3 release support
+* Bumped major version to 3 for consistency with Neo N3 release
+
+## [2.1.51] - 2021-07-07
+
+### Changed
+
+- The invoke file editor now supports editing invocation files that use arrays or objects as contract parameters
+- Extension logs are now also shown in the VS Code Output Panel
+- Fixed an issue that blocked deployment of contracts to Neo N3 TestNet
+- Removed "Invoke Contract" menu item for non Express blockchain networks as feature is not complete
+
+## [2.1.49] - 2021-06-21
+
+### Changed
+
+- Updated C# smart contract template to provide example unit tests
+- Fixed an issue preventing contracts from being deployed to TestNet.
+- Updated Neo Express to latest RC3 build
+- Enable limited support within untrusted VS Code workspaces
+
+## [2.1.47] - 2021-06-08
+
 ### Changed
 
 - C# sample contract now provides scaffolding for a ContractUpdate method
+- Fixed an issue where hashes were shown in an unintuitive byte order in some contexts
+- Updated Neo Express to latest RC3 build
+- Allow asset transfers to arbitrary wallets
 
 ## [2.1.45] - 2021-05-18
 

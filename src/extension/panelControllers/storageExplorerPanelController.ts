@@ -4,7 +4,7 @@ import AutoComplete from "../autoComplete";
 import BlockchainIdentifier from "../blockchainIdentifier";
 import BlockchainMonitor from "../blockchainMonitor/blockchainMonitor";
 import BlockchainMonitorPool from "../blockchainMonitor/blockchainMonitorPool";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import NeoExpress from "../neoExpress/neoExpress";
 import NeoExpressIo from "../neoExpress/neoExpressIo";
 import PanelControllerBase from "./panelControllerBase";

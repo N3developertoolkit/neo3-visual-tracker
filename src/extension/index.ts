@@ -12,7 +12,7 @@ import {
 } from "./commands/commandArguments";
 import ContractDetector from "./fileDetectors/contractDetector";
 import ContractsTreeDataProvider from "./vscodeProviders/contractsTreeDataProvider";
-import Log from "../shared/log";
+import Log from "./util/log";
 import NeoCommands from "./commands/neoCommands";
 import NeoExpress from "./neoExpress/neoExpress";
 import NeoExpressCommands from "./commands/neoExpressCommands";
@@ -43,7 +43,8 @@ function registerCommand(
           commandArguments.path = (context as vscode.Uri).fsPath;
         } else if (context && !!(context as BlockchainIdentifier).name) {
           // Activation was by right-click on an item in the Blockchain explorer
-          commandArguments.blockchainIdentifier = context as BlockchainIdentifier;
+          commandArguments.blockchainIdentifier =
+            context as BlockchainIdentifier;
         } else if (context) {
           // Activation by command URI containing query string parameters
           commandArguments = await sanitizeCommandArguments(context);
@@ -365,4 +366,5 @@ export async function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   Log.log(LOG_PREFIX, "Deactivating extension...");
+  Log.close();
 }

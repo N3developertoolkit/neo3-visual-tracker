@@ -82,11 +82,15 @@ export default class NeoExpressCommands {
     if (!nodeCount) {
       return;
     }
+    const worksapcePath = (vscode.workspace.workspaceFolders || [])[0]?.uri
+      .fsPath;
     const configSavePath = await IoHelpers.pickSaveFile(
       "Create",
       "Neo Express Configurations",
       "neo-express",
-      (vscode.workspace.workspaceFolders || [])[0]?.uri
+      worksapcePath
+        ? vscode.Uri.file(posixPath(worksapcePath, "default.neo-express"))
+        : undefined
     );
     if (!configSavePath) {
       return;
@@ -100,10 +104,11 @@ export default class NeoExpressCommands {
     );
     NeoExpressCommands.showResult(output);
     if (!output.isError) {
-      const blockchainIdentifier = await BlockchainIdentifier.fromNeoExpressConfig(
-        context.extensionPath,
-        configSavePath
-      );
+      const blockchainIdentifier =
+        await BlockchainIdentifier.fromNeoExpressConfig(
+          context.extensionPath,
+          configSavePath
+        );
       if (blockchainIdentifier) {
         await neoExpressInstanceManager.run(blockchainsTreeDataProvider, {
           blockchainIdentifier,
@@ -175,6 +180,7 @@ export default class NeoExpressCommands {
       return;
     }
     const output = await neoExpress.runUnsafe(
+      undefined,
       command,
       "-i",
       identifier.configPath
@@ -326,11 +332,16 @@ export default class NeoExpressCommands {
       return;
     }
     let receiver = commandArguments?.receiver;
+    const CUSTOM_ADDRESS = "(enter an address manually)";
     if (!receiver || walletNames.indexOf(receiver) === -1) {
       receiver = await IoHelpers.multipleChoice(
         `Transfer ${amount} ${asset} from '${sender}' to...`,
-        ...walletNames
+        ...walletNames,
+        CUSTOM_ADDRESS
       );
+    }
+    if (receiver === CUSTOM_ADDRESS) {
+      receiver = await IoHelpers.enterString("Enter the recipients address");
     }
     if (!receiver) {
       return;

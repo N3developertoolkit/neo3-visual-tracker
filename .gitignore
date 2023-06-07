@@ -6,4 +6,5 @@ deps
 *.nupkg
 .DS_Store
 .tools/
+obj
 .idea/

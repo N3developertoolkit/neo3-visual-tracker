@@ -3,7 +3,7 @@ import tryFetchJson from "../util/tryFetchJson";
 // Variable resolution procedure:
 // i)   The `eval` function is called (if-present) and its result is used as the
 //      variable value.
-// ii)  If a `prompt` is provided the user is allowed to optionally specify a 
+// ii)  If a `prompt` is provided the user is allowed to optionally specify a
 //      value (which will overwrite the result of `eval`, if any)
 // iii) If a `parse` function is present it will be called and can modify the
 //      user-provided value.
@@ -22,13 +22,15 @@ type Language = {
   tasks?: {
     label: string;
     dependsOnLabel?: string;
-    group: string;
+    group?: string;
     type: string;
     command: string;
     args: string[];
     problemMatcher: string | any[];
     autoRun?: boolean;
   }[];
+  settings?: { [settingName: string]: string };
+  extensions?: string[];
 };
 
 const languages: { [code: string]: Language } = {
@@ -50,20 +52,21 @@ const languages: { [code: string]: Language } = {
         },
       },
       CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract" },
-      MAINFILE: { eval: async ($) => $["$_CONTRACTNAME_$"] + "Contract.cs" },
+      MAINFILE: {
+        eval: async ($) => "src/" + $["$_CONTRACTNAME_$"] + "Contract.cs",
+      },
     },
     tasks: [
       {
-        label: "restore",
-        group: "build",
-        type: "shell",
+        label: "restore-tools",
         command: "dotnet",
-        args: ["restore"],
+        type: "shell",
+        args: ["tool", "restore"],
         problemMatcher: [],
       },
       {
         label: "build",
-        dependsOnLabel: "restore",
+        dependsOnLabel: "restore-tools",
         group: "build",
         type: "shell",
         command: "dotnet",
@@ -76,6 +79,8 @@ const languages: { [code: string]: Language } = {
         autoRun: true,
       },
     ],
+    settings: { "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj" },
+    extensions: ["ms-dotnettools.csharp", "formulahendry.dotnet-test-explorer"],
   },
   java: {
     variables: {
@@ -126,6 +131,85 @@ const languages: { [code: string]: Language } = {
         parse: (_) => Promise.resolve(_?.replace(/[^.a-z0-9]/gi, "").trim()),
       },
     },
+  },
+  python: {
+    variables: {
+      CONTRACTNAME: {
+        prompt: "Enter name for your contract (e.g. TokenEscrow)",
+        parse: async (contractName) => {
+          if (contractName?.toLocaleLowerCase().endsWith("_contract")) {
+            contractName = contractName.replace(/_contract$/i, "");
+          }
+          if (!contractName) {
+            return undefined;
+          }
+          if (!contractName[0].match(/[a-z]/i)) {
+            contractName = "_" + contractName;
+          }
+          return contractName.replace(/[^a-z0-9]+/gi, "_") || undefined;
+        },
+      },
+      CLASSNAME: { eval: async ($) => $["$_CONTRACTNAME_$"] + "_contract" },
+      MAINFILE: {
+        eval: async ($) => "src/" + $["$_CONTRACTNAME_$"] + "_contract.py",
+      },
+    },
+    tasks: [
+      {
+        label: "create-private-chain",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["create", "-f", "test/$_CONTRACTNAME_$Tests.neo-express"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-owner",
+        dependsOnLabel: "create-private-chain",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "owner"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-alice",
+        dependsOnLabel: "create-wallet-owner",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "alice"],
+        problemMatcher: [],
+      },
+      {
+        label: "create-wallet-bob",
+        dependsOnLabel: "create-wallet-alice",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["wallet", "create", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "bob"],
+        problemMatcher: [],
+      },
+      {
+        label: "transfer-gas-to-wallets",
+        dependsOnLabel: "create-wallet-bob",
+        group: "set-private-chain",
+        type: "shell",
+        command: "neoxp",
+        args: ["batch", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "test/setup-test-chain.batch"],
+        problemMatcher: [],
+      },
+      {
+        label: "build",
+        dependsOnLabel: "transfer-gas-to-wallets",
+        group: "build",
+        command: "neo3-boa",
+        type: "shell",
+        args: ["src/$_CONTRACTNAME_$_contract.py"],
+        problemMatcher: [],
+        autoRun: true,
+      },
+    ],
   },
 };
 

@@ -4,12 +4,36 @@ import InputNonDraggable from "../InputNonDraggable";
 import NeoType from "./NeoType";
 
 type Props = {
-  arg?: string | number;
+  arg?: any;
   autoSuggestListId: string;
   isReadOnly: boolean;
   name: string;
   type?: string | number;
-  onUpdate: (newArgument: string | number) => void;
+  onUpdate: (newArgument: any) => void;
+};
+
+const valueToString = (value: any) => {
+  if (!value) {
+    return "";
+  } else if (Array.isArray(value) || typeof value === "object") {
+    return JSON.stringify(value);
+  } else {
+    return `${value}`;
+  }
+};
+
+const stringToValue = (text: string) => {
+  if (`${parseInt(text)}` === text) {
+    return parseInt(text);
+  } else if (`${parseFloat(text)}` === text) {
+    return parseFloat(text);
+  } else {
+    try {
+      return JSON.parse(text);
+    } catch (e) {
+      return `${text}`;
+    }
+  }
 };
 
 export default function ArgumentInput({
@@ -20,7 +44,7 @@ export default function ArgumentInput({
   type,
   onUpdate,
 }: Props) {
-  const [value, setValue] = useState(`${arg || ""}`);
+  const [value, setValue] = useState(valueToString(arg));
   const inputStyle: React.CSSProperties = {
     color: "var(--vscode-input-foreground)",
     backgroundColor: "var(--vscode-input-background)",
@@ -30,15 +54,6 @@ export default function ArgumentInput({
     fontSize: "0.8rem",
     padding: 1,
     marginLeft: 15,
-  };
-  const coerceType = (text: string) => {
-    if (`${parseInt(text)}` === text) {
-      return parseInt(text);
-    } else if (`${parseFloat(text)}` === text) {
-      return parseFloat(text);
-    } else {
-      return `${text}`;
-    }
   };
   return (
     <div style={{ marginLeft: 15, marginTop: 4 }}>
@@ -57,12 +72,12 @@ export default function ArgumentInput({
         style={inputStyle}
         type="text"
         value={value}
-        onBlur={(e) => onUpdate(coerceType(e.target.value))}
-        onChange={(e) => setValue(e.target.value)}
+        onBlur={(e) => onUpdate(stringToValue(e.target.value))}
+        onChange={(e) => setValue(valueToString(e.target.value))}
         onKeyDown={(e) => {
           if (e.metaKey) {
             // User may be about to save
-            onUpdate(coerceType(value));
+            onUpdate(stringToValue(value));
           }
         }}
       />

@@ -4,7 +4,6 @@
   "displayName": "Neo N3 Visual DevTracker",
   "description": "A Neo N3 blockchain explorer that is directly available within Visual Studio Code",
   "version": "0.0.0",
-  "preview": true,
   "icon": "resources/neo-logo.png",
   "galleryBanner": {
     "color": "#242424",
@@ -23,6 +22,12 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/ngdseattle/neo3-visual-tracker.git"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": "limited",
+      "description": "Trust is required to build, deploy and debug smart contracts"
+    }
   },
   "activationEvents": [
     "onCommand:neo3-visual-devtracker.customizeServerList",
@@ -257,7 +262,7 @@
         },
         {
           "command": "neo3-visual-devtracker.neo.invokeContract",
-          "when": "view == neo3-visual-devtracker.views.blockchains"
+          "when": "view == neo3-visual-devtracker.views.blockchains && viewItem == express"
         },
         {
           "command": "neo3-visual-devtracker.tracker.openTracker",
@@ -320,8 +325,9 @@
     }
   },
   "scripts": {
+    "vscode:prepublish": "npm run compile-prod && npm run bundle-nxp",
     "bundle-nxp": "npm run bundle-nxp-download && npm run bundle-nxp-extract",
-    "bundle-nxp-download": "shx rm -rf deps/nxp && shx mkdir -p deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/2.0.32-preview/Neo.Express.2.0.32-preview.nupkg\" -O deps/nxp/nxp.nupkg",
+    "bundle-nxp-download": "shx rm -rf deps/nxp && shx mkdir -p deps/nxp && nwget \"https://github.com/neo-project/neo-express/releases/download/3.5.20/Neo.Express.3.5.20.nupkg\" -O deps/nxp/nxp.nupkg",
     "bundle-nxp-extract": "cd deps/nxp && extract-zip nxp.nupkg",
     "compile": "npm run compile-ext && npm run compile-panel",
     "compile-ext": "webpack --config src/extension/webpack.config.js --mode development",
@@ -337,7 +343,7 @@
     "watch-panel": "webpack --config src/panel/webpack.config.js --mode development --watch --stats-error-details"
   },
   "devDependencies": {
-    "@cityofzion/neon-core": "^5.0.0-next.10",
+    "@cityofzion/neon-core": "^5.0.0-next.12",
     "@types/crypto-js": "^4.0.1",
     "@types/glob": "^7.1.3",
     "@types/gulp": "^4.0.7",
@@ -358,7 +364,7 @@
     "glob": "^7.1.6",
     "gulp": "^4.0.2",
     "jsonc-parser": "^3.0.0",
-    "nerdbank-gitversioning": "^3.3.37",
+    "nerdbank-gitversioning": "^3.4.244",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "shx": "^0.3.3",
@@ -367,7 +373,7 @@
     "ts-loader": "^8.1.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4",
-    "vsce": "^1.87.1",
+    "vsce": "^2.9.2",
     "webpack": "^5.33.2",
     "webpack-cli": "^4.6.0",
     "wget-improved": "^3.2.1",

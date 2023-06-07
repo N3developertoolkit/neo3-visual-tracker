@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import ActiveConnection from "../activeConnection";
 import AutoComplete from "../autoComplete";
-import Log from "../../shared/log";
+import Log from "../util/log";
 import posixPath from "../util/posixPath";
 import WalletDetector from "../fileDetectors/walletDetector";
 
@@ -16,7 +16,8 @@ type WalletData = {
 };
 
 export default class WalletsTreeDataProvider
-  implements vscode.TreeDataProvider<WalletData> {
+  implements vscode.TreeDataProvider<WalletData>
+{
   onDidChangeTreeData: vscode.Event<void>;
 
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void>;
@@ -69,8 +70,8 @@ export default class WalletsTreeDataProvider
         });
       }
     }
-    const blockchainIdentifier = this.activeConnection.connection
-      ?.blockchainIdentifier;
+    const blockchainIdentifier =
+      this.activeConnection.connection?.blockchainIdentifier;
     const expressWallets = await blockchainIdentifier?.getWalletAddresses();
     if (expressWallets) {
       for (const name of Object.keys(expressWallets)) {

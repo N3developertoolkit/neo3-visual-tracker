@@ -2,7 +2,6 @@ import React from "react";
 
 import AddressInfo from "../../../shared/addressInfo";
 import AutoCompleteData from "../../../shared/autoCompleteData";
-import reverseBytes from "./reverseBytes";
 import ScriptToken from "./ScriptToken";
 
 type Props = {
@@ -55,7 +54,7 @@ export default function AddressDetails({
                       <td>
                         <small>
                           <ScriptToken
-                            token={reverseBytes(assetHash.substring(2))}
+                            token={assetHash.substring(2)}
                             autoCompleteData={autoCompleteData}
                           />
                         </small>
