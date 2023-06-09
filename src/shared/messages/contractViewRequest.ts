@@ -1,3 +1,6 @@
-type ContractViewRequest = { copyHash?: boolean };
+type ContractViewRequest = { 
+    copyHash?: boolean,
+    reverse?: boolean
+};
 
 export default ContractViewRequest;
