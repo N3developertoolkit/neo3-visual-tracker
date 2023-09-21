@@ -1,12 +1,12 @@
 from typing import Any, Union
 
-from boa3.builtin import NeoMetadata, metadata, public
+from boa3.builtin.compile_time import NeoMetadata, metadata, public
 from boa3.builtin.contract import Nep17TransferEvent, abort
-from boa3.builtin.interop.blockchain import get_contract
-from boa3.builtin.interop.contract import GAS, NEO, call_contract
-from boa3.builtin.interop.runtime import calling_script_hash, check_witness
+from boa3.builtin.interop.blockchain import get_contract, Transaction
+from boa3.builtin.interop.contract import call_contract
+from boa3.builtin.interop.runtime import calling_script_hash, check_witness, script_container
 from boa3.builtin.interop.storage import delete, get, put
-from boa3.builtin.type import UInt160
+from boa3.builtin.type import UInt160, helper
 
 
 # -------------------------------------------
@@ -32,8 +32,8 @@ def manifest_metadata() -> NeoMetadata:
 
 
 # Script hash of the contract owner
-OWNER = UInt160(b"owner's address here")
-SUPPLY_KEY = 'totalSupply'
+OWNER_KEY = b'owner'
+SUPPLY_KEY = b'totalSupply'
 
 # Symbol of the Token
 TOKEN_SYMBOL = 'NEP17'
@@ -58,7 +58,7 @@ on_transfer = Nep17TransferEvent
 # -------------------------------------------
 
 
-@public
+@public(safe=True)
 def symbol() -> str:
     """
     Gets the symbols of the token.
@@ -72,7 +72,7 @@ def symbol() -> str:
     return TOKEN_SYMBOL
 
 
-@public
+@public(safe=True)
 def decimals() -> int:
     """
     Gets the amount of decimals used by the token.
@@ -85,8 +85,8 @@ def decimals() -> int:
     return TOKEN_DECIMALS
 
 
-@public
-def totalSupply() -> int:
+@public(name='totalSupply', safe=True)
+def total_supply() -> int:
     """
     Gets the total token supply deployed in the system.
 
@@ -95,11 +95,11 @@ def totalSupply() -> int:
 
     :return: the total token supply deployed in the system.
     """
-    return get(SUPPLY_KEY).to_int()
+    return helper.to_int(get(SUPPLY_KEY))
 
 
-@public
-def balanceOf(account: UInt160) -> int:
+@public(name='balanceOf', safe=True)
+def balance_of(account: UInt160) -> int:
     """
     Get the current balance of an address
 
@@ -109,7 +109,7 @@ def balanceOf(account: UInt160) -> int:
     :type account: UInt160
     """
     assert len(account) == 20
-    return get(account).to_int()
+    return helper.to_int(get(account))
 
 
 @public
@@ -138,7 +138,7 @@ def transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any)
     assert amount >= 0
 
     # The function MUST return false if the from account balance does not have enough tokens to spend.
-    from_balance = get(from_address).to_int()
+    from_balance = helper.to_int(get(from_address))
     if from_balance < amount:
         return False
 
@@ -156,7 +156,7 @@ def transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any)
         else:
             put(from_address, from_balance - amount)
 
-        to_balance = get(to_address).to_int()
+        to_balance = helper.to_int(get(to_address))
         put(to_address, to_balance + amount)
 
     # if the method succeeds, it must fire the transfer event
@@ -169,7 +169,7 @@ def transfer(from_address: UInt160, to_address: UInt160, amount: int, data: Any)
 
 def post_transfer(from_address: Union[UInt160, None], to_address: Union[UInt160, None], amount: int, data: Any):
     """
-    Checks if the one receiving NEP17 tokens is a smart contract and if it's one the onPayment method will be called
+    Checks if the one receiving NEP17 tokens is a smart contract and, if it's one, the onPayment method will be called
 
     :param from_address: the address of the sender
     :type from_address: UInt160
@@ -180,32 +180,10 @@ def post_transfer(from_address: Union[UInt160, None], to_address: Union[UInt160,
     :param data: any pertinent data that might validate the transaction
     :type data: Any
     """
-    if not isinstance(to_address, None):    # TODO: change to 'is not None' when `is` semantic is implemented
+    if to_address is not None:
         contract = get_contract(to_address)
-        if not isinstance(contract, None):      # TODO: change to 'is not None' when `is` semantic is implemented
+        if contract is not None:
             call_contract(to_address, 'onNEP17Payment', [from_address, amount, data])
-
-
-def mint(account: UInt160, amount: int):
-    """
-    Mints new tokens. This is not a NEP-17 standard method, it's only being use to complement the onPayment method
-
-    :param account: the address of the account that is sending cryptocurrency to this contract
-    :type account: UInt160
-    :param amount: the amount of gas to be refunded
-    :type amount: int
-    :raise AssertionError: raised if amount is less than than 0
-    """
-    assert amount >= 0
-    if amount != 0:
-        current_total_supply = totalSupply()
-        account_balance = balanceOf(account)
-
-        put(SUPPLY_KEY, current_total_supply + amount)
-        put(account, account_balance + amount)
-
-        on_transfer(None, account, amount)
-        post_transfer(None, account, amount, None)
 
 
 @public
@@ -217,27 +195,22 @@ def verify() -> bool:
 
     :return: whether the transaction signature is correct
     """
-    return check_witness(OWNER)
+    return check_witness(UInt160(get(OWNER_KEY)))
 
 
 @public
-def deploy() -> bool:
+def _deploy(data: Any, update: bool):
     """
     Initializes the storage when the smart contract is deployed.
-
-    :return: whether the deploy was successful. This method must return True only during the smart contract's deploy.
     """
-    if not check_witness(OWNER):
-        return False
+    if not update:
+        container: Transaction = script_container
 
-    if get(SUPPLY_KEY).to_int() > 0:
-        return False
+        put(SUPPLY_KEY, TOKEN_TOTAL_SUPPLY)
+        put(OWNER_KEY, container.sender)
+        put(container.sender, TOKEN_TOTAL_SUPPLY)
 
-    put(SUPPLY_KEY, TOKEN_TOTAL_SUPPLY)
-    put(OWNER, TOKEN_TOTAL_SUPPLY)
-
-    on_transfer(None, OWNER, TOKEN_TOTAL_SUPPLY)
-    return True
+        on_transfer(None, container.sender, TOKEN_TOTAL_SUPPLY)
 
 
 @public
@@ -245,15 +218,15 @@ def onNEP17Payment(from_address: UInt160, amount: int, data: Any):
     """
     NEP-17 affirms :"if the receiver is a deployed contract, the function MUST call onNEP17Payment method on receiver
     contract with the data parameter from transfer AFTER firing the Transfer event. If the receiver doesn't want to
-    receive this transfer it MUST call ABORT." Therefore, since this is a smart contract, onNEP17Payment must exists.
+    receive this transfer it MUST call ABORT." Therefore, since this is a smart contract, onNEP17Payment must exist.
 
-    There is no guideline as to how it should verify the transaction and it's up to the user to make this verification.
+    There is no guideline as to how it should verify the transaction, and it's up to the user to make this verification.
 
     For instance, in this template no token is accepted, so it will always abort.
 
     :param from_address: the address of the one who is trying to send cryptocurrency to this smart contract
     :type from_address: UInt160
-    :param amount: the amount of cryptocurrency that is being sent to the this smart contract
+    :param amount: the amount of cryptocurrency that is being sent to the smart contract
     :type amount: int
     :param data: any pertinent data that might validate the transaction
     :type data: Any

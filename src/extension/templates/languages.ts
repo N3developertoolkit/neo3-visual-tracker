@@ -196,7 +196,7 @@ const languages: { [code: string]: Language } = {
         group: "set-private-chain",
         type: "shell",
         command: "neoxp",
-        args: ["batch", "-i", "test/$_CONTRACTNAME_$Tests.neo-express", "test/setup-test-chain.batch"],
+        args: ["batch", "-i", "$_CONTRACTNAME_$Tests.neo-express", "test/setup-test-chain.batch"],
         problemMatcher: [],
       },
       {
@@ -205,7 +205,7 @@ const languages: { [code: string]: Language } = {
         group: "build",
         command: "neo3-boa",
         type: "shell",
-        args: ["src/$_CONTRACTNAME_$_contract.py"],
+        args: ["compile", "-db", "src/$_CONTRACTNAME_$_contract.py"],
         problemMatcher: [],
         autoRun: true,
       },
