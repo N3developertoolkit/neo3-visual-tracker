@@ -27,7 +27,7 @@ export default class NeoExpressIo {
       return null;
     }
     try {
-      return JSONC.parse(output.message) as neonSc.ContractManifestJson;
+      return JSONC.parse(output.message)[0] as neonSc.ContractManifestJson;
     } catch (e) {
       throw Error(`Get contract error: ${e.message}`);
     }
