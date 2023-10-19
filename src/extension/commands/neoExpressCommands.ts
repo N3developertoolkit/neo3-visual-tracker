@@ -54,11 +54,19 @@ export default class NeoExpressCommands {
     if (!contractFile) {
       return;
     }
+    const contractData = await IoHelpers.enterString(
+      "Enter optional data to deploy the contract"
+    );
+    let data: string[] = [];
+    if (contractData) {
+      data = ['-d', contractData];
+    }
     const output = await neoExpress.run(
       "contract",
       "deploy",
       contractFile,
       account,
+      ...data,
       "-i",
       identifier.configPath
     );
