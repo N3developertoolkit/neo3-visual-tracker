@@ -35,7 +35,8 @@ export default function Search({ searchHistory, onSearch }: Props) {
   return (
     <form
       style={formStyle}
-      onSubmit={() => {
+      onSubmit={(e) => {
+        e.preventDefault();
         onSearch(searchInput);
         setSearchInput("");
       }}
