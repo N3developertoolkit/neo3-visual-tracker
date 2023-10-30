@@ -266,22 +266,28 @@ export default class TrackerPanelController extends PanelControllerBase<
       return;
     }
 
+    var success = false;
     try {
       const block = await this.blockchainMonitor.getBlock(query, false);
       if (block) {
         request.selectBlock = block.hash;
+        success = true;
       }
     } catch {
       try {
         const tx = await this.getTransaction(query.toLowerCase(), false);
         if (tx) {
           request.selectTransaction = tx.tx.hash;
+          success = true;
         }
       } catch {
-        vscode.window.showErrorMessage(
-          `Could not retrieve block or transaction with hash ${query}`
-        );
+        success = false;
       }
+    }
+    if (!success) {
+      vscode.window.showErrorMessage(
+        `Could not retrieve block or transaction with hash ${query}`
+      );
     }
   }
 }
